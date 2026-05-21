@@ -1,42 +1,75 @@
-# DoAn JavaFX MVC
+# Vehicle Maintenance Management
 
-Skeleton ung dung desktop Java cho do an mon hoc, dung JavaFX, FXML, CSS va mo hinh MVC.
+Ung dung desktop JavaFX cho do an **Quan ly ho so va bao duong phuong tien**. Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co so du lieu.
 
-## Yeu cau
+## Muc tieu
 
-- Java JDK 25.
-- MySQL Server.
-- VS Code.
-- Extension khuyen nghi: **Extension Pack for Java** (`vscjava.vscode-java-pack`).
-- Khong can cai Maven rieng vi project da co Maven Wrapper.
+- Quan ly ho so phuong tien.
+- Quan ly tai khoan va vai tro nguoi dung.
+- Theo doi canh bao lien quan den giay to, bao duong va trang thai phuong tien.
+- Ket noi MySQL qua JDBC.
+
+> Trang thai hien tai: project dang o giai doan dung khung. Mot so lop nhu `MainApp`, `AuthService` dang la skeleton va can duoc hoan thien truoc khi chay day du chuc nang.
+
+## Cong nghe su dung
+
+- Java JDK 25
+- JavaFX 25.0.3
+- FXML + CSS
+- MySQL
+- MySQL Connector/J 9.7.0
+- Maven Wrapper
+- VS Code
+
+## Cau truc thu muc
+
+```text
+src/main/java
+|-- app          # Diem khoi chay ung dung
+|-- database     # Ket noi MySQL
+|-- model
+|   |-- dao      # Lop truy cap du lieu
+|   |-- dto      # Lop truyen du lieu giua cac tang
+|   `-- entity   # Lop anh xa du lieu nghiep vu
+|-- service      # Xu ly nghiep vu
+|-- session      # Luu thong tin phien dang nhap
+`-- util         # Tien ich dung chung
+
+src/main/resources
+|-- css          # File giao dien CSS
+|-- images       # Hinh anh, icon
+`-- view         # File FXML
+
+lib
+`-- mysql-connector-j-9.7.0.jar
+```
+
+## Yeu cau moi truong
+
+- Cai Java JDK 25.
+- Cai MySQL Server.
+- Cai VS Code.
+- Cai extension **Extension Pack for Java** trong VS Code.
 
 Neu may co nhieu JDK, dat `JAVA_HOME` ve JDK 25 truoc khi build:
 
 ```powershell
 $env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.3"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
 ```
 
-## Chay project
-
-Mo thu muc project nay trong VS Code, sau do chay:
+Kiem tra:
 
 ```powershell
+java -version
 .\mvnw -v
-.\mvnw clean package
-.\mvnw javafx:run
 ```
 
-Lan dau chay, wrapper se tai Maven 3.9.11 ve thu muc Maven cache cua user.
+Ket qua Maven nen hien thi Java `25.0.3`.
 
 ## Cau hinh MySQL
 
-Project dung MySQL Connector/J va JDBC. File driver MySQL da duoc dat trong:
-
-```text
-lib/mysql-connector-j-9.7.0.jar
-```
-
-`pom.xml` dang tro truc tiep toi file `.jar` nay bang `systemPath`, nen VS Code/Maven se nap driver tu thu muc `src/lib`. Mac dinh app ket noi toi:
+Mac dinh project ket noi toi database:
 
 ```text
 jdbc:mysql://localhost:3306/vehicle_maintenance_management
@@ -44,38 +77,54 @@ user: root
 password: rong
 ```
 
-Khi chay app, DAO se tu tao database `vehicle_maintenance_management`, bang `vehicles`, va 2 dong du lieu mau neu database dang rong. Neu MySQL cua ban dung mat khau, dat bien moi truong trong terminal truoc khi chay:
+Thong tin nay nam trong:
+
+```text
+src/main/java/database/DatabaseConnection.java
+```
+
+Neu MySQL cua ban co mat khau, cau hinh trong terminal truoc khi chay:
+
+```powershell
+$env:DB_USER = "root"
+$env:DB_PASSWORD = "mat_khau_mysql"
+```
+
+Neu muon doi URL database:
 
 ```powershell
 $env:DB_URL = "jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh"
-$env:DB_USER = "root"
-$env:DB_PASSWORD = ""
+```
+
+## Build project
+
+Chay trong thu muc goc project:
+
+```powershell
+.\mvnw clean package
+```
+
+Neu build loi do Java version, kiem tra lai `JAVA_HOME` dang tro dung JDK 25.
+
+## Chay ung dung
+
+Khi cac file khoi chay va giao dien da duoc hoan thien, chay:
+
+```powershell
 .\mvnw javafx:run
 ```
 
-## Cau truc MVC
+Hien tai can hoan thien `MainApp` va cac man hinh FXML truoc khi app chay day du.
+
+## Thu vien MySQL trong `lib`
+
+Project dang dung file driver:
 
 ```text
-src/main/java
-|-- app          # Entry point JavaFX
-|-- controller   # Dieu phoi FXML va su kien UI
-|-- database     # Ket noi MySQL
-|-- model        # Entity va DAO
-|   |-- entity   # Lop mo ta du lieu
-|   `-- dao      # Lop truy cap MySQL
-|-- service      # Xu ly nghiep vu
-`-- util         # Helper dung chung
-
-src/main/resources
-|-- view         # File .fxml
-`-- css          # File .css
+lib/mysql-connector-j-9.7.0.jar
 ```
 
-Controller chi doc/ghi control UI va goi service. Logic nghiep vu nam trong service. `database` chi giu lop ket noi MySQL. Entity dat trong `model/entity`, DAO dat trong `model/dao`.
-
-## Them thu vien Java vao lib
-
-Dat file `.jar` vao `src/lib`, sau do khai bao dependency trong `pom.xml`. Vi du MySQL Connector/J hien tai:
+Trong `pom.xml`, thu vien nay duoc khai bao bang `systemPath`:
 
 ```xml
 <dependency>
@@ -87,16 +136,22 @@ Dat file `.jar` vao `src/lib`, sau do khai bao dependency trong `pom.xml`. Vi du
 </dependency>
 ```
 
-Sau khi luu `pom.xml`, VS Code Java Projects se tu dong import lai dependency. Neu chua cap nhat, chay:
+## Quy uoc phat trien
+
+- Entity dat trong `model/entity`.
+- DAO dat trong `model/dao`.
+- DTO dat trong `model/dto`.
+- Logic nghiep vu dat trong `service`.
+- Ket noi MySQL dat trong `database`.
+- FXML dat trong `src/main/resources/view`.
+- CSS dat trong `src/main/resources/css`.
+
+## Ghi chu cho nhom
+
+- Khong commit thong tin mat khau MySQL ca nhan.
+- Moi thanh vien cau hinh `DB_USER`, `DB_PASSWORD` rieng bang bien moi truong.
+- Truoc khi push code, nen chay:
 
 ```powershell
 .\mvnw clean package
 ```
-
-## Them man hinh FXML moi
-
-1. Tao FXML trong `src/main/resources/view`.
-2. Tao controller trong `src/main/java/controller`.
-3. Khai bao `fx:controller="controller.TenController"` trong FXML.
-4. Dua style vao `src/main/resources/css/app.css` hoac tao file CSS rieng.
-5. Load FXML bang `FXMLLoader` tu `MainApp` hoac tu controller dieu huong.
