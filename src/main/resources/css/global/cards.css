@@ -1,0 +1,43 @@
+/* =========================================================
+   cards.css
+   Card, toolbar, form-card, summary-card.
+   ========================================================= */
+
+.card,
+.toolbar,
+.form-card,
+.summary-card {
+    -fx-background-color: -app-card-bg;
+    -fx-background-radius: 14;
+    -fx-border-color: -app-border;
+    -fx-border-radius: 14;
+}
+
+.card {
+    -fx-padding: 20;
+}
+
+.toolbar {
+    -fx-padding: 14;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.form-card {
+    -fx-padding: 20;
+}
+
+.summary-card {
+    -fx-padding: 18;
+    -fx-spacing: 6;
+}
+
+.summary-title {
+    -fx-text-fill: -app-text-sub;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+.summary-number {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+}

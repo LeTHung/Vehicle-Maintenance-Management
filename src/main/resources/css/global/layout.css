@@ -1,0 +1,134 @@
+.root-layout {
+  -fx-background-color: #f5f7fb;
+}
+
+/* SIDEBAR */
+.sidebar {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #e5e7eb;
+  -fx-border-width: 0 1 0 0;
+}
+
+.sidebar-header {
+  -fx-padding: 24 22 18 22;
+  -fx-spacing: 4;
+  -fx-border-color: #e5e7eb;
+  -fx-border-width: 0 0 1 0;
+}
+
+.logo-text {
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2563eb;
+}
+
+.logo-subtitle {
+  -fx-font-size: 12px;
+  -fx-text-fill: #6b7280;
+}
+
+.sidebar-menu {
+  -fx-padding: 18 12 12 12;
+}
+
+.nav-title {
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #9ca3af;
+  -fx-padding: 14 10 6 10;
+}
+
+.nav-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: #6b7280;
+  -fx-font-size: 14px;
+  -fx-font-weight: 500;
+  -fx-alignment: CENTER_LEFT;
+  -fx-padding: 11 14;
+  -fx-background-radius: 8;
+  -fx-cursor: hand;
+}
+
+.nav-button:hover {
+  -fx-background-color: #eff6ff;
+  -fx-text-fill: #2563eb;
+}
+
+.nav-button.active {
+  -fx-background-color: #eff6ff;
+  -fx-text-fill: #2563eb;
+  -fx-font-weight: bold;
+}
+
+.sidebar-footer {
+  -fx-padding: 16;
+  -fx-spacing: 10;
+  -fx-alignment: CENTER_LEFT;
+  -fx-border-color: #e5e7eb;
+  -fx-border-width: 1 0 0 0;
+}
+
+.user-name {
+  -fx-font-size: 13px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #111827;
+}
+
+.user-role {
+  -fx-font-size: 12px;
+  -fx-text-fill: #6b7280;
+}
+
+.logout-button {
+  -fx-background-color: #fee2e2;
+  -fx-text-fill: #b91c1c;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8;
+  -fx-padding: 8 12;
+  -fx-cursor: hand;
+}
+
+/* TOPBAR */
+.topbar {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #e5e7eb;
+  -fx-border-width: 0 0 1 0;
+  -fx-padding: 16 24;
+  -fx-spacing: 16;
+  -fx-alignment: CENTER_LEFT;
+}
+
+.topbar-title {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #111827;
+}
+
+.topbar-subtitle {
+  -fx-font-size: 13px;
+  -fx-text-fill: #6b7280;
+}
+
+.content-area {
+  -fx-background-color: #f5f7fb;
+}
+
+/* PLACEHOLDER */
+.placeholder-box {
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 14;
+  -fx-border-radius: 14;
+  -fx-border-color: #e5e7eb;
+  -fx-padding: 40;
+}
+
+.placeholder-title {
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #111827;
+}
+
+.placeholder-message {
+  -fx-font-size: 14px;
+  -fx-text-fill: #6b7280;
+}
