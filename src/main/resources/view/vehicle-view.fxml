@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.VehicleController"
+      stylesheets="@../css/pages/vehicle.css"
+      styleClass="page">
+
+    <padding>
+        <Insets top="24" right="24" bottom="24" left="24"/>
+    </padding>
+
+    <VBox spacing="4">
+        <Label text="Quản lý phương tiện" styleClass="page-title"/>
+        <Label text="Quản lý biển số, loại xe, số khung, số máy, năm sản xuất, ODO và trạng thái." styleClass="page-subtitle"/>
+    </VBox>
+
+    <HBox spacing="12" styleClass="toolbar">
+        <TextField fx:id="txtSearch" promptText="Tìm theo biển số, loại xe..." HBox.hgrow="ALWAYS" styleClass="input-field"/>
+        <Button text="Tìm kiếm" onAction="#handleSearchVehicle" styleClass="secondary-button"/>
+        <Button text="Làm mới" onAction="#handleRefreshVehicle" styleClass="secondary-button"/>
+    </HBox>
+
+    <GridPane hgap="12" vgap="12" styleClass="form-card">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="15"/>
+            <ColumnConstraints percentWidth="35"/>
+            <ColumnConstraints percentWidth="15"/>
+            <ColumnConstraints percentWidth="35"/>
+        </columnConstraints>
+
+        <Label text="Biển số" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+        <TextField fx:id="txtLicensePlate" promptText="VD: 51A-12345" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="input-field"/>
+
+        <Label text="Loại xe" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="form-label"/>
+        <ComboBox fx:id="cbVehicleType" promptText="Chọn loại xe" GridPane.rowIndex="0" GridPane.columnIndex="3" maxWidth="Infinity" styleClass="input-field"/>
+
+        <Label text="Số khung" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+        <TextField fx:id="txtChassisNumber" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="input-field"/>
+
+        <Label text="Số máy" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="form-label"/>
+        <TextField fx:id="txtEngineNumber" GridPane.rowIndex="1" GridPane.columnIndex="3" styleClass="input-field"/>
+
+        <Label text="Năm sản xuất" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+        <TextField fx:id="txtManufactureYear" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="input-field"/>
+
+        <Label text="Ngày mua" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="form-label"/>
+        <DatePicker fx:id="dpPurchaseDate" GridPane.rowIndex="2" GridPane.columnIndex="3" maxWidth="Infinity" styleClass="input-field"/>
+
+        <Label text="Trạng thái" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+        <ComboBox fx:id="cbStatus" promptText="Chọn trạng thái" GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="Infinity" styleClass="input-field"/>
+
+        <Label text="ODO hiện tại" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="form-label"/>
+        <TextField fx:id="txtCurrentOdo" promptText="VD: 35000" GridPane.rowIndex="3" GridPane.columnIndex="3" styleClass="input-field"/>
+
+        <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="4">
+            <Button text="Lưu" onAction="#handleSaveVehicle" styleClass="primary-button"/>
+            <Button text="Cập nhật" onAction="#handleUpdateVehicle" styleClass="secondary-button"/>
+            <Button text="Xóa trắng" onAction="#handleClearVehicleForm" styleClass="secondary-button"/>
+        </HBox>
+    </GridPane>
+
+    <TableView fx:id="tblVehicle" VBox.vgrow="ALWAYS" styleClass="data-table">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="colLicensePlate" text="Biển số" prefWidth="130"/>
+            <TableColumn fx:id="colVehicleType" text="Loại xe" prefWidth="130"/>
+            <TableColumn fx:id="colChassisNumber" text="Số khung" prefWidth="150"/>
+            <TableColumn fx:id="colEngineNumber" text="Số máy" prefWidth="150"/>
+            <TableColumn fx:id="colManufactureYear" text="Năm SX" prefWidth="90"/>
+            <TableColumn fx:id="colPurchaseDate" text="Ngày mua" prefWidth="120"/>
+            <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="140"/>
+            <TableColumn fx:id="colCurrentOdo" text="ODO" prefWidth="100"/>
+        </columns>
+    </TableView>
+</VBox>

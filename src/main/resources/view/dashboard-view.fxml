@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" spacing="20" styleClass="page">
+    <padding>
+        <Insets top="24" right="24" bottom="24" left="24"/>
+    </padding>
+
+    <VBox spacing="4">
+        <Label text="Dashboard" styleClass="page-title"/>
+        <Label text="Tổng quan nhanh về phương tiện, giấy tờ và cảnh báo." styleClass="page-subtitle"/>
+    </VBox>
+
+    <HBox spacing="16">
+        <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+            <Label text="Tổng phương tiện" styleClass="summary-title"/>
+            <Label text="0" styleClass="summary-number primary-text"/>
+        </VBox>
+
+        <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+            <Label text="Giấy tờ sắp hết hạn" styleClass="summary-title"/>
+            <Label text="0" styleClass="summary-number warning-text"/>
+        </VBox>
+
+        <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+            <Label text="Giấy tờ đã hết hạn" styleClass="summary-title"/>
+            <Label text="0" styleClass="summary-number danger-text"/>
+        </VBox>
+    </HBox>
+
+    <VBox styleClass="card" spacing="10">
+        <Label text="Việc cần làm hôm nay" styleClass="section-title"/>
+        <Label text="1. Hoàn thiện FXML cho 3 màn hình: phương tiện, giấy tờ xe, cảnh báo giấy tờ." styleClass="normal-text"/>
+        <Label text="2. Kiểm tra sidebar/topbar load đúng màn hình." styleClass="normal-text"/>
+        <Label text="3. Chưa xử lý CRUD ở ngày này, chỉ cần giao diện không lỗi." styleClass="normal-text"/>
+    </VBox>
+</VBox>
