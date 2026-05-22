@@ -1,0 +1,10 @@
+.vehicle-form-title {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #111827;
+}
+
+.vehicle-note {
+  -fx-text-fill: #6b7280;
+  -fx-font-size: 13px;
+}
