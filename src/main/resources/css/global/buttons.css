@@ -1,0 +1,33 @@
+/* =========================================================
+   buttons.css
+   Button chính, button phụ, hover.
+   ========================================================= */
+
+.primary-button {
+    -fx-background-color: -app-primary;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: 700;
+    -fx-background-radius: 8;
+    -fx-padding: 9 16;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: -app-primary-hover;
+}
+
+.secondary-button {
+    -fx-background-color: -app-card-bg;
+    -fx-text-fill: -app-text-main;
+    -fx-font-weight: 700;
+    -fx-border-color: -app-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 9 16;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: -app-primary-soft;
+    -fx-text-fill: -app-primary;
+}
