@@ -11,7 +11,7 @@ public final class DatabaseConnection {
             + "&characterEncoding=UTF-8"
             + "&serverTimezone=Asia/Ho_Chi_Minh";
     private static final String DEFAULT_USER = "root";
-    private static final String DEFAULT_PASSWORD = "";
+    private static final String DEFAULT_PASSWORD = "123456";
 
     private DatabaseConnection() {
     }

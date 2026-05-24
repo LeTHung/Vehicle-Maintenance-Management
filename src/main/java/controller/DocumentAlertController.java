@@ -13,6 +13,7 @@ public class DocumentAlertController {
     private ComboBox<String> cbAlertType;
     @FXML
     private TextField txtSearch;
+
     @FXML
     private Label lblExpiredCount;
     @FXML
@@ -23,23 +24,41 @@ public class DocumentAlertController {
     @FXML
     private TableView<?> tblAlert;
     @FXML
-    private TableColumn<?, ?> colVehiclePlate;
+    private TableColumn<?, ?> colDocumentId;
     @FXML
-    private TableColumn<?, ?> colDocumentType;
+    private TableColumn<?, ?> colVehicleId;
     @FXML
-    private TableColumn<?, ?> colIssueDate;
+    private TableColumn<?, ?> colLicensePlate;
+    @FXML
+    private TableColumn<?, ?> colVehicleType;
+    @FXML
+    private TableColumn<?, ?> colDocumentTypeName;
+    @FXML
+    private TableColumn<?, ?> colDocumentNumber;
+    @FXML
+    private TableColumn<?, ?> colIssuerName;
     @FXML
     private TableColumn<?, ?> colExpiryDate;
     @FXML
-    private TableColumn<?, ?> colDaysLeft;
+    private TableColumn<?, ?> colDaysToExpiry;
     @FXML
-    private TableColumn<?, ?> colAlertStatus;
-    @FXML
-    private TableColumn<?, ?> colNote;
+    private TableColumn<?, ?> colDueStatus;
 
     @FXML
     public void initialize() {
-        cbAlertType.getItems().setAll("Tất cả", "Đã hết hạn", "Sắp hết hạn trong 15 ngày");
+        initComboBoxes();
+        resetSummary();
+    }
+
+    private void initComboBoxes() {
+        cbAlertType.getItems().setAll(
+                "Tất cả",
+                "OVERDUE",
+                "COMING_DUE",
+                "NORMAL");
+    }
+
+    private void resetSummary() {
         lblExpiredCount.setText("0");
         lblWarningCount.setText("0");
         lblTotalAlertCount.setText("0");
@@ -47,13 +66,23 @@ public class DocumentAlertController {
 
     @FXML
     private void handleSearchAlert() {
-        System.out.println("Tìm cảnh báo: " + txtSearch.getText());
+        String keyword = txtSearch.getText();
+        String alertType = cbAlertType.getValue();
+
+        System.out.println("Tìm cảnh báo: " + keyword);
+        System.out.println("Loại cảnh báo: " + alertType);
+
+        // Ngày sau sẽ nối DocumentAlertDAO.search()
     }
 
     @FXML
     private void handleRefreshAlert() {
         txtSearch.clear();
         cbAlertType.setValue(null);
+        resetSummary();
+
         System.out.println("Làm mới cảnh báo giấy tờ");
+
+        // Ngày sau sẽ gọi loadAlertData()
     }
 }

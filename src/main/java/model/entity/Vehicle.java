@@ -3,39 +3,39 @@ package model.entity;
 import java.time.LocalDate;
 
 public class Vehicle {
-    private int id;
+
+    private long vehicleId;
+    private String vehicleCode;
     private String licensePlate;
     private String vehicleType;
+    private String brand;
+    private String model;
+    private Integer manufactureYear;
+    private LocalDate purchaseDate;
     private String chassisNumber;
     private String engineNumber;
-    private int manufactureYear;
-    private LocalDate purchaseDate;
-    private String status;
-    private int currentOdo;
+    private String color;
+    private int currentOdometer;
+    private String vehicleStatus;
+    private String notes;
 
     public Vehicle() {
     }
 
-    public Vehicle(int id, String licensePlate, String vehicleType, String chassisNumber,
-            String engineNumber, int manufactureYear, LocalDate purchaseDate,
-            String status, int currentOdo) {
-        this.id = id;
-        this.licensePlate = licensePlate;
-        this.vehicleType = vehicleType;
-        this.chassisNumber = chassisNumber;
-        this.engineNumber = engineNumber;
-        this.manufactureYear = manufactureYear;
-        this.purchaseDate = purchaseDate;
-        this.status = status;
-        this.currentOdo = currentOdo;
+    public long getVehicleId() {
+        return vehicleId;
     }
 
-    public int getId() {
-        return id;
+    public void setVehicleId(long vehicleId) {
+        this.vehicleId = vehicleId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getVehicleCode() {
+        return vehicleCode;
+    }
+
+    public void setVehicleCode(String vehicleCode) {
+        this.vehicleCode = vehicleCode;
     }
 
     public String getLicensePlate() {
@@ -54,6 +54,38 @@ public class Vehicle {
         this.vehicleType = vehicleType;
     }
 
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public Integer getManufactureYear() {
+        return manufactureYear;
+    }
+
+    public void setManufactureYear(Integer manufactureYear) {
+        this.manufactureYear = manufactureYear;
+    }
+
+    public LocalDate getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(LocalDate purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
     public String getChassisNumber() {
         return chassisNumber;
     }
@@ -70,35 +102,35 @@ public class Vehicle {
         this.engineNumber = engineNumber;
     }
 
-    public int getManufactureYear() {
-        return manufactureYear;
+    public String getColor() {
+        return color;
     }
 
-    public void setManufactureYear(int manufactureYear) {
-        this.manufactureYear = manufactureYear;
+    public void setColor(String color) {
+        this.color = color;
     }
 
-    public LocalDate getPurchaseDate() {
-        return purchaseDate;
+    public int getCurrentOdometer() {
+        return currentOdometer;
     }
 
-    public void setPurchaseDate(LocalDate purchaseDate) {
-        this.purchaseDate = purchaseDate;
+    public void setCurrentOdometer(int currentOdometer) {
+        this.currentOdometer = currentOdometer;
     }
 
-    public String getStatus() {
-        return status;
+    public String getVehicleStatus() {
+        return vehicleStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setVehicleStatus(String vehicleStatus) {
+        this.vehicleStatus = vehicleStatus;
     }
 
-    public int getCurrentOdo() {
-        return currentOdo;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setCurrentOdo(int currentOdo) {
-        this.currentOdo = currentOdo;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

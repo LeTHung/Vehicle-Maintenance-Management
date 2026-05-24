@@ -11,80 +11,128 @@ public class VehicleController {
 
     @FXML
     private TextField txtSearch;
+
+    @FXML
+    private TextField txtVehicleCode;
     @FXML
     private TextField txtLicensePlate;
     @FXML
     private ComboBox<String> cbVehicleType;
     @FXML
-    private TextField txtChassisNumber;
+    private TextField txtBrand;
     @FXML
-    private TextField txtEngineNumber;
+    private TextField txtModel;
     @FXML
     private TextField txtManufactureYear;
     @FXML
     private DatePicker dpPurchaseDate;
     @FXML
-    private ComboBox<String> cbStatus;
+    private TextField txtChassisNumber;
     @FXML
-    private TextField txtCurrentOdo;
+    private TextField txtEngineNumber;
+    @FXML
+    private TextField txtColor;
+    @FXML
+    private TextField txtCurrentOdometer;
+    @FXML
+    private ComboBox<String> cbVehicleStatus;
+    @FXML
+    private TextField txtNotes;
 
     @FXML
     private TableView<?> tblVehicle;
     @FXML
-    private TableColumn<?, ?> colId;
+    private TableColumn<?, ?> colVehicleId;
+    @FXML
+    private TableColumn<?, ?> colVehicleCode;
     @FXML
     private TableColumn<?, ?> colLicensePlate;
     @FXML
     private TableColumn<?, ?> colVehicleType;
     @FXML
-    private TableColumn<?, ?> colChassisNumber;
+    private TableColumn<?, ?> colBrand;
     @FXML
-    private TableColumn<?, ?> colEngineNumber;
+    private TableColumn<?, ?> colModel;
     @FXML
     private TableColumn<?, ?> colManufactureYear;
     @FXML
     private TableColumn<?, ?> colPurchaseDate;
     @FXML
-    private TableColumn<?, ?> colStatus;
+    private TableColumn<?, ?> colChassisNumber;
     @FXML
-    private TableColumn<?, ?> colCurrentOdo;
+    private TableColumn<?, ?> colEngineNumber;
+    @FXML
+    private TableColumn<?, ?> colColor;
+    @FXML
+    private TableColumn<?, ?> colCurrentOdometer;
+    @FXML
+    private TableColumn<?, ?> colVehicleStatus;
 
     @FXML
     public void initialize() {
-        cbVehicleType.getItems().setAll("Xe tải", "Xe khách", "Xe con", "Xe chuyên dụng");
-        cbStatus.getItems().setAll("Đang hoạt động", "Đang bảo dưỡng", "Ngừng hoạt động");
+        initComboBoxes();
+    }
+
+    private void initComboBoxes() {
+        cbVehicleType.getItems().setAll(
+                "Xe tải",
+                "Xe khách",
+                "Xe con",
+                "Xe bán tải",
+                "Xe chuyên dụng");
+
+        cbVehicleStatus.getItems().setAll(
+                "ACTIVE",
+                "UNDER_MAINTENANCE",
+                "INACTIVE");
     }
 
     @FXML
     private void handleSearchVehicle() {
-        System.out.println("Tìm phương tiện: " + txtSearch.getText());
+        String keyword = txtSearch.getText();
+        System.out.println("Tìm phương tiện: " + keyword);
+
+        // Ngày 4 sẽ nối VehicleDAO.search(keyword)
     }
 
     @FXML
     private void handleRefreshVehicle() {
         txtSearch.clear();
+        handleClearVehicleForm();
+
         System.out.println("Làm mới danh sách phương tiện");
+
+        // Ngày 4 sẽ gọi loadVehicleData()
     }
 
     @FXML
     private void handleSaveVehicle() {
         System.out.println("Lưu phương tiện mới");
+
+        // Ngày sau sẽ lấy dữ liệu từ form -> Vehicle -> VehicleService.save()
     }
 
     @FXML
     private void handleUpdateVehicle() {
         System.out.println("Cập nhật phương tiện");
+
+        // Ngày sau sẽ lấy dòng đang chọn -> cập nhật Vehicle
     }
 
     @FXML
     private void handleClearVehicleForm() {
+        txtVehicleCode.clear();
         txtLicensePlate.clear();
         cbVehicleType.setValue(null);
-        txtChassisNumber.clear();
-        txtEngineNumber.clear();
+        txtBrand.clear();
+        txtModel.clear();
         txtManufactureYear.clear();
         dpPurchaseDate.setValue(null);
-        cbStatus.setValue(null);
-        txtCurrentOdo.clear();
+        txtChassisNumber.clear();
+        txtEngineNumber.clear();
+        txtColor.clear();
+        txtCurrentOdometer.clear();
+        cbVehicleStatus.setValue(null);
+        txtNotes.clear();
     }
 }

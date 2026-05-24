@@ -7,6 +7,7 @@
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="controller.VehicleDocumentController"
       stylesheets="@../css/pages/vehicle-document.css"
+      spacing="18"
       styleClass="page">
 
     <padding>
@@ -15,7 +16,7 @@
 
     <VBox spacing="4">
         <Label text="Quản lý giấy tờ xe" styleClass="page-title"/>
-        <Label text="Cập nhật đăng kiểm, bảo hiểm, phí đường bộ và ngày hết hạn cho từng phương tiện." styleClass="page-subtitle"/>
+        <Label text="Cập nhật đăng kiểm, bảo hiểm, phí đường bộ, ngày hiệu lực, ngày hết hạn và chi phí." styleClass="page-subtitle"/>
     </VBox>
 
     <HBox spacing="12" styleClass="toolbar">
@@ -28,10 +29,12 @@
 
     <GridPane hgap="12" vgap="12" styleClass="form-card">
         <columnConstraints>
-            <ColumnConstraints percentWidth="15"/>
-            <ColumnConstraints percentWidth="35"/>
-            <ColumnConstraints percentWidth="15"/>
-            <ColumnConstraints percentWidth="35"/>
+            <ColumnConstraints percentWidth="14"/>
+            <ColumnConstraints percentWidth="19"/>
+            <ColumnConstraints percentWidth="14"/>
+            <ColumnConstraints percentWidth="19"/>
+            <ColumnConstraints percentWidth="14"/>
+            <ColumnConstraints percentWidth="20"/>
         </columnConstraints>
 
         <Label text="Phương tiện" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
@@ -40,16 +43,36 @@
         <Label text="Loại giấy tờ" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="form-label"/>
         <ComboBox fx:id="cbDocumentType" promptText="Chọn loại giấy tờ" GridPane.rowIndex="0" GridPane.columnIndex="3" maxWidth="Infinity" styleClass="input-field"/>
 
-        <Label text="Ngày cấp" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
-        <DatePicker fx:id="dpIssueDate" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity" styleClass="input-field"/>
+        <Label text="Số giấy tờ" GridPane.rowIndex="0" GridPane.columnIndex="4" styleClass="form-label"/>
+        <TextField fx:id="txtDocumentNumber" promptText="VD: DK-001" GridPane.rowIndex="0" GridPane.columnIndex="5" styleClass="input-field"/>
 
-        <Label text="Ngày hết hạn" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="form-label"/>
-        <DatePicker fx:id="dpExpiryDate" GridPane.rowIndex="1" GridPane.columnIndex="3" maxWidth="Infinity" styleClass="input-field"/>
+        <Label text="Đơn vị cấp" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+        <TextField fx:id="txtIssuerName" promptText="VD: Trung tâm đăng kiểm" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.columnSpan="3" styleClass="input-field"/>
 
-        <Label text="Ghi chú" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
-        <TextField fx:id="txtNote" promptText="Ghi chú thêm nếu có" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.columnSpan="3" styleClass="input-field"/>
+        <Label text="Trạng thái" GridPane.rowIndex="1" GridPane.columnIndex="4" styleClass="form-label"/>
+        <ComboBox fx:id="cbDocumentStatus" promptText="Chọn trạng thái" GridPane.rowIndex="1" GridPane.columnIndex="5" maxWidth="Infinity" styleClass="input-field"/>
 
-        <HBox spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="4">
+        <Label text="Ngày cấp" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+        <DatePicker fx:id="dpIssueDate" GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="Infinity" styleClass="input-field"/>
+
+        <Label text="Ngày hiệu lực" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="form-label"/>
+        <DatePicker fx:id="dpEffectiveDate" GridPane.rowIndex="2" GridPane.columnIndex="3" maxWidth="Infinity" styleClass="input-field"/>
+
+        <Label text="Ngày hết hạn" GridPane.rowIndex="2" GridPane.columnIndex="4" styleClass="form-label"/>
+        <DatePicker fx:id="dpExpiryDate" GridPane.rowIndex="2" GridPane.columnIndex="5" maxWidth="Infinity" styleClass="input-field"/>
+
+        <Label text="Chi phí" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+        <TextField fx:id="txtFeeAmount" promptText="VD: 340000" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="input-field"/>
+
+        <Label text="Ngày thanh toán" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="form-label"/>
+        <DatePicker fx:id="dpPaidDate" GridPane.rowIndex="3" GridPane.columnIndex="3" maxWidth="Infinity" styleClass="input-field"/>
+
+        <CheckBox fx:id="chkIsCurrent" text="Giấy tờ hiện hành" selected="true" GridPane.rowIndex="3" GridPane.columnIndex="4" GridPane.columnSpan="2" styleClass="form-check"/>
+
+        <Label text="Ghi chú" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="form-label"/>
+        <TextField fx:id="txtNote" promptText="Ghi chú thêm nếu có" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.columnSpan="5" styleClass="input-field"/>
+
+        <HBox spacing="10" GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.columnSpan="6">
             <Button text="Lưu" onAction="#handleSaveDocument" styleClass="primary-button"/>
             <Button text="Cập nhật" onAction="#handleUpdateDocument" styleClass="secondary-button"/>
             <Button text="Xóa trắng" onAction="#handleClearDocumentForm" styleClass="secondary-button"/>
@@ -58,13 +81,18 @@
 
     <TableView fx:id="tblDocument" VBox.vgrow="ALWAYS" styleClass="data-table">
         <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
-            <TableColumn fx:id="colVehiclePlate" text="Biển số xe" prefWidth="140"/>
-            <TableColumn fx:id="colDocumentType" text="Loại giấy tờ" prefWidth="160"/>
-            <TableColumn fx:id="colIssueDate" text="Ngày cấp" prefWidth="130"/>
+            <TableColumn fx:id="colDocumentId" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="colLicensePlate" text="Biển số" prefWidth="130"/>
+            <TableColumn fx:id="colDocumentTypeName" text="Loại giấy tờ" prefWidth="160"/>
+            <TableColumn fx:id="colDocumentNumber" text="Số giấy tờ" prefWidth="130"/>
+            <TableColumn fx:id="colIssuerName" text="Đơn vị cấp" prefWidth="180"/>
+            <TableColumn fx:id="colIssueDate" text="Ngày cấp" prefWidth="120"/>
+            <TableColumn fx:id="colEffectiveDate" text="Ngày hiệu lực" prefWidth="130"/>
             <TableColumn fx:id="colExpiryDate" text="Ngày hết hạn" prefWidth="140"/>
-            <TableColumn fx:id="colDocumentStatus" text="Trạng thái" prefWidth="150"/>
-            <TableColumn fx:id="colNote" text="Ghi chú" prefWidth="250"/>
+            <TableColumn fx:id="colFeeAmount" text="Chi phí" prefWidth="110"/>
+            <TableColumn fx:id="colPaidDate" text="Ngày thanh toán" prefWidth="140"/>
+            <TableColumn fx:id="colDocumentStatus" text="Trạng thái" prefWidth="130"/>
+            <TableColumn fx:id="colIsCurrent" text="Hiện hành" prefWidth="100"/>
         </columns>
     </TableView>
 </VBox>

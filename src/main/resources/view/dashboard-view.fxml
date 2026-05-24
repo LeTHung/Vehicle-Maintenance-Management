@@ -4,7 +4,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" spacing="20" styleClass="page">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      stylesheets="@../css/pages/dashboard.css"
+      spacing="18"
+      styleClass="page">
+
     <padding>
         <Insets top="24" right="24" bottom="24" left="24"/>
     </padding>
@@ -30,11 +34,5 @@
             <Label text="0" styleClass="summary-number danger-text"/>
         </VBox>
     </HBox>
-
-    <VBox styleClass="card" spacing="10">
-        <Label text="Việc cần làm hôm nay" styleClass="section-title"/>
-        <Label text="1. Hoàn thiện FXML cho 3 màn hình: phương tiện, giấy tờ xe, cảnh báo giấy tờ." styleClass="normal-text"/>
-        <Label text="2. Kiểm tra sidebar/topbar load đúng màn hình." styleClass="normal-text"/>
-        <Label text="3. Chưa xử lý CRUD ở ngày này, chỉ cần giao diện không lỗi." styleClass="normal-text"/>
-    </VBox>
+    
 </VBox>
