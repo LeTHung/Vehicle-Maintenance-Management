@@ -2,12 +2,15 @@ package controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.geometry.Pos;
+
+import java.net.URL;
 
 public class MainLayoutController {
 
@@ -20,6 +23,9 @@ public class MainLayoutController {
     private Label lblUserName;
     @FXML
     private Label lblUserRole;
+
+    @FXML
+    private TextField txtQuickSearch;
 
     @FXML
     private VBox groupDashboard;
@@ -65,9 +71,9 @@ public class MainLayoutController {
     public void initialize() {
         /*
          * Tạm thời test role ở đây.
-         * Sau này khi Khoa làm login xong thì thay bằng UserSession.
+         * Sau này khi phần Login/UserSession hoàn thiện thì thay dòng này.
          */
-        String currentRole = ROLE_MANAGER;// ROLE_MANAGER ROLE_ADMIN ROLE_TECH
+        String currentRole = ROLE_MANAGER;
         String currentName = "Lê Tiến Hưng";
 
         lblUserName.setText(currentName);
@@ -79,27 +85,23 @@ public class MainLayoutController {
     private void applyRolePermission(String role) {
         hideAllGroups();
 
-        groupDashboard.setVisible(true);
-        groupDashboard.setManaged(true);
+        showGroup(groupDashboard);
 
         switch (role) {
             case ROLE_ADMIN:
                 lblUserRole.setText("Quản trị viên");
-
                 showGroup(groupAdmin);
                 showGroup(groupReport);
                 break;
 
             case ROLE_MANAGER:
                 lblUserRole.setText("Quản lý đội xe");
-
                 showGroup(groupManager);
                 showGroup(groupReport);
                 break;
 
             case ROLE_TECH:
                 lblUserRole.setText("Nhân viên kỹ thuật");
-
                 showGroup(groupTechnician);
                 break;
 
@@ -131,15 +133,11 @@ public class MainLayoutController {
         loadPage("dashboard-view.fxml", "Dashboard", btnDashboard);
     }
 
-    // =========================
-    // ADMIN - placeholder
-    // =========================
-
     @FXML
     private void openUserManagement() {
         showPlaceholder(
                 "Quản lý người dùng",
-                "",
+                "Màn hình này sẽ do thành viên phụ trách Auth/User hoàn thiện.",
                 btnUserManagement);
     }
 
@@ -147,13 +145,9 @@ public class MainLayoutController {
     private void openRoleManagement() {
         showPlaceholder(
                 "Vai trò & phân quyền",
-                "",
+                "Màn hình này sẽ được tích hợp sau khi có phân quyền.",
                 btnRoleManagement);
     }
-
-    // =========================
-    // MANAGER - phần của bạn
-    // =========================
 
     @FXML
     private void openVehicle() {
@@ -170,15 +164,11 @@ public class MainLayoutController {
         loadPage("document-alert-view.fxml", "Cảnh báo giấy tờ xe", btnDocumentAlert);
     }
 
-    // =========================
-    // TECH - placeholder
-    // =========================
-
     @FXML
     private void openMaintenancePlan() {
         showPlaceholder(
                 "Kế hoạch bảo dưỡng",
-                "",
+                "Màn hình này sẽ do thành viên phụ trách bảo dưỡng hoàn thiện.",
                 btnMaintenancePlan);
     }
 
@@ -186,7 +176,7 @@ public class MainLayoutController {
     private void openMaintenanceRecord() {
         showPlaceholder(
                 "Cập nhật bảo dưỡng",
-                "",
+                "Màn hình này sẽ do thành viên phụ trách bảo dưỡng hoàn thiện.",
                 btnMaintenanceRecord);
     }
 
@@ -194,35 +184,41 @@ public class MainLayoutController {
     private void openMaintenanceHistory() {
         showPlaceholder(
                 "Lịch sử bảo dưỡng",
-                "",
+                "Màn hình này sẽ do thành viên phụ trách bảo dưỡng hoàn thiện.",
                 btnMaintenanceHistory);
     }
-
-    // =========================
-    // REPORT - placeholder
-    // =========================
 
     @FXML
     private void openReport() {
         showPlaceholder(
                 "Báo cáo chi phí",
-                "",
+                "Màn hình báo cáo sẽ được tích hợp sau.",
                 btnReport);
     }
 
     @FXML
     private void handleLogout() {
         System.out.println("Đăng xuất hệ thống");
+
         showPlaceholder(
                 "Đăng xuất",
-                "",
+                "Sau này sẽ quay về màn hình đăng nhập.",
                 null);
     }
 
     private void loadPage(String fxmlFile, String title, Button activeButton) {
         try {
-            Parent page = FXMLLoader.load(
-                    getClass().getResource("/view/" + fxmlFile));
+            URL fxmlUrl = getClass().getResource("/view/" + fxmlFile);
+
+            if (fxmlUrl == null) {
+                showPlaceholder(
+                        "Lỗi tải màn hình",
+                        "Không tìm thấy file: " + fxmlFile,
+                        activeButton);
+                return;
+            }
+
+            Parent page = FXMLLoader.load(fxmlUrl);
 
             contentArea.getChildren().setAll(page);
             lblPageTitle.setText(title);
