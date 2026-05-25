@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>24</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <javafx.version>25.0.3</javafx.version>
         <mysql.connector.version>9.7.0</mysql.connector.version>
         <mysql.connector.jar>${project.basedir}/lib/mysql-connector-j-${mysql.connector.version}.jar</mysql.connector.jar>
@@ -35,6 +35,11 @@
             <version>${mysql.connector.version}</version>
             <scope>system</scope>
             <systemPath>${mysql.connector.jar}</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
         </dependency>
     </dependencies>
 

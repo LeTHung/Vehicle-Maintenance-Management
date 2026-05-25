@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.UserController">
+
+    <top>
+        <HBox spacing="8">
+            <padding>
+                <javafx.geometry.Insets top="12" right="12" bottom="12" left="12"/>
+            </padding>
+            <Button fx:id="addButton" text="Thêm" onAction="#onAddClick"/>
+            <Button fx:id="editButton" text="Sửa" onAction="#onEditClick"/>
+            <Button fx:id="lockButton" text="Khóa/Mở" onAction="#onLockClick"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="userTable">
+            <columns>
+                <TableColumn text="ID"/>
+                <TableColumn text="Username"/>
+                <TableColumn text="Họ tên"/>
+                <TableColumn text="Vai trò"/>
+                <TableColumn text="Trạng thái"/>
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>
