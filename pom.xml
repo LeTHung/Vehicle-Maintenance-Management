@@ -15,7 +15,6 @@
         <maven.compiler.release>25</maven.compiler.release>
         <javafx.version>25.0.3</javafx.version>
         <mysql.connector.version>9.7.0</mysql.connector.version>
-        <mysql.connector.jar>${project.basedir}/lib/mysql-connector-j-${mysql.connector.version}.jar</mysql.connector.jar>
     </properties>
 
     <dependencies>
@@ -33,8 +32,6 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>${mysql.connector.version}</version>
-            <scope>system</scope>
-            <systemPath>${mysql.connector.jar}</systemPath>
         </dependency>
         <dependency>
             <groupId>org.mindrot</groupId>
