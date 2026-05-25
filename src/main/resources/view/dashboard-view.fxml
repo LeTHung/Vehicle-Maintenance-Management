@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.DashboardController"
       stylesheets="@../css/pages/dashboard.css"
       spacing="18"
       styleClass="page">
@@ -21,17 +22,17 @@
     <HBox spacing="16">
         <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
             <Label text="Tổng phương tiện" styleClass="summary-title"/>
-            <Label text="0" styleClass="summary-number primary-text"/>
+            <Label fx:id="lblTotalVehicleCount" text="0" styleClass="summary-number primary-text"/>
         </VBox>
 
         <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
             <Label text="Giấy tờ sắp hết hạn" styleClass="summary-title"/>
-            <Label text="0" styleClass="summary-number warning-text"/>
+            <Label fx:id="lblComingDueCount" text="0" styleClass="summary-number warning-text"/>
         </VBox>
 
         <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
             <Label text="Giấy tờ đã hết hạn" styleClass="summary-title"/>
-            <Label text="0" styleClass="summary-number danger-text"/>
+            <Label fx:id="lblOverdueCount" text="0" styleClass="summary-number danger-text"/>
         </VBox>
     </HBox>
     
