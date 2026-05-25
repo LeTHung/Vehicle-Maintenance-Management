@@ -7,3 +7,14 @@ target/
 .vscode/launch.json
 .vscode/tasks.json
 *.log
+.tmp-ttcs-review/
+
+# AI / vibe-coding tools
+CLAUDE.md
+.claude/
+.cursor/
+.cursorignore
+.cursorindexingignore
+.aider*
+.windsurf/
+.copilot/
