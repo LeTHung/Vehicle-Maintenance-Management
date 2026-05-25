@@ -87,7 +87,7 @@ public class VehicleDocumentController {
         cbDocumentStatus.getItems().setAll(
                 "VALID",
                 "EXPIRED",
-                "RENEWED",
+                "REPLACED",
                 "CANCELLED");
 
         // Tạm thời dùng dữ liệu mẫu.
