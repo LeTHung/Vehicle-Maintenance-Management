@@ -12,9 +12,9 @@ public class MainApp extends Application {
     public void start(Stage stage) {
         try {
             Parent root = FXMLLoader.load(
-                    getClass().getResource("/view/main-layout.fxml"));
+                getClass().getResource("/view/login-view.fxml"));
 
-            Scene scene = new Scene(root, 1200, 760);
+            Scene scene = new Scene(root);
 
             String[] globalCssFiles = {
                     "/css/global/theme.css",
@@ -33,6 +33,8 @@ public class MainApp extends Application {
 
             stage.setTitle("FleetCare - Quản lý hồ sơ & bảo dưỡng phương tiện");
             stage.setScene(scene);
+            stage.sizeToScene();
+            stage.centerOnScreen();
             stage.show();
 
         } catch (Exception e) {

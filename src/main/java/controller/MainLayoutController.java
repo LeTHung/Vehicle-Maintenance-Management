@@ -1,16 +1,25 @@
 package controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import model.entity.Role;
+import model.entity.User;
+import service.AuthService;
+import session.UserSession;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 
 public class MainLayoutController {
 
@@ -67,27 +76,33 @@ public class MainLayoutController {
     private static final String ROLE_MANAGER = "MANAGER";
     private static final String ROLE_TECH = "TECH";
 
+    private final AuthService authService = new AuthService();
+
     @FXML
     public void initialize() {
-        /*
-         * Tạm thời test role ở đây.
-         * Sau này khi phần Login/UserSession hoàn thiện thì thay dòng này.
-         */
-        String currentRole = ROLE_MANAGER;
-        String currentName = "Lê Tiến Hưng";
+        UserSession session = UserSession.getInstance();
+        if (!session.isLoggedIn()) {
+            navigateToLogin();
+            return;
+        }
 
-        lblUserName.setText(currentName);
-        applyRolePermission(currentRole);
+        User user = session.getCurrentUser();
+        Role role = session.getCurrentRole();
+
+        lblUserName.setText(resolveDisplayName(user));
+        applyRolePermission(role == null ? null : role.getRoleCode());
 
         openDashboard();
     }
 
     private void applyRolePermission(String role) {
+        String normalizedRole = normalizeRoleCode(role);
+
         hideAllGroups();
 
         showGroup(groupDashboard);
 
-        switch (role) {
+        switch (normalizedRole) {
             case ROLE_ADMIN:
                 lblUserRole.setText("Quản trị viên");
                 showGroup(groupAdmin);
@@ -198,12 +213,92 @@ public class MainLayoutController {
 
     @FXML
     private void handleLogout() {
-        System.out.println("Đăng xuất hệ thống");
+        authService.logout();
+        navigateToLogin();
+    }
 
-        showPlaceholder(
-                "Đăng xuất",
-                "Sau này sẽ quay về màn hình đăng nhập.",
-                null);
+    private void navigateToLogin() {
+        if (contentArea.getScene() == null) {
+            Platform.runLater(this::navigateToLogin);
+            return;
+        }
+
+        try {
+            URL fxmlUrl = getClass().getResource("/view/login-view.fxml");
+
+            if (fxmlUrl == null) {
+                showPlaceholder(
+                        "Lỗi tải màn hình",
+                        "Không tìm thấy file: login-view.fxml",
+                        null);
+                return;
+            }
+
+            Parent root = FXMLLoader.load(fxmlUrl);
+            Scene scene = new Scene(root);
+            applyGlobalStyles(scene);
+
+            Stage stage = (Stage) contentArea.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("FleetCare - Quản lý hồ sơ & bảo dưỡng phương tiện");
+            stage.sizeToScene();
+            stage.centerOnScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showPlaceholder(
+                    "Lỗi tải màn hình",
+                    "Không thể quay về màn hình đăng nhập.",
+                    null);
+        }
+    }
+
+    private String resolveDisplayName(User user) {
+        if (user == null) {
+            return "Người dùng";
+        }
+
+        String fullName = user.getFullName();
+        if (fullName != null && !fullName.isBlank()) {
+            return fullName.trim();
+        }
+
+        String username = user.getUsername();
+        if (username != null && !username.isBlank()) {
+            return username.trim();
+        }
+
+        return "Người dùng";
+    }
+
+    private String normalizeRoleCode(String roleCode) {
+        if (roleCode == null || roleCode.isBlank()) {
+            return "";
+        }
+
+        String normalized = roleCode.trim().toUpperCase(Locale.ROOT);
+
+        return switch (normalized) {
+            case "FLEET_MANAGER" -> ROLE_MANAGER;
+            case "TECHNICIAN" -> ROLE_TECH;
+            default -> normalized;
+        };
+    }
+
+    private void applyGlobalStyles(Scene scene) {
+        String[] globalCssFiles = {
+                "/css/global/theme.css",
+                "/css/global/layout.css",
+                "/css/global/pages.css",
+                "/css/global/cards.css",
+                "/css/global/forms.css",
+                "/css/global/buttons.css",
+                "/css/global/tables.css"
+        };
+
+        for (String css : globalCssFiles) {
+            scene.getStylesheets().add(
+                    getClass().getResource(css).toExternalForm());
+        }
     }
 
     private void loadPage(String fxmlFile, String title, Button activeButton) {
