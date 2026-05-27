@@ -150,10 +150,7 @@ public class MainLayoutController {
 
     @FXML
     private void openUserManagement() {
-        showPlaceholder(
-                "Quản lý người dùng",
-                "Màn hình này sẽ do thành viên phụ trách Auth/User hoàn thiện.",
-                btnUserManagement);
+        loadPage("user-view.fxml", "Quan ly nguoi dung", btnUserManagement);
     }
 
     @FXML
