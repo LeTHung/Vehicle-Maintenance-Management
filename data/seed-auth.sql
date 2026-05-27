@@ -1,19 +1,33 @@
--- Seed roles and sample users for FleetCare
--- Password for all sample accounts: 123456
--- BCrypt hash generated with cost 12
+-- FleetCare auth seed data
+-- Target database: vehicle_maintenance_management
+-- Demo accounts:
+--   admin   / 123456
+--   manager / 123456
+--   tech    / 123456
+-- Password hashes were generated with jBCrypt cost 12.
+--
+-- MySQL Workbench:
+--   Open this file, run all statements.
+--
+-- PowerShell + mysql CLI:
+--   Get-Content data\seed-auth.sql | mysql -u root -p
+
+CREATE DATABASE IF NOT EXISTS vehicle_maintenance_management
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 
 USE vehicle_maintenance_management;
 
-INSERT INTO roles (role_id, role_code, role_name, description, is_active, created_at, updated_at)
+INSERT INTO roles (role_code, role_name, description, is_active, created_at, updated_at)
 VALUES
-    (1, 'ADMIN', 'Quan tri he thong', 'Quan tri he thong, tai khoan, cau hinh', 1, NOW(), NOW()),
-    (2, 'FLEET_MANAGER', 'Quan ly doi xe', 'Quan ly ho so xe, giay to, ke hoach, bao cao', 1, NOW(), NOW()),
-    (3, 'TECHNICIAN', 'Nhan vien ky thuat', 'Cap nhat bao duong, sua chua, phu tung, ODO', 1, NOW(), NOW())
+    ('ADMIN', 'Quan tri he thong', 'Quan tri he thong, tai khoan, cau hinh', 1, NOW(), NOW()),
+    ('FLEET_MANAGER', 'Quan ly doi xe', 'Quan ly ho so xe, giay to, ke hoach, bao cao', 1, NOW(), NOW()),
+    ('TECHNICIAN', 'Nhan vien ky thuat', 'Cap nhat bao duong, sua chua, phu tung, ODO', 1, NOW(), NOW())
 ON DUPLICATE KEY UPDATE
-    role_code = VALUES(role_code),
     role_name = VALUES(role_name),
     description = VALUES(description),
-    is_active = VALUES(is_active);
+    is_active = VALUES(is_active),
+    updated_at = NOW();
 
 INSERT INTO users (
     username,
@@ -62,4 +76,15 @@ ON DUPLICATE KEY UPDATE
     phone = VALUES(phone),
     role_id = VALUES(role_id),
     account_status = VALUES(account_status),
-    must_change_password = VALUES(must_change_password);
+    must_change_password = VALUES(must_change_password),
+    updated_at = NOW();
+
+SELECT role_id, role_code, role_name, is_active
+FROM roles
+WHERE role_code IN ('ADMIN', 'FLEET_MANAGER', 'TECHNICIAN')
+ORDER BY role_id;
+
+SELECT user_id, username, full_name, role_id, account_status
+FROM users
+WHERE username IN ('admin', 'manager', 'tech')
+ORDER BY user_id;
