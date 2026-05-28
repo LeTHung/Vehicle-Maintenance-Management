@@ -2,42 +2,40 @@ package app;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
+import util.StylesheetLoader;
+
+import java.net.URL;
 
 public class MainApp extends Application {
+
+    private static final double LOGIN_WIDTH = 420;
+    private static final double LOGIN_HEIGHT = 360;
 
     @Override
     public void start(Stage stage) {
         try {
-            Parent root = FXMLLoader.load(
-                getClass().getResource("/view/login-view.fxml"));
-
-            Scene scene = new Scene(root);
-
-            String[] globalCssFiles = {
-                    "/css/global/theme.css",
-                    "/css/global/layout.css",
-                    "/css/global/pages.css",
-                    "/css/global/cards.css",
-                    "/css/global/forms.css",
-                    "/css/global/buttons.css",
-                    "/css/global/tables.css"
-            };
-
-            for (String css : globalCssFiles) {
-                scene.getStylesheets().add(
-                        getClass().getResource(css).toExternalForm());
+            URL fxmlUrl = getClass().getResource("/view/login-view.fxml");
+            if (fxmlUrl == null) {
+                throw new RuntimeException("Khong tim thay /view/login-view.fxml");
             }
 
-            stage.setTitle("FleetCare - Quản lý hồ sơ & bảo dưỡng phương tiện");
+            Parent root = FXMLLoader.load(fxmlUrl);
+            Scene scene = new Scene(root, LOGIN_WIDTH, LOGIN_HEIGHT);
+            StylesheetLoader.addBaseStyles(scene);
+
+            stage.setTitle("FleetCare - Dang nhap");
+            stage.setResizable(false);
+            stage.setMinWidth(LOGIN_WIDTH);
+            stage.setMinHeight(LOGIN_HEIGHT);
             stage.setScene(scene);
             stage.sizeToScene();
             stage.centerOnScreen();
             stage.show();
-
         } catch (Exception e) {
+            System.out.println("Loi khoi dong ung dung");
             e.printStackTrace();
         }
     }

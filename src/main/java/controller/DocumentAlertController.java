@@ -1,88 +1,90 @@
 package controller;
 
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import model.dto.DocumentAlertDTO;
+import service.DocumentAlertService;
 
 public class DocumentAlertController {
 
-    @FXML
-    private ComboBox<String> cbAlertType;
-    @FXML
-    private TextField txtSearch;
+    private final DocumentAlertService documentAlertService = new DocumentAlertService();
 
-    @FXML
-    private Label lblExpiredCount;
-    @FXML
-    private Label lblWarningCount;
-    @FXML
-    private Label lblTotalAlertCount;
+    @FXML private ComboBox<String> cbAlertType;
+    @FXML private TextField txtSearch;
+    @FXML private Label lblExpiredCount;
+    @FXML private Label lblWarningCount;
+    @FXML private Label lblTotalAlertCount;
 
-    @FXML
-    private TableView<?> tblAlert;
-    @FXML
-    private TableColumn<?, ?> colDocumentId;
-    @FXML
-    private TableColumn<?, ?> colVehicleId;
-    @FXML
-    private TableColumn<?, ?> colLicensePlate;
-    @FXML
-    private TableColumn<?, ?> colVehicleType;
-    @FXML
-    private TableColumn<?, ?> colDocumentTypeName;
-    @FXML
-    private TableColumn<?, ?> colDocumentNumber;
-    @FXML
-    private TableColumn<?, ?> colIssuerName;
-    @FXML
-    private TableColumn<?, ?> colExpiryDate;
-    @FXML
-    private TableColumn<?, ?> colDaysToExpiry;
-    @FXML
-    private TableColumn<?, ?> colDueStatus;
+    @FXML private TableView<DocumentAlertDTO> tblAlert;
+    @FXML private TableColumn<DocumentAlertDTO, Long> colDocumentId;
+    @FXML private TableColumn<DocumentAlertDTO, Long> colVehicleId;
+    @FXML private TableColumn<DocumentAlertDTO, String> colLicensePlate;
+    @FXML private TableColumn<DocumentAlertDTO, String> colVehicleType;
+    @FXML private TableColumn<DocumentAlertDTO, String> colDocumentTypeName;
+    @FXML private TableColumn<DocumentAlertDTO, String> colDocumentNumber;
+    @FXML private TableColumn<DocumentAlertDTO, String> colIssuerName;
+    @FXML private TableColumn<DocumentAlertDTO, Object> colExpiryDate;
+    @FXML private TableColumn<DocumentAlertDTO, Integer> colDaysToExpiry;
+    @FXML private TableColumn<DocumentAlertDTO, String> colDueStatus;
 
     @FXML
     public void initialize() {
-        initComboBoxes();
-        resetSummary();
+        cbAlertType.getItems().setAll("Tất cả", "OVERDUE", "COMING_DUE", "NORMAL");
+        cbAlertType.setValue("Tất cả");
+        configureTable();
+        loadAlertData();
     }
 
-    private void initComboBoxes() {
-        cbAlertType.getItems().setAll(
-                "Tất cả",
-                "OVERDUE",
-                "COMING_DUE",
-                "NORMAL");
-    }
-
-    private void resetSummary() {
-        lblExpiredCount.setText("0");
-        lblWarningCount.setText("0");
-        lblTotalAlertCount.setText("0");
+    private void configureTable() {
+        colDocumentId.setCellValueFactory(cell -> new SimpleLongProperty(cell.getValue().getDocumentId()).asObject());
+        colVehicleId.setCellValueFactory(cell -> new SimpleLongProperty(cell.getValue().getVehicleId()).asObject());
+        colLicensePlate.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getLicensePlate())));
+        colVehicleType.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getVehicleType())));
+        colDocumentTypeName.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDocumentTypeName())));
+        colDocumentNumber.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDocumentNumber())));
+        colIssuerName.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getIssuerName())));
+        colExpiryDate.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getExpiryDate()));
+        colDaysToExpiry.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getDaysToExpiry()).asObject());
+        colDueStatus.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDueStatus())));
     }
 
     @FXML
     private void handleSearchAlert() {
-        String keyword = txtSearch.getText();
-        String alertType = cbAlertType.getValue();
-
-        System.out.println("Tìm cảnh báo: " + keyword);
-        System.out.println("Loại cảnh báo: " + alertType);
-
-        // Ngày sau sẽ nối DocumentAlertDAO.search()
+        tblAlert.setItems(FXCollections.observableArrayList(
+                documentAlertService.searchAlerts(txtSearch.getText(), cbAlertType.getValue())));
+        updateSummary();
     }
 
     @FXML
     private void handleRefreshAlert() {
         txtSearch.clear();
-        cbAlertType.setValue(null);
-        resetSummary();
+        cbAlertType.setValue("Tất cả");
+        loadAlertData();
+    }
 
-        System.out.println("Làm mới cảnh báo giấy tờ");
+    private void loadAlertData() {
+        tblAlert.setItems(FXCollections.observableArrayList(documentAlertService.listAlerts()));
+        updateSummary();
+    }
 
-        // Ngày sau sẽ gọi loadAlertData()
+    private void updateSummary() {
+        int expired = documentAlertService.countExpired();
+        int comingDue = documentAlertService.countComingDue();
+        lblExpiredCount.setText(String.valueOf(expired));
+        lblWarningCount.setText(String.valueOf(comingDue));
+        lblTotalAlertCount.setText(String.valueOf(expired + comingDue));
+    }
+
+    private String nullToEmpty(String value) {
+        return value == null ? "" : value;
     }
 }

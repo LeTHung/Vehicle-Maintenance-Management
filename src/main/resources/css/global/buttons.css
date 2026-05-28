@@ -1,33 +1,44 @@
-/* =========================================================
-   buttons.css
-   Button chính, button phụ, hover.
-   ========================================================= */
+/* Shared buttons. Add page-only button variants in the page CSS file. */
 
+.button {
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 10 16;
+    -fx-cursor: hand;
+}
+
+.btn-primary,
 .primary-button {
-    -fx-background-color: -app-primary;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-weight: 700;
-    -fx-background-radius: 8;
-    -fx-padding: 9 16;
-    -fx-cursor: hand;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, -app-primary, -app-primary-container);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.30), 18, 0, 0, 6);
 }
 
+.btn-primary:hover,
 .primary-button:hover {
-    -fx-background-color: -app-primary-hover;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #003ca3, -app-primary-hover);
 }
 
+.btn-ghost,
 .secondary-button {
-    -fx-background-color: -app-card-bg;
-    -fx-text-fill: -app-text-main;
-    -fx-font-weight: 700;
-    -fx-border-color: -app-border;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 9 16;
-    -fx-cursor: hand;
+    -fx-background-color: transparent;
+    -fx-text-fill: -app-primary;
+    -fx-border-color: rgba(0,74,198,0.18);
+    -fx-border-width: 1;
 }
 
+.btn-ghost:hover,
 .secondary-button:hover {
     -fx-background-color: -app-primary-soft;
-    -fx-text-fill: -app-primary;
+}
+
+.btn-soft {
+    -fx-background-color: -app-surface-low;
+    -fx-text-fill: -app-text-main;
+}
+
+.btn-soft:hover {
+    -fx-background-color: -app-surface-high;
 }

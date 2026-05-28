@@ -8,92 +8,43 @@ import session.UserSession;
 import util.PasswordUtil;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
 
-/**
- * Service xử lý nghiệp vụ đăng nhập / đăng xuất hệ thống FleetCare.
- *
- * <p>Phối hợp giữa {@code UserDAO}, {@code RoleDAO}, {@code PasswordUtil}
- * và {@code UserSession}: xác thực mật khẩu bằng BCrypt, kiểm tra trạng thái
- * tài khoản, ghi nhận thời điểm đăng nhập, và nạp {@code currentUser} +
- * {@code currentRole} vào session.</p>
- *
- * <p>Day 1: skeleton. Day 4 sẽ implement đầy đủ.</p>
- */
 public class AuthService {
+
+    private static final String STATUS_LOCKED = "LOCKED";
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
 
-    /**
-     * Đăng nhập bằng cặp ({@code username}, {@code rawPassword}).
-     *
-     * @return entity {@link User} đã đăng nhập thành công
-     * @throws AuthenticationException khi sai thông tin hoặc tài khoản bị khóa
-     */
     public User login(String username, String rawPassword) throws AuthenticationException {
-        String normalizedUsername = username == null ? "" : username.trim();
-        String normalizedPassword = rawPassword == null ? "" : rawPassword.trim();
-
-        if (normalizedUsername.isEmpty() || normalizedPassword.isEmpty()) {
+        if (username == null || username.isBlank() || rawPassword == null || rawPassword.isBlank()) {
             throw new AuthenticationException("Vui lòng nhập tên đăng nhập và mật khẩu.");
         }
 
-        User user = userDAO.findByUsername(normalizedUsername)
+        User user = userDAO.findByUsername(username.trim())
                 .orElseThrow(() -> new AuthenticationException("Tên đăng nhập hoặc mật khẩu không đúng."));
 
-        if (!PasswordUtil.verify(normalizedPassword, user.getPasswordHash())) {
-            throw new AuthenticationException("Tên đăng nhập hoặc mật khẩu không đúng.");
-        }
-
-        if (isLocked(user.getAccountStatus())) {
+        if (STATUS_LOCKED.equalsIgnoreCase(user.getAccountStatus())) {
             throw new AuthenticationException("Tài khoản đã bị khóa.");
         }
 
-        Role role = roleDAO.findById(user.getRoleId())
-                .orElseThrow(() -> new AuthenticationException("Không tìm thấy vai trò của tài khoản."));
-
-        if (!role.isActive()) {
-            throw new AuthenticationException("Vai trò hiện tại đang bị vô hiệu hóa.");
+        if (!PasswordUtil.verify(rawPassword, user.getPasswordHash())) {
+            throw new AuthenticationException("Tên đăng nhập hoặc mật khẩu không đúng.");
         }
 
-        role.setRoleCode(normalizeRoleCode(role.getRoleCode()));
+        Role role = roleDAO.findById(user.getRoleId())
+                .orElseThrow(() -> new AuthenticationException("Tài khoản chưa được gán vai trò hợp lệ."));
 
-        UserSession session = UserSession.getInstance();
-        session.setCurrentUser(user);
-        session.setCurrentRole(role);
+        if (!role.isActive()) {
+            throw new AuthenticationException("Vai trò của tài khoản đã bị vô hiệu hóa.");
+        }
 
         userDAO.updateLastLogin(user.getUserId(), LocalDateTime.now());
-
+        UserSession.getInstance().login(user, role);
         return user;
     }
 
-    /**
-     * Đăng xuất phiên hiện tại: xoá thông tin trong {@code UserSession}.
-     */
     public void logout() {
         UserSession.getInstance().clear();
-    }
-
-    private boolean isLocked(String accountStatus) {
-        if (accountStatus == null || accountStatus.isBlank()) {
-            return false;
-        }
-
-        return "LOCKED".equalsIgnoreCase(accountStatus.trim());
-    }
-
-    private String normalizeRoleCode(String roleCode) {
-        if (roleCode == null || roleCode.isBlank()) {
-            return roleCode;
-        }
-
-        String normalized = roleCode.trim().toUpperCase(Locale.ROOT);
-
-        return switch (normalized) {
-            case "FLEET_MANAGER" -> "MANAGER";
-            case "TECHNICIAN" -> "TECH";
-            default -> normalized;
-        };
     }
 }

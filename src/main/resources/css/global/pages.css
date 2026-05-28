@@ -1,42 +1,78 @@
-/* =========================================================
-   pages.css
-   Style chung cho tiêu đề trang và chữ trong các màn hình con.
-   ========================================================= */
+/* Shared page wrappers and text hierarchy. */
+
+.page-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.page-scroll > .viewport {
+    -fx-background-color: transparent;
+}
 
 .page {
-    -fx-background-color: -app-bg;
+    -fx-padding: 28 32 36 32;
+    -fx-background-color: -app-surface;
+}
+
+.page-header {
+    -fx-spacing: 6;
 }
 
 .page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -app-text-main;
+}
+
+.page-subtitle,
+.hero-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: -app-text-normal;
+}
+
+.display-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -app-text-main;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -app-text-main;
+}
+
+.item-title,
+.priority-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -app-text-main;
+}
+
+.item-subtitle,
+.priority-text,
+.micro-copy,
+.placeholder-message {
+    -fx-font-size: 12px;
+    -fx-text-fill: -app-text-sub;
+}
+
+.placeholder-box {
+    -fx-background-color: rgba(255,255,255,0.86);
+    -fx-background-radius: 20;
+    -fx-padding: 46;
+    -fx-max-width: 620;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.07), 22, 0, 0, 8);
+}
+
+.placeholder-title {
     -fx-font-size: 24px;
     -fx-font-weight: 800;
     -fx-text-fill: -app-text-main;
 }
 
-.page-subtitle {
-    -fx-font-size: 14px;
-    -fx-text-fill: -app-text-sub;
-}
-
-.section-title {
-    -fx-font-size: 16px;
-    -fx-font-weight: 800;
-    -fx-text-fill: -app-text-main;
-}
-
-.normal-text {
-    -fx-font-size: 14px;
-    -fx-text-fill: -app-text-normal;
-}
-
-.primary-text {
-    -fx-text-fill: -app-primary;
-}
-
-.warning-text {
-    -fx-text-fill: -app-warning;
-}
-
-.danger-text {
-    -fx-text-fill: -app-danger;
+.error-label {
+    -fx-text-fill: -app-danger-dark;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
 }

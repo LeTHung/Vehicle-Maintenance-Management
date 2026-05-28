@@ -1,10 +1,99 @@
-.vehicle-form-title {
-  -fx-font-size: 16px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #111827;
+.vehicle-page {
+    -fx-background-color: -app-bg;
+}
+
+.vehicle-editor {
+    -fx-background-color: transparent;
+    -fx-text-fill: -app-text-main;
+}
+
+.vehicle-editor > .title {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12 12 0 0;
+    -fx-border-color: #dbe4ef;
+    -fx-border-radius: 12 12 0 0;
+    -fx-padding: 10 14;
+}
+
+.vehicle-editor > .title > .text {
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-fill: -app-text-main;
+}
+
+.vehicle-editor > *.content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0 0 12 12;
+    -fx-border-color: #dbe4ef;
+    -fx-border-radius: 0 0 12 12;
+    -fx-padding: 0;
+}
+
+.vehicle-form-card {
+    -fx-padding: 14 16 16 16;
+    -fx-background-color: #ffffff;
+}
+
+.vehicle-form-card .form-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #344054;
+}
+
+.vehicle-form-card .input-field,
+.vehicle-form-card .text-field,
+.vehicle-form-card .combo-box,
+.vehicle-form-card .date-picker {
+    -fx-min-height: 36;
+    -fx-pref-height: 36;
+    -fx-font-size: 13px;
+}
+
+.vehicle-table-card {
+    -fx-padding: 16;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 14;
+    -fx-border-color: #dbe4ef;
+    -fx-border-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(31, 45, 61, 0.06), 14, 0.16, 0, 5);
 }
 
 .vehicle-note {
-  -fx-text-fill: #6b7280;
-  -fx-font-size: 13px;
+    -fx-text-fill: #667085;
+    -fx-font-size: 13px;
+}
+
+.table-hint {
+    -fx-padding: 7 12;
+    -fx-background-color: #eef5ff;
+    -fx-background-radius: 999;
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #155bd4;
+}
+
+.vehicle-table {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-fixed-cell-size: 42;
+}
+
+.vehicle-table .column-header,
+.vehicle-table .filler {
+    -fx-size: 44px;
+}
+
+.vehicle-table .column-header .label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #475467;
+}
+
+.vehicle-table .table-row-cell {
+    -fx-cell-size: 42px;
+}
+
+.vehicle-table .table-cell {
+    -fx-padding: 8 10;
+    -fx-font-size: 13px;
 }
