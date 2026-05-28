@@ -1,4 +1,4 @@
-package controller;
+package controller.layout;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,52 +22,30 @@ import java.util.Locale;
 
 public class MainLayoutController {
 
-    @FXML
-    private StackPane contentArea;
-    @FXML
-    private Label lblPageTitle;
-    @FXML
-    private Label lblUserName;
-    @FXML
-    private Label lblUserRole;
-    @FXML
-    private Label lblRoleBadge;
-    @FXML
-    private TextField txtQuickSearch;
-    @FXML
-    private ComboBox<String> cbRolePreview;
+    @FXML private StackPane contentArea;
+    @FXML private Label lblPageTitle;
+    @FXML private Label lblUserName;
+    @FXML private Label lblUserRole;
+    @FXML private Label lblRoleBadge;
+    @FXML private TextField txtQuickSearch;
+    @FXML private ComboBox<String> cbRolePreview;
 
-    @FXML
-    private VBox groupAdmin;
-    @FXML
-    private VBox groupManager;
-    @FXML
-    private VBox groupTechnician;
-    @FXML
-    private VBox groupReport;
+    @FXML private VBox groupAdmin;
+    @FXML private VBox groupManager;
+    @FXML private VBox groupTechnician;
+    @FXML private VBox groupReport;
 
-    @FXML
-    private Button btnDashboard;
-    @FXML
-    private Button btnAdminUsers;
-    @FXML
-    private Button btnAdminRoles;
-    @FXML
-    private Button btnAuditLog;
-    @FXML
-    private Button btnVehicle;
-    @FXML
-    private Button btnVehicleDocument;
-    @FXML
-    private Button btnDocumentAlert;
-    @FXML
-    private Button btnMaintenancePlan;
-    @FXML
-    private Button btnMaintenanceRecord;
-    @FXML
-    private Button btnMaintenanceHistory;
-    @FXML
-    private Button btnReport;
+    @FXML private Button btnDashboard;
+    @FXML private Button btnAdminUsers;
+    @FXML private Button btnAdminRoles;
+    @FXML private Button btnAuditLog;
+    @FXML private Button btnVehicle;
+    @FXML private Button btnVehicleDocument;
+    @FXML private Button btnDocumentAlert;
+    @FXML private Button btnMaintenancePlan;
+    @FXML private Button btnMaintenanceRecord;
+    @FXML private Button btnMaintenanceHistory;
+    @FXML private Button btnReport;
 
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_MANAGER = "MANAGER";
@@ -159,17 +137,17 @@ public class MainLayoutController {
     @FXML
     private void openDashboard() {
         if (ROLE_ADMIN.equals(currentRole)) {
-            loadPage("admin-dashboard-view.fxml", "Dashboard quản trị", btnDashboard);
+            loadPage("dashboard/admin-dashboard-view.fxml", "Dashboard quản trị", btnDashboard);
         } else if (ROLE_TECH.equals(currentRole)) {
-            loadPage("technician-dashboard-view.fxml", "Dashboard kỹ thuật", btnDashboard);
+            loadPage("dashboard/technician-dashboard-view.fxml", "Dashboard kỹ thuật", btnDashboard);
         } else {
-            loadPage("manager-dashboard-view.fxml", "Dashboard đội xe", btnDashboard);
+            loadPage("dashboard/manager-dashboard-view.fxml", "Dashboard đội xe", btnDashboard);
         }
     }
 
     @FXML
     private void openAdminUsers() {
-        loadPage("user-view.fxml", "Quản lý người dùng", btnAdminUsers);
+        loadPage("user/user-view.fxml", "Quản lý người dùng", btnAdminUsers);
     }
 
     @FXML
@@ -181,22 +159,24 @@ public class MainLayoutController {
 
     @FXML
     private void openAuditLog() {
-        showPlaceholder("Audit logs", "Khu vực theo dõi thao tác hệ thống và lịch sử hoạt động.", btnAuditLog);
+        showPlaceholder("Audit logs",
+                "Khu vực theo dõi thao tác hệ thống và lịch sử hoạt động.",
+                btnAuditLog);
     }
 
     @FXML
     private void openVehicle() {
-        loadPage("vehicle-view.fxml", "Quản lý phương tiện", btnVehicle);
+        loadPage("vehicle/vehicle-view.fxml", "Quản lý phương tiện", btnVehicle);
     }
 
     @FXML
     private void openVehicleDocument() {
-        loadPage("vehicle-document-view.fxml", "Giấy tờ xe", btnVehicleDocument);
+        loadPage("vehicle/vehicle-document-view.fxml", "Giấy tờ xe", btnVehicleDocument);
     }
 
     @FXML
     private void openDocumentAlert() {
-        loadPage("document-alert-view.fxml", "Cảnh báo giấy tờ", btnDocumentAlert);
+        loadPage("vehicle/document-alert-view.fxml", "Cảnh báo giấy tờ", btnDocumentAlert);
     }
 
     @FXML
@@ -231,7 +211,7 @@ public class MainLayoutController {
     private void handleLogout() {
         UserSession.getInstance().clear();
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/login-view.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/view/auth/login-view.fxml"));
             Scene scene = new Scene(root, 420, 360);
             applyAppStyles(scene);
 

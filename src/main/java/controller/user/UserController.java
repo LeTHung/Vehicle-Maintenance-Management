@@ -1,4 +1,4 @@
-package controller;
+package controller.user;
 
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;

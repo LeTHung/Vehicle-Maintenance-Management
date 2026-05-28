@@ -30,7 +30,7 @@ public final class StylesheetLoader {
             if (url != null) {
                 scene.getStylesheets().add(url.toExternalForm());
             } else {
-                System.out.println("Khong tim thay stylesheet: " + stylesheet);
+                System.out.println("Không tìm thấy stylesheet: " + stylesheet);
             }
         }
     }

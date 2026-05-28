@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.VehicleDocumentController" fitToWidth="true" styleClass="page-scroll">
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.vehicle.VehicleDocumentController" fitToWidth="true" styleClass="page-scroll">
     <VBox spacing="24" styleClass="page">
         <VBox styleClass="page-header">
             <Label text="Giấy tờ &amp; đăng kiểm" styleClass="page-title"/>

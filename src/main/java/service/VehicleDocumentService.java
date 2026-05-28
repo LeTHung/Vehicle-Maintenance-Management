@@ -49,7 +49,7 @@ public class VehicleDocumentService {
 
         Long generatedId = vehicleDocumentDAO.insert(document);
         if (generatedId == null) {
-            throw new IllegalStateException("Khong the luu giay to xe. Vui long kiem tra du lieu.");
+            throw new IllegalStateException("Không thể lưu giấy tờ xe. Vui lòng kiểm tra dữ liệu.");
         }
 
         return vehicleDocumentDAO.findById(generatedId).orElse(document);
@@ -57,13 +57,13 @@ public class VehicleDocumentService {
 
     public VehicleDocument updateDocument(VehicleDocument document) {
         if (document == null || document.getDocumentId() <= 0) {
-            throw new IllegalArgumentException("Vui long chon giay to can cap nhat.");
+            throw new IllegalArgumentException("Vui lòng chọn giấy tờ cần cập nhật.");
         }
 
         normalizeAndValidate(document, document.getDocumentId());
 
         if (!vehicleDocumentDAO.update(document)) {
-            throw new IllegalStateException("Khong the cap nhat giay to xe. Vui long thu lai.");
+            throw new IllegalStateException("Không thể cập nhật giấy tờ xe. Vui lòng thử lại.");
         }
 
         return vehicleDocumentDAO.findById(document.getDocumentId()).orElse(document);
@@ -71,15 +71,15 @@ public class VehicleDocumentService {
 
     private void normalizeAndValidate(VehicleDocument document, Long currentDocumentId) {
         if (document == null) {
-            throw new IllegalArgumentException("Du lieu giay to khong hop le.");
+            throw new IllegalArgumentException("Dữ liệu giấy tờ không hợp lệ.");
         }
 
         if (document.getVehicleId() <= 0) {
-            throw new IllegalArgumentException("Vui long chon phuong tien.");
+            throw new IllegalArgumentException("Vui lòng chọn phương tiện.");
         }
 
         if (document.getDocumentTypeId() <= 0) {
-            throw new IllegalArgumentException("Vui long chon loai giay to.");
+            throw new IllegalArgumentException("Vui lòng chọn loại giấy tờ.");
         }
 
         document.setDocumentNumber(normalizeOptional(document.getDocumentNumber()));
@@ -88,7 +88,7 @@ public class VehicleDocumentService {
         document.setNote(normalizeOptional(document.getNote()));
 
         if (document.getExpiryDate() == null) {
-            throw new IllegalArgumentException("Ngay het han khong duoc de trong.");
+            throw new IllegalArgumentException("Ngày hết hạn không được để trống.");
         }
 
         validateDateRange(document.getIssueDate(), document.getEffectiveDate(), document.getExpiryDate());
@@ -98,7 +98,7 @@ public class VehicleDocumentService {
         }
 
         if (document.getFeeAmount().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Chi phi khong duoc am.");
+            throw new IllegalArgumentException("Chi phí không được âm.");
         }
 
         if (document.isCurrent()
@@ -106,17 +106,17 @@ public class VehicleDocumentService {
                         document.getVehicleId(),
                         document.getDocumentTypeId(),
                         currentDocumentId)) {
-            throw new IllegalArgumentException("Xe da co giay to hien hanh cho loai nay.");
+            throw new IllegalArgumentException("Xe đã có giấy tờ hiện hành cho loại này.");
         }
     }
 
     private void validateDateRange(LocalDate issueDate, LocalDate effectiveDate, LocalDate expiryDate) {
         if (effectiveDate != null && expiryDate.isBefore(effectiveDate)) {
-            throw new IllegalArgumentException("Ngay het han phai lon hon hoac bang ngay hieu luc.");
+            throw new IllegalArgumentException("Ngày hết hạn phải lớn hơn hoặc bằng ngày hiệu lực.");
         }
 
         if (issueDate != null && effectiveDate != null && effectiveDate.isBefore(issueDate)) {
-            throw new IllegalArgumentException("Ngay hieu luc phai lon hon hoac bang ngay cap.");
+            throw new IllegalArgumentException("Ngày hiệu lực phải lớn hơn hoặc bằng ngày cấp.");
         }
     }
 
@@ -127,7 +127,7 @@ public class VehicleDocumentService {
 
         return switch (normalizedStatus) {
             case STATUS_VALID, STATUS_EXPIRED, STATUS_REPLACED, STATUS_CANCELLED -> normalizedStatus;
-            default -> throw new IllegalArgumentException("Trang thai giay to khong hop le.");
+            default -> throw new IllegalArgumentException("Trạng thái giấy tờ không hợp lệ.");
         };
     }
 

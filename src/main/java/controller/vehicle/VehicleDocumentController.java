@@ -1,4 +1,4 @@
-package controller;
+package controller.vehicle;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -21,7 +21,6 @@ import service.VehicleDocumentService;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class VehicleDocumentController {
