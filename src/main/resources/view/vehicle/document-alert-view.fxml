@@ -26,7 +26,6 @@
             <HBox styleClass="table-title-row">
                 <Label text="Danh sách cảnh báo" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Nguồn dữ liệu: vw_due_vehicle_documents" styleClass="micro-copy"/>
             </HBox>
             <TableView fx:id="tblAlert" prefHeight="410" styleClass="data-table">
                 <columns>

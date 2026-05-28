@@ -14,41 +14,71 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import model.entity.Vehicle;
 import service.VehicleService;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VehicleController {
 
     private final VehicleService vehicleService = new VehicleService();
     private Long selectedVehicleId;
 
-    @FXML private TextField txtSearch;
-    @FXML private TextField txtVehicleCode;
-    @FXML private TextField txtLicensePlate;
-    @FXML private ComboBox<String> cbVehicleType;
-    @FXML private TextField txtBrand;
-    @FXML private TextField txtModel;
-    @FXML private TextField txtManufactureYear;
-    @FXML private DatePicker dpPurchaseDate;
-    @FXML private TextField txtChassisNumber;
-    @FXML private TextField txtEngineNumber;
-    @FXML private TextField txtColor;
-    @FXML private TextField txtCurrentOdometer;
-    @FXML private ComboBox<String> cbVehicleStatus;
-    @FXML private TextField txtNotes;
+    @FXML
+    private TextField txtSearch;
+    @FXML
+    private TextField txtVehicleCode;
+    @FXML
+    private TextField txtLicensePlate;
+    @FXML
+    private ComboBox<String> cbVehicleType;
+    @FXML
+    private TextField txtBrand;
+    @FXML
+    private TextField txtModel;
+    @FXML
+    private TextField txtManufactureYear;
+    @FXML
+    private DatePicker dpPurchaseDate;
+    @FXML
+    private TextField txtChassisNumber;
+    @FXML
+    private TextField txtEngineNumber;
+    @FXML
+    private TextField txtColor;
+    @FXML
+    private TextField txtCurrentOdometer;
+    @FXML
+    private ComboBox<String> cbVehicleStatus;
+    @FXML
+    private TextField txtNotes;
 
-    @FXML private TableView<Vehicle> tblVehicle;
-    @FXML private TableColumn<Vehicle, Long> colVehicleId;
-    @FXML private TableColumn<Vehicle, String> colVehicleCode;
-    @FXML private TableColumn<Vehicle, String> colLicensePlate;
-    @FXML private TableColumn<Vehicle, String> colVehicleType;
-    @FXML private TableColumn<Vehicle, String> colBrand;
-    @FXML private TableColumn<Vehicle, String> colModel;
-    @FXML private TableColumn<Vehicle, Integer> colManufactureYear;
-    @FXML private TableColumn<Vehicle, Object> colPurchaseDate;
-    @FXML private TableColumn<Vehicle, String> colChassisNumber;
-    @FXML private TableColumn<Vehicle, String> colEngineNumber;
-    @FXML private TableColumn<Vehicle, String> colColor;
-    @FXML private TableColumn<Vehicle, Integer> colCurrentOdometer;
-    @FXML private TableColumn<Vehicle, String> colVehicleStatus;
+    @FXML
+    private TableView<Vehicle> tblVehicle;
+    @FXML
+    private TableColumn<Vehicle, Long> colVehicleId;
+    @FXML
+    private TableColumn<Vehicle, String> colVehicleCode;
+    @FXML
+    private TableColumn<Vehicle, String> colLicensePlate;
+    @FXML
+    private TableColumn<Vehicle, String> colVehicleType;
+    @FXML
+    private TableColumn<Vehicle, String> colBrand;
+    @FXML
+    private TableColumn<Vehicle, String> colModel;
+    @FXML
+    private TableColumn<Vehicle, Integer> colManufactureYear;
+    @FXML
+    private TableColumn<Vehicle, Object> colPurchaseDate;
+    @FXML
+    private TableColumn<Vehicle, String> colChassisNumber;
+    @FXML
+    private TableColumn<Vehicle, String> colEngineNumber;
+    @FXML
+    private TableColumn<Vehicle, String> colColor;
+    @FXML
+    private TableColumn<Vehicle, Integer> colCurrentOdometer;
+    @FXML
+    private TableColumn<Vehicle, String> colVehicleStatus;
 
     @FXML
     public void initialize() {
@@ -60,18 +90,26 @@ public class VehicleController {
 
     private void configureTable() {
         colVehicleId.setCellValueFactory(cell -> new SimpleLongProperty(cell.getValue().getVehicleId()).asObject());
-        colVehicleCode.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getVehicleCode())));
-        colLicensePlate.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getLicensePlate())));
-        colVehicleType.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getVehicleType())));
+        colVehicleCode
+                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getVehicleCode())));
+        colLicensePlate
+                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getLicensePlate())));
+        colVehicleType
+                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getVehicleType())));
         colBrand.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getBrand())));
         colModel.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getModel())));
-        colManufactureYear.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getManufactureYear()));
+        colManufactureYear
+                .setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getManufactureYear()));
         colPurchaseDate.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getPurchaseDate()));
-        colChassisNumber.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getChassisNumber())));
-        colEngineNumber.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getEngineNumber())));
+        colChassisNumber
+                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getChassisNumber())));
+        colEngineNumber
+                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getEngineNumber())));
         colColor.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getColor())));
-        colCurrentOdometer.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getCurrentOdometer()).asObject());
-        colVehicleStatus.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getVehicleStatus())));
+        colCurrentOdometer.setCellValueFactory(
+                cell -> new SimpleIntegerProperty(cell.getValue().getCurrentOdometer()).asObject());
+        colVehicleStatus
+                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getVehicleStatus())));
 
         tblVehicle.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> populateForm(newValue));
@@ -97,7 +135,7 @@ public class VehicleController {
             selectVehicle(created.getVehicleId());
             showInfo("Đã lưu phương tiện.");
         } catch (RuntimeException e) {
-            showError(e.getMessage());
+            showError(userFriendlyMessage(e));
         }
     }
 
@@ -116,7 +154,7 @@ public class VehicleController {
             selectVehicle(updated.getVehicleId());
             showInfo("Đã cập nhật phương tiện.");
         } catch (RuntimeException e) {
-            showError(e.getMessage());
+            showError(userFriendlyMessage(e));
         }
     }
 
@@ -144,21 +182,44 @@ public class VehicleController {
     }
 
     private Vehicle readVehicleFromForm() {
+        validateRequiredFields();
+
         Vehicle vehicle = new Vehicle();
         vehicle.setVehicleCode(txtVehicleCode.getText());
         vehicle.setLicensePlate(txtLicensePlate.getText());
         vehicle.setVehicleType(cbVehicleType.getValue());
         vehicle.setBrand(txtBrand.getText());
         vehicle.setModel(txtModel.getText());
-        vehicle.setManufactureYear(parseInteger(txtManufactureYear.getText(), "Năm sản xuất phải là số."));
+        vehicle.setManufactureYear(parseOptionalInteger(txtManufactureYear.getText(), "Năm sản xuất phải là số."));
         vehicle.setPurchaseDate(dpPurchaseDate.getValue());
         vehicle.setChassisNumber(txtChassisNumber.getText());
         vehicle.setEngineNumber(txtEngineNumber.getText());
         vehicle.setColor(txtColor.getText());
-        vehicle.setCurrentOdometer(parseInteger(txtCurrentOdometer.getText(), "ODO phải là số."));
+        vehicle.setCurrentOdometer(parseRequiredInteger(txtCurrentOdometer.getText(), "ODO hiện tại"));
         vehicle.setVehicleStatus(cbVehicleStatus.getValue());
         vehicle.setNotes(txtNotes.getText());
         return vehicle;
+    }
+
+    private void validateRequiredFields() {
+        List<String> errors = new ArrayList<>();
+        addRequiredError(errors, txtLicensePlate.getText(), "Biển số");
+        if (cbVehicleType.getValue() == null || cbVehicleType.getValue().isBlank()) {
+            errors.add("- Loại xe không được để trống.");
+        }
+        addRequiredError(errors, txtChassisNumber.getText(), "Số khung");
+        addRequiredError(errors, txtEngineNumber.getText(), "Số máy");
+        addRequiredError(errors, txtCurrentOdometer.getText(), "ODO hiện tại");
+
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException("Vui lòng kiểm tra dữ liệu:\n" + String.join("\n", errors));
+        }
+    }
+
+    private void addRequiredError(List<String> errors, String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            errors.add("- " + fieldName + " không được để trống.");
+        }
     }
 
     private void populateForm(Vehicle vehicle) {
@@ -172,7 +233,8 @@ public class VehicleController {
         cbVehicleType.setValue(vehicle.getVehicleType());
         txtBrand.setText(nullToEmpty(vehicle.getBrand()));
         txtModel.setText(nullToEmpty(vehicle.getModel()));
-        txtManufactureYear.setText(vehicle.getManufactureYear() == null ? "" : String.valueOf(vehicle.getManufactureYear()));
+        txtManufactureYear
+                .setText(vehicle.getManufactureYear() == null ? "" : String.valueOf(vehicle.getManufactureYear()));
         dpPurchaseDate.setValue(vehicle.getPurchaseDate());
         txtChassisNumber.setText(nullToEmpty(vehicle.getChassisNumber()));
         txtEngineNumber.setText(nullToEmpty(vehicle.getEngineNumber()));
@@ -192,7 +254,7 @@ public class VehicleController {
         }
     }
 
-    private Integer parseInteger(String value, String message) {
+    private Integer parseOptionalInteger(String value, String message) {
         if (value == null || value.isBlank()) {
             return null;
         }
@@ -201,6 +263,25 @@ public class VehicleController {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(message);
         }
+    }
+
+    private int parseRequiredInteger(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " không được để trống.");
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(fieldName + " phải là số.");
+        }
+    }
+
+    private String userFriendlyMessage(RuntimeException e) {
+        String message = e.getMessage();
+        if (message == null || message.isBlank() || message.contains("Cannot invoke")) {
+            return "Dữ liệu nhập chưa hợp lệ. Vui lòng kiểm tra lại các trường bắt buộc.";
+        }
+        return message;
     }
 
     private void showInfo(String message) {

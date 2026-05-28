@@ -65,7 +65,6 @@
             <HBox styleClass="table-title-row">
                 <Label text="Danh sách phương tiện" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Dữ liệu từ bảng vehicles" styleClass="micro-copy"/>
             </HBox>
             <TableView fx:id="tblVehicle" prefHeight="360" styleClass="data-table">
                 <columns>
