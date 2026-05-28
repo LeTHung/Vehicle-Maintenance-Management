@@ -29,7 +29,7 @@ public class VehicleService {
 
         Long generatedId = vehicleDAO.insert(vehicle);
         if (generatedId == null) {
-            throw new IllegalStateException("Khong the luu phuong tien. Vui long kiem tra du lieu.");
+            throw new IllegalStateException("Không thể lưu phương tiện. Vui lòng kiểm tra dữ liệu.");
         }
 
         return vehicleDAO.findById(generatedId).orElse(vehicle);
@@ -37,13 +37,13 @@ public class VehicleService {
 
     public Vehicle updateVehicle(Vehicle vehicle) {
         if (vehicle == null || vehicle.getVehicleId() <= 0) {
-            throw new IllegalArgumentException("Vui long chon phuong tien can cap nhat.");
+            throw new IllegalArgumentException("Vui lòng chọn phương tiện cần cập nhật.");
         }
 
         normalizeAndValidate(vehicle, vehicle.getVehicleId());
 
         if (!vehicleDAO.update(vehicle)) {
-            throw new IllegalStateException("Khong the cap nhat phuong tien. Vui long thu lai.");
+            throw new IllegalStateException("Không thể cập nhật phương tiện. Vui lòng thử lại.");
         }
 
         return vehicleDAO.findById(vehicle.getVehicleId()).orElse(vehicle);
@@ -51,16 +51,16 @@ public class VehicleService {
 
     private void normalizeAndValidate(Vehicle vehicle, Long currentVehicleId) {
         if (vehicle == null) {
-            throw new IllegalArgumentException("Du lieu phuong tien khong hop le.");
+            throw new IllegalArgumentException("Dữ liệu phương tiện không hợp lệ.");
         }
 
         vehicle.setVehicleCode(normalizeOptional(vehicle.getVehicleCode()));
-        vehicle.setLicensePlate(requireText(vehicle.getLicensePlate(), "Bien so khong duoc de trong.").toUpperCase(Locale.ROOT));
-        vehicle.setVehicleType(requireText(vehicle.getVehicleType(), "Loai xe khong duoc de trong."));
+        vehicle.setLicensePlate(requireText(vehicle.getLicensePlate(), "Biển số không được để trống.").toUpperCase(Locale.ROOT));
+        vehicle.setVehicleType(requireText(vehicle.getVehicleType(), "Loại xe không được để trống."));
         vehicle.setBrand(normalizeOptional(vehicle.getBrand()));
         vehicle.setModel(normalizeOptional(vehicle.getModel()));
-        vehicle.setChassisNumber(requireText(vehicle.getChassisNumber(), "So khung khong duoc de trong.").toUpperCase(Locale.ROOT));
-        vehicle.setEngineNumber(requireText(vehicle.getEngineNumber(), "So may khong duoc de trong.").toUpperCase(Locale.ROOT));
+        vehicle.setChassisNumber(requireText(vehicle.getChassisNumber(), "Số khung không được để trống.").toUpperCase(Locale.ROOT));
+        vehicle.setEngineNumber(requireText(vehicle.getEngineNumber(), "Số máy không được để trống.").toUpperCase(Locale.ROOT));
         vehicle.setColor(normalizeOptional(vehicle.getColor()));
         vehicle.setVehicleStatus(normalizeStatus(vehicle.getVehicleStatus()));
         vehicle.setNotes(normalizeOptional(vehicle.getNotes()));
@@ -68,24 +68,24 @@ public class VehicleService {
         validateManufactureYear(vehicle.getManufactureYear());
 
         if (vehicle.getCurrentOdometer() < 0) {
-            throw new IllegalArgumentException("ODO hien tai khong duoc am.");
+            throw new IllegalArgumentException("ODO hiện tại không được âm.");
         }
 
         if (vehicle.getVehicleCode() != null
                 && vehicleDAO.existsByVehicleCode(vehicle.getVehicleCode(), currentVehicleId)) {
-            throw new IllegalArgumentException("Ma xe da ton tai.");
+            throw new IllegalArgumentException("Mã xe đã tồn tại.");
         }
 
         if (vehicleDAO.existsByLicensePlate(vehicle.getLicensePlate(), currentVehicleId)) {
-            throw new IllegalArgumentException("Bien so da ton tai.");
+            throw new IllegalArgumentException("Biển số đã tồn tại.");
         }
 
         if (vehicleDAO.existsByChassisNumber(vehicle.getChassisNumber(), currentVehicleId)) {
-            throw new IllegalArgumentException("So khung da ton tai.");
+            throw new IllegalArgumentException("Số khung đã tồn tại.");
         }
 
         if (vehicleDAO.existsByEngineNumber(vehicle.getEngineNumber(), currentVehicleId)) {
-            throw new IllegalArgumentException("So may da ton tai.");
+            throw new IllegalArgumentException("Số máy đã tồn tại.");
         }
     }
 
@@ -96,7 +96,7 @@ public class VehicleService {
 
         int nextYear = LocalDate.now().getYear() + 1;
         if (year < 1900 || year > nextYear) {
-            throw new IllegalArgumentException("Nam san xuat khong hop le.");
+            throw new IllegalArgumentException("Năm sản xuất không hợp lệ.");
         }
     }
 
@@ -107,7 +107,7 @@ public class VehicleService {
 
         return switch (normalizedStatus) {
             case STATUS_ACTIVE, STATUS_UNDER_MAINTENANCE, STATUS_INACTIVE, STATUS_DISPOSED -> normalizedStatus;
-            default -> throw new IllegalArgumentException("Trang thai phuong tien khong hop le.");
+            default -> throw new IllegalArgumentException("Trạng thái phương tiện không hợp lệ.");
         };
     }
 

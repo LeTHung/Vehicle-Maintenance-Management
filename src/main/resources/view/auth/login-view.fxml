@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="controller.LoginController"
+      fx:controller="controller.auth.LoginController"
       alignment="CENTER"
       spacing="14"
       prefWidth="420"

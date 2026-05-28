@@ -1,4 +1,4 @@
-package controller;
+package controller.vehicle;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -52,7 +52,7 @@ public class VehicleController {
 
     @FXML
     public void initialize() {
-        cbVehicleType.getItems().setAll("Xe tai", "Xe khach", "Xe con", "Xe ban tai", "Xe chuyen dung");
+        cbVehicleType.getItems().setAll("Xe tải", "Xe khách", "Xe con", "Xe bán tải", "Xe chuyên dụng");
         cbVehicleStatus.getItems().setAll("ACTIVE", "UNDER_MAINTENANCE", "INACTIVE", "DISPOSED");
         configureTable();
         loadVehicleData();

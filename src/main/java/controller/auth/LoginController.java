@@ -1,4 +1,4 @@
-package controller;
+package controller.auth;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,14 +20,10 @@ public class LoginController {
 
     private final AuthService authService = new AuthService();
 
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private Button loginButton;
-    @FXML
-    private Label errorLabel;
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private Button loginButton;
+    @FXML private Label errorLabel;
 
     @FXML
     public void initialize() {
@@ -57,7 +53,7 @@ public class LoginController {
     }
 
     private void loadMainLayout() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/main-layout.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/layout/main-layout.fxml"));
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 1280, 800);

@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.VehicleController" fitToWidth="true" styleClass="page-scroll">
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.vehicle.VehicleController" fitToWidth="true" styleClass="page-scroll">
     <VBox spacing="24" styleClass="page">
         <VBox styleClass="page-header">
             <Label text="Hồ sơ phương tiện" styleClass="page-title"/>
