@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" styleClass="page-scroll">
+    <VBox spacing="28" styleClass="page">
+        <VBox styleClass="hero-admin">
+            <Label text="System Administration Dashboard" styleClass="display-title"/>
+            <Label text="Quản lý người dùng, vai trò, phân quyền và cấu hình hệ thống FleetCare." styleClass="hero-subtitle"/>
+            <HBox spacing="12">
+                <Button text="+ Tạo người dùng" styleClass="btn-primary"/>
+                <Button text="Cấu hình quyền" styleClass="btn-ghost"/>
+            </HBox>
+        </VBox>
+        <HBox spacing="18">
+            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS"><Label text="Người dùng" styleClass="metric-label"/><Label text="24" styleClass="metric-value"/><Label text="3 vai trò chính" styleClass="metric-trend-primary"/></VBox>
+            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS"><Label text="Tài khoản khóa" styleClass="metric-label"/><Label text="2" styleClass="metric-value-warning"/><Label text="Cần rà soát" styleClass="metric-trend-warning"/></VBox>
+            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS"><Label text="Cảnh báo hệ thống" styleClass="metric-label"/><Label text="5" styleClass="metric-value-danger"/><Label text="Trong 24 giờ" styleClass="metric-trend-danger"/></VBox>
+        </HBox>
+        <VBox spacing="14" styleClass="panel">
+            <Label text="Module quản trị" styleClass="section-title"/>
+            <HBox spacing="14">
+                <VBox styleClass="module-card" HBox.hgrow="ALWAYS"><Label text="Quản lý người dùng" styleClass="item-title"/><Label text="Tạo, sửa, khóa/mở khóa tài khoản." styleClass="item-subtitle"/></VBox>
+                <VBox styleClass="module-card" HBox.hgrow="ALWAYS"><Label text="Vai trò &amp; phân quyền" styleClass="item-title"/><Label text="Ẩn/hiện menu theo quyền đăng nhập." styleClass="item-subtitle"/></VBox>
+                <VBox styleClass="module-card" HBox.hgrow="ALWAYS"><Label text="Audit logs" styleClass="item-title"/><Label text="Theo dõi thao tác quan trọng của hệ thống." styleClass="item-subtitle"/></VBox>
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

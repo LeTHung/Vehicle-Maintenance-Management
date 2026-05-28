@@ -1,12 +1,12 @@
 package controller;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
@@ -14,10 +14,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.entity.Role;
 import model.entity.User;
-import service.AuthService;
 import session.UserSession;
+import util.StylesheetLoader;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
 
@@ -25,19 +24,19 @@ public class MainLayoutController {
 
     @FXML
     private StackPane contentArea;
-
     @FXML
     private Label lblPageTitle;
     @FXML
     private Label lblUserName;
     @FXML
     private Label lblUserRole;
-
+    @FXML
+    private Label lblRoleBadge;
     @FXML
     private TextField txtQuickSearch;
-
     @FXML
-    private VBox groupDashboard;
+    private ComboBox<String> cbRolePreview;
+
     @FXML
     private VBox groupAdmin;
     @FXML
@@ -49,26 +48,24 @@ public class MainLayoutController {
 
     @FXML
     private Button btnDashboard;
-
     @FXML
-    private Button btnUserManagement;
+    private Button btnAdminUsers;
     @FXML
-    private Button btnRoleManagement;
-
+    private Button btnAdminRoles;
+    @FXML
+    private Button btnAuditLog;
     @FXML
     private Button btnVehicle;
     @FXML
     private Button btnVehicleDocument;
     @FXML
     private Button btnDocumentAlert;
-
     @FXML
     private Button btnMaintenancePlan;
     @FXML
     private Button btnMaintenanceRecord;
     @FXML
     private Button btnMaintenanceHistory;
-
     @FXML
     private Button btnReport;
 
@@ -76,89 +73,115 @@ public class MainLayoutController {
     private static final String ROLE_MANAGER = "MANAGER";
     private static final String ROLE_TECH = "TECH";
 
-    private final AuthService authService = new AuthService();
+    private String currentRole = ROLE_MANAGER;
 
     @FXML
     public void initialize() {
-        UserSession session = UserSession.getInstance();
-        if (!session.isLoggedIn()) {
-            navigateToLogin();
-            return;
-        }
-
-        User user = session.getCurrentUser();
-        Role role = session.getCurrentRole();
-
-        lblUserName.setText(resolveDisplayName(user));
-        applyRolePermission(role == null ? null : role.getRoleCode());
-
+        currentRole = resolveCurrentRole();
+        bindCurrentUser();
+        hideRolePreview();
+        applyRolePermission(currentRole);
         openDashboard();
     }
 
-    private void applyRolePermission(String role) {
-        String normalizedRole = normalizeRoleCode(role);
+    private void bindCurrentUser() {
+        User user = UserSession.getInstance().getCurrentUser();
+        lblUserName.setText(resolveDisplayName(user));
+    }
 
-        hideAllGroups();
+    private String resolveCurrentRole() {
+        Role role = UserSession.getInstance().getCurrentRole();
+        String roleCode = role == null ? null : role.getRoleCode();
+        if (roleCode == null || roleCode.isBlank()) {
+            return ROLE_MANAGER;
+        }
 
-        showGroup(groupDashboard);
+        return switch (roleCode.trim().toUpperCase(Locale.ROOT)) {
+            case ROLE_ADMIN -> ROLE_ADMIN;
+            case "FLEET_MANAGER", ROLE_MANAGER -> ROLE_MANAGER;
+            case "TECHNICIAN", ROLE_TECH -> ROLE_TECH;
+            default -> ROLE_MANAGER;
+        };
+    }
 
-        switch (normalizedRole) {
-            case ROLE_ADMIN:
-                lblUserRole.setText("Quản trị viên");
-                showGroup(groupAdmin);
-                showGroup(groupReport);
-                break;
-
-            case ROLE_MANAGER:
-                lblUserRole.setText("Quản lý đội xe");
-                showGroup(groupManager);
-                showGroup(groupReport);
-                break;
-
-            case ROLE_TECH:
-                lblUserRole.setText("Nhân viên kỹ thuật");
-                showGroup(groupTechnician);
-                break;
-
-            default:
-                lblUserRole.setText("Không xác định");
-                break;
+    private void hideRolePreview() {
+        if (cbRolePreview != null) {
+            cbRolePreview.setVisible(false);
+            cbRolePreview.setManaged(false);
         }
     }
 
-    private void hideAllGroups() {
+    private void applyRolePermission(String role) {
         hideGroup(groupAdmin);
         hideGroup(groupManager);
         hideGroup(groupTechnician);
         hideGroup(groupReport);
+
+        switch (role) {
+            case ROLE_ADMIN -> {
+                lblUserRole.setText("Quản trị viên");
+                lblRoleBadge.setText("ADMIN");
+                showGroup(groupAdmin);
+                showGroup(groupReport);
+            }
+            case ROLE_TECH -> {
+                lblUserRole.setText("Nhân viên kỹ thuật");
+                lblRoleBadge.setText("TECH");
+                showGroup(groupTechnician);
+            }
+            case ROLE_MANAGER -> {
+                lblUserRole.setText("Quản lý đội xe");
+                lblRoleBadge.setText("MANAGER");
+                showGroup(groupManager);
+                showGroup(groupReport);
+            }
+            default -> {
+                lblUserRole.setText("Chưa phân quyền");
+                lblRoleBadge.setText("UNKNOWN");
+            }
+        }
     }
 
     private void hideGroup(VBox group) {
-        group.setVisible(false);
-        group.setManaged(false);
+        if (group != null) {
+            group.setVisible(false);
+            group.setManaged(false);
+        }
     }
 
     private void showGroup(VBox group) {
-        group.setVisible(true);
-        group.setManaged(true);
+        if (group != null) {
+            group.setVisible(true);
+            group.setManaged(true);
+        }
     }
 
     @FXML
     private void openDashboard() {
-        loadPage("dashboard-view.fxml", "Dashboard", btnDashboard);
+        if (ROLE_ADMIN.equals(currentRole)) {
+            loadPage("admin-dashboard-view.fxml", "Dashboard quản trị", btnDashboard);
+        } else if (ROLE_TECH.equals(currentRole)) {
+            loadPage("technician-dashboard-view.fxml", "Dashboard kỹ thuật", btnDashboard);
+        } else {
+            loadPage("manager-dashboard-view.fxml", "Dashboard đội xe", btnDashboard);
+        }
     }
 
     @FXML
-    private void openUserManagement() {
-        loadPage("user-view.fxml", "Quan ly nguoi dung", btnUserManagement);
+    private void openAdminUsers() {
+        loadPage("user-view.fxml", "Quản lý người dùng", btnAdminUsers);
     }
 
     @FXML
-    private void openRoleManagement() {
-        showPlaceholder(
-                "Vai trò & phân quyền",
-                "Màn hình này sẽ được tích hợp sau khi có phân quyền.",
-                btnRoleManagement);
+    private void openAdminRoles() {
+        showPlaceholder("Vai trò & phân quyền",
+                "Màn hình này sẽ nối với Role/Permission sau khi có module phân quyền.",
+                btnAdminRoles);
+    }
+
+    @FXML
+    private void openAuditLog() {
+        showPlaceholder("Audit logs", "Khu vực theo dõi thao tác hệ thống và lịch sử hoạt động.", btnAuditLog);
     }
 
     @FXML
@@ -168,161 +191,81 @@ public class MainLayoutController {
 
     @FXML
     private void openVehicleDocument() {
-        loadPage("vehicle-document-view.fxml", "Quản lý giấy tờ xe", btnVehicleDocument);
+        loadPage("vehicle-document-view.fxml", "Giấy tờ xe", btnVehicleDocument);
     }
 
     @FXML
     private void openDocumentAlert() {
-        loadPage("document-alert-view.fxml", "Cảnh báo giấy tờ xe", btnDocumentAlert);
+        loadPage("document-alert-view.fxml", "Cảnh báo giấy tờ", btnDocumentAlert);
     }
 
     @FXML
     private void openMaintenancePlan() {
-        showPlaceholder(
-                "Kế hoạch bảo dưỡng",
-                "Màn hình này sẽ do thành viên phụ trách bảo dưỡng hoàn thiện.",
+        showPlaceholder("Kế hoạch bảo dưỡng",
+                "Màn hình này do thành viên phụ trách kỹ thuật/bảo dưỡng hoàn thiện.",
                 btnMaintenancePlan);
     }
 
     @FXML
     private void openMaintenanceRecord() {
-        showPlaceholder(
-                "Cập nhật bảo dưỡng",
-                "Màn hình này sẽ do thành viên phụ trách bảo dưỡng hoàn thiện.",
+        showPlaceholder("Cập nhật bảo dưỡng",
+                "Màn hình phiếu bảo dưỡng, chi phí và phụ tùng sẽ được tích hợp sau.",
                 btnMaintenanceRecord);
     }
 
     @FXML
     private void openMaintenanceHistory() {
-        showPlaceholder(
-                "Lịch sử bảo dưỡng",
-                "Màn hình này sẽ do thành viên phụ trách bảo dưỡng hoàn thiện.",
+        showPlaceholder("Lịch sử bảo dưỡng",
+                "Màn hình này sẽ hiển thị lịch sử bảo dưỡng theo từng xe.",
                 btnMaintenanceHistory);
     }
 
     @FXML
     private void openReport() {
-        showPlaceholder(
-                "Báo cáo chi phí",
-                "Màn hình báo cáo sẽ được tích hợp sau.",
+        showPlaceholder("Báo cáo chi phí",
+                "Báo cáo chi phí bảo dưỡng và giấy tờ sẽ được tích hợp sau.",
                 btnReport);
     }
 
     @FXML
     private void handleLogout() {
-        authService.logout();
-        navigateToLogin();
-    }
-
-    private void navigateToLogin() {
-        if (contentArea.getScene() == null) {
-            Platform.runLater(this::navigateToLogin);
-            return;
-        }
-
+        UserSession.getInstance().clear();
         try {
-            URL fxmlUrl = getClass().getResource("/view/login-view.fxml");
-
-            if (fxmlUrl == null) {
-                showPlaceholder(
-                        "Lỗi tải màn hình",
-                        "Không tìm thấy file: login-view.fxml",
-                        null);
-                return;
-            }
-
-            Parent root = FXMLLoader.load(fxmlUrl);
-            Scene scene = new Scene(root);
-            applyGlobalStyles(scene);
+            Parent root = FXMLLoader.load(getClass().getResource("/view/login-view.fxml"));
+            Scene scene = new Scene(root, 420, 360);
+            applyAppStyles(scene);
 
             Stage stage = (Stage) contentArea.getScene().getWindow();
+            stage.setMaximized(false);
+            stage.setMinWidth(0);
+            stage.setMinHeight(0);
+            stage.setMaxWidth(Double.MAX_VALUE);
+            stage.setMaxHeight(Double.MAX_VALUE);
+            stage.setResizable(false);
             stage.setScene(scene);
-            stage.setTitle("FleetCare - Quản lý hồ sơ & bảo dưỡng phương tiện");
+            stage.setTitle("FleetCare - Đăng nhập");
             stage.sizeToScene();
             stage.centerOnScreen();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            showPlaceholder(
-                    "Lỗi tải màn hình",
-                    "Không thể quay về màn hình đăng nhập.",
-                    null);
-        }
-    }
-
-    private String resolveDisplayName(User user) {
-        if (user == null) {
-            return "Người dùng";
-        }
-
-        String fullName = user.getFullName();
-        if (fullName != null && !fullName.isBlank()) {
-            return fullName.trim();
-        }
-
-        String username = user.getUsername();
-        if (username != null && !username.isBlank()) {
-            return username.trim();
-        }
-
-        return "Người dùng";
-    }
-
-    private String normalizeRoleCode(String roleCode) {
-        if (roleCode == null || roleCode.isBlank()) {
-            return "";
-        }
-
-        String normalized = roleCode.trim().toUpperCase(Locale.ROOT);
-
-        return switch (normalized) {
-            case "FLEET_MANAGER" -> ROLE_MANAGER;
-            case "TECHNICIAN" -> ROLE_TECH;
-            default -> normalized;
-        };
-    }
-
-    private void applyGlobalStyles(Scene scene) {
-        String[] globalCssFiles = {
-                "/css/global/theme.css",
-                "/css/global/layout.css",
-                "/css/global/pages.css",
-                "/css/global/cards.css",
-                "/css/global/forms.css",
-                "/css/global/buttons.css",
-                "/css/global/tables.css"
-        };
-
-        for (String css : globalCssFiles) {
-            scene.getStylesheets().add(
-                    getClass().getResource(css).toExternalForm());
+            showPlaceholder("Lỗi đăng xuất", "Không thể quay về màn hình đăng nhập.", null);
         }
     }
 
     private void loadPage(String fxmlFile, String title, Button activeButton) {
         try {
-            URL fxmlUrl = getClass().getResource("/view/" + fxmlFile);
-
-            if (fxmlUrl == null) {
-                showPlaceholder(
-                        "Lỗi tải màn hình",
-                        "Không tìm thấy file: " + fxmlFile,
-                        activeButton);
+            URL url = getClass().getResource("/view/" + fxmlFile);
+            if (url == null) {
+                showPlaceholder("Lỗi tải màn hình", "Không tìm thấy file: " + fxmlFile, activeButton);
                 return;
             }
-
-            Parent page = FXMLLoader.load(fxmlUrl);
-
+            Parent page = FXMLLoader.load(url);
             contentArea.getChildren().setAll(page);
             lblPageTitle.setText(title);
             setActiveButton(activeButton);
-
         } catch (Exception e) {
             e.printStackTrace();
-
-            showPlaceholder(
-                    "Lỗi tải màn hình",
-                    "Không thể tải file: " + fxmlFile,
-                    activeButton);
+            showPlaceholder("Lỗi tải màn hình", "Không thể tải file: " + fxmlFile, activeButton);
         }
     }
 
@@ -336,37 +279,44 @@ public class MainLayoutController {
 
         Label messageLabel = new Label(message);
         messageLabel.getStyleClass().add("placeholder-message");
+        messageLabel.setWrapText(true);
 
         box.getChildren().addAll(titleLabel, messageLabel);
-
         contentArea.getChildren().setAll(box);
         lblPageTitle.setText(title);
-
         setActiveButton(activeButton);
     }
 
     private void setActiveButton(Button activeButton) {
         Button[] buttons = {
-                btnDashboard,
-                btnUserManagement,
-                btnRoleManagement,
-                btnVehicle,
-                btnVehicleDocument,
-                btnDocumentAlert,
-                btnMaintenancePlan,
-                btnMaintenanceRecord,
-                btnMaintenanceHistory,
-                btnReport
+                btnDashboard, btnAdminUsers, btnAdminRoles, btnAuditLog,
+                btnVehicle, btnVehicleDocument, btnDocumentAlert,
+                btnMaintenancePlan, btnMaintenanceRecord, btnMaintenanceHistory, btnReport
         };
-
         for (Button button : buttons) {
             if (button != null) {
-                button.getStyleClass().remove("active");
+                button.getStyleClass().remove("nav-button-active");
             }
         }
-
-        if (activeButton != null && !activeButton.getStyleClass().contains("active")) {
-            activeButton.getStyleClass().add("active");
+        if (activeButton != null && !activeButton.getStyleClass().contains("nav-button-active")) {
+            activeButton.getStyleClass().add("nav-button-active");
         }
+    }
+
+    private void applyAppStyles(Scene scene) {
+        StylesheetLoader.addBaseStyles(scene);
+    }
+
+    private String resolveDisplayName(User user) {
+        if (user == null) {
+            return "Người dùng";
+        }
+        if (user.getFullName() != null && !user.getFullName().isBlank()) {
+            return user.getFullName().trim();
+        }
+        if (user.getUsername() != null && !user.getUsername().isBlank()) {
+            return user.getUsername().trim();
+        }
+        return "Người dùng";
     }
 }

@@ -5,159 +5,86 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.MainLayoutController"
-            prefWidth="1200"
-            prefHeight="760"
-            styleClass="root-layout">
+            prefWidth="1280"
+            prefHeight="800"
+            styleClass="app-shell">
 
-    <!-- SIDEBAR -->
     <left>
-        <VBox prefWidth="260" styleClass="sidebar">
-
-            <VBox styleClass="sidebar-header">
-                <Label text="FleetCare" styleClass="logo-text"/>
-                <Label text="Quản lý hồ sơ &amp; bảo dưỡng phương tiện"
-                       styleClass="logo-subtitle"/>
+        <VBox styleClass="sidebar">
+            <VBox styleClass="sidebar-brand">
+                <HBox spacing="12" styleClass="brand-row">
+                    <Label text="FC" styleClass="brand-mark"/>
+                    <VBox>
+                        <Label text="FleetCare" styleClass="brand-title"/>
+                        <Label text="Quản lý hồ sơ &amp; bảo dưỡng" styleClass="brand-subtitle"/>
+                    </VBox>
+                </HBox>
             </VBox>
 
-            <VBox spacing="8" styleClass="sidebar-menu">
+            <VBox styleClass="nav-wrap">
+                <Label text="TỔNG QUAN" styleClass="nav-title"/>
+                <Button fx:id="btnDashboard" text="Dashboard" onAction="#openDashboard" maxWidth="Infinity" styleClass="nav-button"/>
 
-                <!-- DASHBOARD -->
-                <VBox fx:id="groupDashboard" spacing="6">
-                    <Label text="TỔNG QUAN" styleClass="nav-title"/>
-
-                    <Button fx:id="btnDashboard"
-                            text="Dashboard"
-                            onAction="#openDashboard"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
-                </VBox>
-
-                <!-- ADMIN -->
-                <VBox fx:id="groupAdmin" spacing="6">
+                <VBox fx:id="groupAdmin">
                     <Label text="QUẢN TRỊ HỆ THỐNG" styleClass="nav-title"/>
-
-                    <Button fx:id="btnUserManagement"
-                            text="Quản lý người dùng"
-                            onAction="#openUserManagement"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
-
-                    <Button fx:id="btnRoleManagement"
-                            text="Vai trò &amp; phân quyền"
-                            onAction="#openRoleManagement"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
+                    <Button fx:id="btnAdminUsers" text="Quản lý người dùng" onAction="#openAdminUsers" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnAdminRoles" text="Vai trò &amp; phân quyền" onAction="#openAdminRoles" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnAuditLog" text="Audit logs" onAction="#openAuditLog" maxWidth="Infinity" styleClass="nav-button"/>
                 </VBox>
 
-                <!-- MANAGER -->
-                <VBox fx:id="groupManager" spacing="6">
+                <VBox fx:id="groupManager">
                     <Label text="QUẢN LÝ ĐỘI XE" styleClass="nav-title"/>
-
-                    <Button fx:id="btnVehicle"
-                            text="Phương tiện"
-                            onAction="#openVehicle"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
-
-                    <Button fx:id="btnVehicleDocument"
-                            text="Giấy tờ xe"
-                            onAction="#openVehicleDocument"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
-
-                    <Button fx:id="btnDocumentAlert"
-                            text="Cảnh báo giấy tờ"
-                            onAction="#openDocumentAlert"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
+                    <Button fx:id="btnVehicle" text="Hồ sơ phương tiện" onAction="#openVehicle" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnVehicleDocument" text="Giấy tờ &amp; đăng kiểm" onAction="#openVehicleDocument" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnDocumentAlert" text="Cảnh báo giấy tờ" onAction="#openDocumentAlert" maxWidth="Infinity" styleClass="nav-button"/>
                 </VBox>
 
-                <!-- TECHNICIAN -->
-                <VBox fx:id="groupTechnician" spacing="6">
+                <VBox fx:id="groupTechnician">
                     <Label text="KỸ THUẬT BẢO DƯỠNG" styleClass="nav-title"/>
-
-                    <Button fx:id="btnMaintenancePlan"
-                            text="Kế hoạch bảo dưỡng"
-                            onAction="#openMaintenancePlan"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
-
-                    <Button fx:id="btnMaintenanceRecord"
-                            text="Cập nhật bảo dưỡng"
-                            onAction="#openMaintenanceRecord"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
-
-                    <Button fx:id="btnMaintenanceHistory"
-                            text="Lịch sử bảo dưỡng"
-                            onAction="#openMaintenanceHistory"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
+                    <Button fx:id="btnMaintenancePlan" text="Kế hoạch bảo dưỡng" onAction="#openMaintenancePlan" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnMaintenanceRecord" text="Cập nhật bảo dưỡng" onAction="#openMaintenanceRecord" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnMaintenanceHistory" text="Lịch sử bảo dưỡng" onAction="#openMaintenanceHistory" maxWidth="Infinity" styleClass="nav-button"/>
                 </VBox>
 
-                <!-- REPORT -->
-                <VBox fx:id="groupReport" spacing="6">
+                <VBox fx:id="groupReport">
                     <Label text="BÁO CÁO" styleClass="nav-title"/>
-
-                    <Button fx:id="btnReport"
-                            text="Báo cáo chi phí"
-                            onAction="#openReport"
-                            maxWidth="Infinity"
-                            styleClass="nav-button"/>
+                    <Button fx:id="btnReport" text="Báo cáo chi phí" onAction="#openReport" maxWidth="Infinity" styleClass="nav-button"/>
                 </VBox>
-
             </VBox>
 
             <Region VBox.vgrow="ALWAYS"/>
 
-            <HBox styleClass="sidebar-footer">
-                <VBox HBox.hgrow="ALWAYS">
-                    <Label fx:id="lblUserName"
-                           text="Người dùng"
-                           styleClass="user-name"/>
-
-                    <Label fx:id="lblUserRole"
-                           text="Vai trò"
-                           styleClass="user-role"/>
-                </VBox>
-
-                <Button text="Thoát"
-                        onAction="#handleLogout"
-                        styleClass="logout-button"/>
-            </HBox>
-
+            <VBox styleClass="sidebar-footer">
+                <HBox spacing="10">
+                    <Label text="FC" styleClass="avatar-mini"/>
+                    <VBox>
+                        <Label fx:id="lblUserName" text="Người dùng" styleClass="user-name"/>
+                        <Label fx:id="lblUserRole" text="Vai trò" styleClass="user-role"/>
+                    </VBox>
+                </HBox>
+                <Button text="Đăng xuất" onAction="#handleLogout" maxWidth="Infinity" styleClass="logout-button"/>
+            </VBox>
         </VBox>
     </left>
 
-    <!-- TOPBAR -->
     <top>
         <HBox styleClass="topbar">
             <VBox>
-                <Label fx:id="lblPageTitle"
-                       text="Dashboard"
-                       styleClass="topbar-title"/>
-
-                <Label text="Hệ thống quản lý hồ sơ &amp; bảo dưỡng phương tiện"
-                       styleClass="topbar-subtitle"/>
+                <HBox spacing="10">
+                    <Label fx:id="lblPageTitle" text="Dashboard" styleClass="topbar-title"/>
+                    <Label fx:id="lblRoleBadge" text="ROLE" styleClass="role-badge"/>
+                </HBox>
+                <Label text="Hệ thống quản lý hồ sơ, giấy tờ và bảo dưỡng phương tiện." styleClass="topbar-subtitle"/>
             </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <TextField fx:id="txtQuickSearch"
-                       promptText="Tìm kiếm nhanh..."
-                       prefWidth="260"
-                       styleClass="search-field"/>
-
-            <Button text="Thông báo"
-                    onAction="#openDocumentAlert"
-                    styleClass="secondary-button"/>
+            <TextField fx:id="txtQuickSearch" promptText="Tìm kiếm nhanh..." prefWidth="300" styleClass="search-field"/>
+            <Button text="Thông báo" onAction="#openDocumentAlert" styleClass="btn-soft"/>
         </HBox>
     </top>
 
-    <!-- CONTENT -->
     <center>
-        <StackPane fx:id="contentArea"
-                   styleClass="content-area"/>
+        <StackPane fx:id="contentArea" styleClass="content-area"/>
     </center>
-
 </BorderPane>

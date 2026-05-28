@@ -112,7 +112,9 @@ public class DocumentAlertDAO {
     }
 
     private String normalizeStatus(String dueStatus) {
-        if (dueStatus == null || dueStatus.isBlank() || dueStatus.equals("Tất cả")) {
+        if (dueStatus == null || dueStatus.isBlank()
+                || dueStatus.equalsIgnoreCase("Tat ca")
+                || dueStatus.equals("Tất cả")) {
             return null;
         }
 

@@ -17,16 +17,7 @@ public final class DatabaseConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        loadDriver();
         return DriverManager.getConnection(getUrl(), getUser(), getPassword());
-    }
-
-    private static void loadDriver() throws SQLException {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("MySQL JDBC driver is not available on the runtime classpath.", e);
-        }
     }
 
     public static String getUrl() {

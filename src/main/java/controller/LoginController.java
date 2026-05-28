@@ -12,29 +12,20 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import service.AuthService;
 import service.AuthenticationException;
+import util.StylesheetLoader;
 
 import java.io.IOException;
 
-/**
- * Controller cho màn hình đăng nhập ({@code login-view.fxml}).
- *
- * <p>Day 1: chỉ khai báo các binding @FXML và stub event handler.
- * Day 4 sẽ gọi {@code AuthService.login} và điều hướng sang
- * {@code main-layout.fxml} khi thành công.</p>
- */
 public class LoginController {
 
     private final AuthService authService = new AuthService();
 
     @FXML
     private TextField usernameField;
-
     @FXML
     private PasswordField passwordField;
-
     @FXML
     private Button loginButton;
-
     @FXML
     private Label errorLabel;
 
@@ -52,11 +43,8 @@ public class LoginController {
     private void onLoginClick(ActionEvent event) {
         hideError();
 
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-
         try {
-            authService.login(username, password);
+            authService.login(usernameField.getText(), passwordField.getText());
             loadMainLayout();
         } catch (AuthenticationException e) {
             showError(e.getMessage());
@@ -72,30 +60,26 @@ public class LoginController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/main-layout.fxml"));
         Parent root = loader.load();
 
-        Scene scene = new Scene(root, 1200, 760);
-        applyGlobalStyles(scene);
+        Scene scene = new Scene(root, 1280, 800);
+        applyAppStyles(scene);
 
         Stage stage = (Stage) loginButton.getScene().getWindow();
+        stage.setResizable(true);
+        stage.setMinWidth(0);
+        stage.setMinHeight(0);
+        stage.setMaxWidth(Double.MAX_VALUE);
+        stage.setMaxHeight(Double.MAX_VALUE);
         stage.setScene(scene);
         stage.setTitle("FleetCare - Quản lý hồ sơ & bảo dưỡng phương tiện");
+        stage.setMinWidth(1100);
+        stage.setMinHeight(720);
+        stage.setWidth(1280);
+        stage.setHeight(800);
         stage.centerOnScreen();
     }
 
-    private void applyGlobalStyles(Scene scene) {
-        String[] globalCssFiles = {
-                "/css/global/theme.css",
-                "/css/global/layout.css",
-                "/css/global/pages.css",
-                "/css/global/cards.css",
-                "/css/global/forms.css",
-                "/css/global/buttons.css",
-                "/css/global/tables.css"
-        };
-
-        for (String css : globalCssFiles) {
-            scene.getStylesheets().add(
-                    getClass().getResource(css).toExternalForm());
-        }
+    private void applyAppStyles(Scene scene) {
+        StylesheetLoader.addBaseStyles(scene);
     }
 
     private void showError(String message) {
