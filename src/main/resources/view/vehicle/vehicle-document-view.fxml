@@ -64,7 +64,6 @@
             <HBox styleClass="table-title-row">
                 <Label text="Danh sách giấy tờ xe" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Dùng JOIN vehicles + document_types khi nối DAO" styleClass="micro-copy"/>
             </HBox>
             <TableView fx:id="tblDocument" prefHeight="360" styleClass="data-table">
                 <columns>
