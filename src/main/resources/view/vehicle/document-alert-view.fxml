@@ -2,7 +2,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.vehicle.DocumentAlertController" fitToWidth="true" styleClass="page-scroll">
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.vehicle.DocumentAlertController"
+            fitToWidth="true"
+            styleClass="page-scroll">
     <VBox spacing="24" styleClass="page">
         <VBox styleClass="page-header">
             <Label text="Cảnh báo giấy tờ" styleClass="page-title"/>
@@ -10,14 +13,29 @@
         </VBox>
 
         <HBox spacing="18">
-            <VBox styleClass="summary-danger" HBox.hgrow="ALWAYS"><Label text="Đã hết hạn" styleClass="metric-label"/><Label fx:id="lblExpiredCount" text="0" styleClass="metric-value-danger"/><Label text="OVERDUE" styleClass="metric-trend-danger"/></VBox>
-            <VBox styleClass="summary-warning" HBox.hgrow="ALWAYS"><Label text="Sắp hết hạn" styleClass="metric-label"/><Label fx:id="lblWarningCount" text="0" styleClass="metric-value-warning"/><Label text="COMING_DUE" styleClass="metric-trend-warning"/></VBox>
-            <VBox styleClass="summary-primary" HBox.hgrow="ALWAYS"><Label text="Tổng cảnh báo" styleClass="metric-label"/><Label fx:id="lblTotalAlertCount" text="0" styleClass="metric-value"/><Label text="Cần xử lý" styleClass="metric-trend-primary"/></VBox>
+            <VBox styleClass="summary-danger" HBox.hgrow="ALWAYS">
+                <Label text="Đã hết hạn" styleClass="metric-label"/>
+                <Label fx:id="lblExpiredCount" text="0" styleClass="metric-value-danger"/>
+                <Label text="OVERDUE" styleClass="metric-trend-danger"/>
+            </VBox>
+            <VBox styleClass="summary-warning" HBox.hgrow="ALWAYS">
+                <Label text="Sắp hết hạn" styleClass="metric-label"/>
+                <Label fx:id="lblWarningCount" text="0" styleClass="metric-value-warning"/>
+                <Label text="COMING_DUE" styleClass="metric-trend-warning"/>
+            </VBox>
+            <VBox styleClass="summary-primary" HBox.hgrow="ALWAYS">
+                <Label text="Tổng cảnh báo" styleClass="metric-label"/>
+                <Label fx:id="lblTotalAlertCount" text="0" styleClass="metric-value"/>
+                <Label text="Cần xử lý" styleClass="metric-trend-primary"/>
+            </VBox>
         </HBox>
 
         <HBox spacing="12" styleClass="toolbar-panel">
             <ComboBox fx:id="cbAlertType" promptText="Loại cảnh báo" prefWidth="190"/>
-            <TextField fx:id="txtSearch" promptText="Tìm theo biển số, số giấy tờ, đơn vị cấp..." HBox.hgrow="ALWAYS" styleClass="search-field"/>
+            <TextField fx:id="txtSearch"
+                       promptText="Tìm theo biển số, số giấy tờ, đơn vị cấp..."
+                       HBox.hgrow="ALWAYS"
+                       styleClass="search-field"/>
             <Button text="Tìm kiếm" onAction="#handleSearchAlert" styleClass="btn-ghost"/>
             <Button text="Làm mới" onAction="#handleRefreshAlert" styleClass="btn-primary"/>
         </HBox>

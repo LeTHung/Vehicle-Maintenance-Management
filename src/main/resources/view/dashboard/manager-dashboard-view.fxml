@@ -2,7 +2,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" styleClass="page-scroll">
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.dashboard.ManagerDashboardController"
+            fitToWidth="true"
+            styleClass="page-scroll">
     <VBox spacing="28" styleClass="page">
         <VBox styleClass="hero-manager">
             <Label text="Fleet Operations Dashboard" styleClass="display-title"/>
@@ -16,61 +19,46 @@
         <HBox spacing="18">
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
                 <Label text="Tổng phương tiện" styleClass="metric-label"/>
-                <Label text="128" styleClass="metric-value"/>
-                <Label text="+8 xe trong tháng" styleClass="metric-trend-success"/>
+                <Label fx:id="lblTotalVehicles" text="0" styleClass="metric-value"/>
+                <Label text="Dữ liệu từ bảng vehicles" styleClass="metric-trend-primary"/>
             </VBox>
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
                 <Label text="Đang hoạt động" styleClass="metric-label"/>
-                <Label text="112" styleClass="metric-value"/>
-                <Label text="87.5% đội xe" styleClass="metric-trend-primary"/>
+                <Label fx:id="lblActiveVehicles" text="0" styleClass="metric-value"/>
+                <Label text="Trạng thái ACTIVE" styleClass="metric-trend-success"/>
             </VBox>
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
                 <Label text="Giấy tờ sắp hạn" styleClass="metric-label"/>
-                <Label text="14" styleClass="metric-value-warning"/>
+                <Label fx:id="lblComingDueDocuments" text="0" styleClass="metric-value-warning"/>
                 <Label text="Cần xử lý 15 ngày tới" styleClass="metric-trend-warning"/>
             </VBox>
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
-                <Label text="Xe cần bảo dưỡng" styleClass="metric-label"/>
-                <Label text="9" styleClass="metric-value-danger"/>
-                <Label text="Ưu tiên kỹ thuật" styleClass="metric-trend-danger"/>
+                <Label text="Giấy tờ quá hạn" styleClass="metric-label"/>
+                <Label fx:id="lblOverdueDocuments" text="0" styleClass="metric-value-danger"/>
+                <Label text="Ưu tiên xử lý" styleClass="metric-trend-danger"/>
             </VBox>
         </HBox>
 
         <HBox spacing="22">
             <VBox spacing="16" styleClass="panel" HBox.hgrow="ALWAYS">
-                <Label text="Hoạt động đội xe" styleClass="section-title"/>
-                <HBox spacing="12" styleClass="timeline-row">
-                    <Label text="●" styleClass="dot-success"/>
-                    <VBox>
-                        <Label text="51A-12345 hoàn tất cập nhật ODO" styleClass="item-title"/>
-                        <Label text="Cập nhật 35.000 km, trạng thái ACTIVE" styleClass="item-subtitle"/>
-                    </VBox>
-                </HBox>
-                <HBox spacing="12" styleClass="timeline-row">
-                    <Label text="●" styleClass="dot-warning"/>
-                    <VBox>
-                        <Label text="51B-67890 có phí đường bộ hết hạn" styleClass="item-title"/>
-                        <Label text="Cần cập nhật giấy tờ trước khi vận hành" styleClass="item-subtitle"/>
-                    </VBox>
-                </HBox>
-                <HBox spacing="12" styleClass="timeline-row">
-                    <Label text="●" styleClass="dot-primary"/>
-                    <VBox>
-                        <Label text="51C-24680 đang trong trạng thái bảo dưỡng" styleClass="item-title"/>
-                        <Label text="Chờ xác nhận từ bộ phận kỹ thuật" styleClass="item-subtitle"/>
-                    </VBox>
-                </HBox>
+                <Label text="Cảnh báo giấy tờ ưu tiên" styleClass="section-title"/>
+                <VBox fx:id="alertList" spacing="12"/>
             </VBox>
 
             <VBox spacing="16" styleClass="panel" prefWidth="360">
                 <Label text="Ưu tiên hôm nay" styleClass="section-title"/>
                 <VBox styleClass="priority-card-warning">
-                    <Label text="Giấy tờ sắp hết hạn" styleClass="priority-title"/>
-                    <Label text="Kiểm tra đăng kiểm, bảo hiểm, phí đường bộ của các xe cảnh báo." styleClass="priority-text"/>
+                    <Label text="Giấy tờ cần theo dõi" styleClass="priority-title"/>
+                    <Label fx:id="lblPriorityText"
+                           text="Theo dõi giấy tờ sắp hết hạn trong 15 ngày tới."
+                           wrapText="true"
+                           styleClass="priority-text"/>
                 </VBox>
                 <VBox styleClass="priority-card-primary">
                     <Label text="Chuẩn hóa hồ sơ xe" styleClass="priority-title"/>
-                    <Label text="Bổ sung mã xe, số khung, số máy, hãng xe và dòng xe để nối bảo dưỡng." styleClass="priority-text"/>
+                    <Label text="Bổ sung mã xe, số khung, số máy, hãng xe và dòng xe để nối bảo dưỡng."
+                           wrapText="true"
+                           styleClass="priority-text"/>
                 </VBox>
             </VBox>
         </HBox>

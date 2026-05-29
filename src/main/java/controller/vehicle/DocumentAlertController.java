@@ -16,6 +16,8 @@ import service.DocumentAlertService;
 
 public class DocumentAlertController {
 
+    private static final String ALL_OPTION = "Tất cả";
+
     private final DocumentAlertService documentAlertService = new DocumentAlertService();
 
     @FXML private ComboBox<String> cbAlertType;
@@ -38,8 +40,8 @@ public class DocumentAlertController {
 
     @FXML
     public void initialize() {
-        cbAlertType.getItems().setAll("Tất cả", "OVERDUE", "COMING_DUE", "NORMAL");
-        cbAlertType.setValue("Tất cả");
+        cbAlertType.getItems().setAll(ALL_OPTION, "OVERDUE", "COMING_DUE", "NORMAL");
+        cbAlertType.setValue(ALL_OPTION);
         configureTable();
         loadAlertData();
     }
@@ -67,7 +69,7 @@ public class DocumentAlertController {
     @FXML
     private void handleRefreshAlert() {
         txtSearch.clear();
-        cbAlertType.setValue("Tất cả");
+        cbAlertType.setValue(ALL_OPTION);
         loadAlertData();
     }
 

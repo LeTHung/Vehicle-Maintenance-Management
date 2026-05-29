@@ -32,7 +32,6 @@ public class DocumentAlertDAO {
             while (resultSet.next()) {
                 alerts.add(mapToAlert(resultSet));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -48,7 +47,10 @@ public class DocumentAlertDAO {
                        document_type_name, document_number, issuer_name,
                        expiry_date, days_to_expiry, due_status
                 FROM vw_due_vehicle_documents
-                WHERE (? IS NULL OR due_status = ?)
+                WHERE (
+                       (? IS NULL AND due_status IN ('OVERDUE', 'COMING_DUE'))
+                    OR (? IS NOT NULL AND due_status = ?)
+                  )
                   AND (
                        license_plate LIKE ?
                     OR vehicle_type LIKE ?
@@ -67,18 +69,18 @@ public class DocumentAlertDAO {
 
             statement.setString(1, statusValue);
             statement.setString(2, statusValue);
-            statement.setString(3, keywordValue);
+            statement.setString(3, statusValue);
             statement.setString(4, keywordValue);
             statement.setString(5, keywordValue);
             statement.setString(6, keywordValue);
             statement.setString(7, keywordValue);
+            statement.setString(8, keywordValue);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     alerts.add(mapToAlert(resultSet));
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -103,7 +105,6 @@ public class DocumentAlertDAO {
                     return resultSet.getInt("total");
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -114,11 +115,11 @@ public class DocumentAlertDAO {
     private String normalizeStatus(String dueStatus) {
         if (dueStatus == null || dueStatus.isBlank()
                 || dueStatus.equalsIgnoreCase("Tat ca")
-                || dueStatus.equals("Tất cả")) {
+                || dueStatus.equalsIgnoreCase("Tất cả")) {
             return null;
         }
 
-        return dueStatus;
+        return dueStatus.trim().toUpperCase();
     }
 
     private DocumentAlertDTO mapToAlert(ResultSet resultSet) throws SQLException {
