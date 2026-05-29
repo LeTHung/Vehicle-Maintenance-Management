@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -240,6 +241,12 @@ public class MainLayoutController {
                 return;
             }
             Parent page = FXMLLoader.load(url);
+            if (page instanceof ScrollPane sp) {
+                sp.setFitToWidth(true);
+                sp.setFitToHeight(false);
+                sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+                sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            }
             contentArea.getChildren().setAll(page);
             lblPageTitle.setText(title);
             setActiveButton(activeButton);
