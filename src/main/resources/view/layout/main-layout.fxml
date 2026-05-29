@@ -37,13 +37,14 @@
                     <Button fx:id="btnVehicle" text="Hồ sơ phương tiện" onAction="#openVehicle" maxWidth="Infinity" styleClass="nav-button"/>
                     <Button fx:id="btnVehicleDocument" text="Giấy tờ &amp; đăng kiểm" onAction="#openVehicleDocument" maxWidth="Infinity" styleClass="nav-button"/>
                     <Button fx:id="btnDocumentAlert" text="Cảnh báo giấy tờ" onAction="#openDocumentAlert" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Label text="BẢO DƯỠNG" styleClass="nav-title"/>
+                    <Button fx:id="btnMaintenancePlan" text="Kế hoạch bảo dưỡng" onAction="#openMaintenancePlan" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnMaintenanceHistory" text="Lịch sử bảo dưỡng" onAction="#openMaintenanceHistory" maxWidth="Infinity" styleClass="nav-button"/>
                 </VBox>
 
                 <VBox fx:id="groupTechnician">
                     <Label text="KỸ THUẬT BẢO DƯỠNG" styleClass="nav-title"/>
-                    <Button fx:id="btnMaintenancePlan" text="Kế hoạch bảo dưỡng" onAction="#openMaintenancePlan" maxWidth="Infinity" styleClass="nav-button"/>
                     <Button fx:id="btnMaintenanceRecord" text="Cập nhật bảo dưỡng" onAction="#openMaintenanceRecord" maxWidth="Infinity" styleClass="nav-button"/>
-                    <Button fx:id="btnMaintenanceHistory" text="Lịch sử bảo dưỡng" onAction="#openMaintenanceHistory" maxWidth="Infinity" styleClass="nav-button"/>
                 </VBox>
 
                 <VBox fx:id="groupReport">

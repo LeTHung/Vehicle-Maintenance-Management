@@ -287,7 +287,7 @@ public class MaintenanceRecordDAO {
         if (r.getOdometer() == null) ps.setNull(9, Types.INTEGER);
         else ps.setInt(9, r.getOdometer());
 
-        ps.setString(10, r.getWorkSummary());
+        ps.setString(10, r.getWorkSummary() != null ? r.getWorkSummary() : "");
         setNullableString(ps, 11, r.getServiceProviderName());
         setNullableLong(ps, 12, r.getTechnicianId());
 
