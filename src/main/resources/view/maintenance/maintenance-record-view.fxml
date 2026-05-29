@@ -54,6 +54,35 @@
             </HBox>
         </GridPane>
 
+        <!-- Hạng mục / Phụ tùng -->
+        <VBox styleClass="form-panel" spacing="12">
+            <HBox styleClass="table-title-row">
+                <Label text="Hạng mục / Phụ tùng" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Xóa hết" onAction="#handleClearItems" styleClass="btn-ghost"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ComboBox fx:id="cbItemType" prefWidth="90"/>
+                <TextField fx:id="txtItemDesc" promptText="Mô tả hạng mục / phụ tùng..." HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="txtItemQty" promptText="SL" prefWidth="65"/>
+                <TextField fx:id="txtItemUnit" promptText="Đơn vị" prefWidth="80"/>
+                <TextField fx:id="txtItemUnitCost" promptText="Đơn giá" prefWidth="120"/>
+                <Label fx:id="lblItemLineTotal" text="= 0 VNĐ" prefWidth="120" styleClass="form-label"/>
+                <Button text="+ Thêm" onAction="#handleAddItem" styleClass="btn-primary"/>
+            </HBox>
+            <TableView fx:id="tblItems" prefHeight="180" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="colItemType"      text="Loại"       prefWidth="80"/>
+                    <TableColumn fx:id="colItemDesc"      text="Mô tả"      prefWidth="260"/>
+                    <TableColumn fx:id="colItemQty"       text="SL"         prefWidth="65"/>
+                    <TableColumn fx:id="colItemUnit"      text="Đơn vị"     prefWidth="80"/>
+                    <TableColumn fx:id="colItemUnitCost"  text="Đơn giá"    prefWidth="120"/>
+                    <TableColumn fx:id="colItemLineTotal" text="Thành tiền" prefWidth="120"/>
+                    <TableColumn fx:id="colItemRemove"    text=""            prefWidth="60"/>
+                </columns>
+            </TableView>
+        </VBox>
+
         <VBox styleClass="table-panel">
             <HBox styleClass="table-title-row">
                 <Label text="Danh sách phiếu bảo dưỡng" styleClass="section-title"/>

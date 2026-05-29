@@ -198,9 +198,7 @@ public class MainLayoutController {
 
     @FXML
     private void openMaintenanceHistory() {
-        showPlaceholder("Lịch sử bảo dưỡng",
-                "Màn hình lịch sử bảo dưỡng theo từng xe — sẽ hoàn thiện ở ngày 12.",
-                btnMaintenanceHistory);
+        loadPage("maintenance/maintenance-history-view.fxml", "Lịch sử bảo dưỡng", btnMaintenanceHistory);
     }
 
     @FXML
