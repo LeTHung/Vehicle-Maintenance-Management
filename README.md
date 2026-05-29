@@ -86,23 +86,54 @@ user: root
 password: 123456
 ```
 
-Thong tin mac dinh nam trong:
+Thong tin ket noi nam trong file local:
 
 ```text
-src/main/java/database/DatabaseConnection.java
+config/database.properties
 ```
 
-Neu MySQL cua ban khac user/password, cau hinh trong terminal truoc khi chay:
+File nay khong commit len git. Co the copy tu:
+
+```text
+config/database.example.properties
+```
+
+### Chay local
+
+Dat `DB_MODE=local`, sau do cau hinh trong `config/database.properties`:
+
+```properties
+DB_URL=jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh
+DB_USER=root
+DB_PASSWORD=mat_khau_mysql
+```
+
+Neu muon cau hinh bang bien moi truong trong terminal:
 
 ```powershell
+$env:DB_URL = "jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh"
 $env:DB_USER = "root"
 $env:DB_PASSWORD = "mat_khau_mysql"
 ```
 
-Neu muon doi URL database:
+### Chay Railway
 
-```powershell
-$env:DB_URL = "jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh"
+Dat `DB_MODE=railway`. App se doc thong tin Railway theo 1 trong 2 cach:
+
+```properties
+MYSQL_PUBLIC_URL=mysql://user:password@host:port/database
+```
+
+Co the dung `MYSQL_URL` thay cho `MYSQL_PUBLIC_URL`, nhung khi chay app tu may ca nhan thi public URL thuong de ket noi hon.
+
+Hoac:
+
+```properties
+MYSQLHOST=host
+MYSQLPORT=port
+MYSQLDATABASE=database
+MYSQLUSER=user
+MYSQLPASSWORD=password
 ```
 
 ## Tao database va seed tai khoan demo
