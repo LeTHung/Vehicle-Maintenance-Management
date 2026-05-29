@@ -14,13 +14,13 @@
 
         <!-- Thống kê nhanh -->
         <HBox spacing="16">
-            <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
-                <Label text="Quá hạn" styleClass="summary-label"/>
-                <Label fx:id="lblOverdueCount" text="0" styleClass="summary-value-danger"/>
+            <VBox styleClass="summary-danger" HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="Quá hạn" styleClass="metric-label"/>
+                <Label fx:id="lblOverdueCount" text="0" styleClass="metric-value-danger"/>
             </VBox>
-            <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
-                <Label text="Sắp đến hạn" styleClass="summary-label"/>
-                <Label fx:id="lblComingDueCount" text="0" styleClass="summary-value-warning"/>
+            <VBox styleClass="summary-warning" HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="Sắp đến hạn" styleClass="metric-label"/>
+                <Label fx:id="lblComingDueCount" text="0" styleClass="metric-value-warning"/>
             </VBox>
         </HBox>
 
@@ -36,7 +36,7 @@
                 <Label text="Xe cần bảo dưỡng" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblAlert" prefHeight="420" styleClass="data-table">
+            <TableView fx:id="tblAlert" prefHeight="500" VBox.vgrow="ALWAYS" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colAlertPlanId"         text="ID"              prefWidth="60"/>
                     <TableColumn fx:id="colAlertLicensePlate"   text="Biển số"         prefWidth="120"/>
