@@ -181,30 +181,24 @@ public class MainLayoutController {
 
     @FXML
     private void openMaintenancePlan() {
-        showPlaceholder("Kế hoạch bảo dưỡng",
-                "Màn hình này do thành viên phụ trách kỹ thuật/bảo dưỡng hoàn thiện.",
-                btnMaintenancePlan);
+        loadPage("maintenance/maintenance-plan-view.fxml", "Kế hoạch bảo dưỡng", btnMaintenancePlan);
     }
 
     @FXML
     private void openMaintenanceRecord() {
-        showPlaceholder("Cập nhật bảo dưỡng",
-                "Màn hình phiếu bảo dưỡng, chi phí và phụ tùng sẽ được tích hợp sau.",
-                btnMaintenanceRecord);
+        loadPage("maintenance/maintenance-record-view.fxml", "Cập nhật bảo dưỡng", btnMaintenanceRecord);
     }
 
     @FXML
     private void openMaintenanceHistory() {
         showPlaceholder("Lịch sử bảo dưỡng",
-                "Màn hình này sẽ hiển thị lịch sử bảo dưỡng theo từng xe.",
+                "Màn hình lịch sử bảo dưỡng theo từng xe — sẽ hoàn thiện ở ngày 12.",
                 btnMaintenanceHistory);
     }
 
     @FXML
     private void openReport() {
-        showPlaceholder("Báo cáo chi phí",
-                "Báo cáo chi phí bảo dưỡng và giấy tờ sẽ được tích hợp sau.",
-                btnReport);
+        loadPage("maintenance/report-view.fxml", "Báo cáo chi phí", btnReport);
     }
 
     @FXML

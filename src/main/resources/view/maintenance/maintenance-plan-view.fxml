@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.maintenance.MaintenancePlanController" fitToWidth="true" styleClass="page-scroll">
+    <VBox spacing="24" styleClass="page">
+        <VBox styleClass="page-header">
+            <Label text="Kế hoạch bảo dưỡng" styleClass="page-title"/>
+            <Label text="Lập và quản lý kế hoạch bảo dưỡng định kỳ theo ngày hoặc số km cho từng xe." styleClass="page-subtitle"/>
+        </VBox>
+
+        <HBox spacing="12" styleClass="toolbar-panel">
+            <ComboBox fx:id="cbFilterVehicle" promptText="Lọc theo xe..." prefWidth="220"/>
+            <Button text="Làm mới" onAction="#handleRefresh" styleClass="btn-soft"/>
+        </HBox>
+
+        <GridPane hgap="16" vgap="14" styleClass="form-panel">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="14"/><ColumnConstraints percentWidth="36"/>
+                <ColumnConstraints percentWidth="14"/><ColumnConstraints percentWidth="36"/>
+            </columnConstraints>
+
+            <Label text="Xe" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+            <ComboBox fx:id="cbVehicle" promptText="Chọn xe..." maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label text="Loại bảo dưỡng" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="form-label"/>
+            <ComboBox fx:id="cbMaintenanceType" promptText="Chọn loại..." maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+            <Label text="Chu kỳ (ngày)" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="txtIntervalDays" promptText="Ví dụ: 90" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Chu kỳ (km)" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="form-label"/>
+            <TextField fx:id="txtIntervalKm" promptText="Ví dụ: 10000" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+            <Label text="Ngày bảo dưỡng cuối" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+            <DatePicker fx:id="dpLastServiceDate" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="ODO bảo dưỡng cuối (km)" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="form-label"/>
+            <TextField fx:id="txtLastServiceOdometer" promptText="Ví dụ: 45000" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+
+            <Label text="Ngày đến hạn tiếp theo" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+            <DatePicker fx:id="dpNextDueDate" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="ODO đến hạn tiếp theo (km)" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="form-label"/>
+            <TextField fx:id="txtNextDueOdometer" promptText="Ví dụ: 55000" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
+
+            <Label text="Cảnh báo trước (ngày)" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="txtAlertBeforeDays" promptText="Ví dụ: 14" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <Label text="Cảnh báo trước (km)" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="form-label"/>
+            <TextField fx:id="txtAlertBeforeKm" promptText="Ví dụ: 500" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
+
+            <Label text="Ghi chú" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="txtNotes" promptText="Ghi chú kế hoạch..." GridPane.rowIndex="5" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+
+            <HBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="0" GridPane.columnSpan="4">
+                <Button text="Lưu" onAction="#handleSave" styleClass="btn-primary"/>
+                <Button text="Cập nhật" onAction="#handleUpdate" styleClass="btn-soft"/>
+                <Button text="Hủy kích hoạt" onAction="#handleDeactivate" styleClass="btn-ghost"/>
+                <Button text="Xóa trắng" onAction="#handleClear" styleClass="btn-ghost"/>
+            </HBox>
+        </GridPane>
+
+        <VBox styleClass="table-panel">
+            <HBox styleClass="table-title-row">
+                <Label text="Danh sách kế hoạch bảo dưỡng" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <TableView fx:id="tblPlan" prefHeight="360" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="colPlanId" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="colPlanLicensePlate" text="Biển số" prefWidth="120"/>
+                    <TableColumn fx:id="colPlanMaintenanceType" text="Loại bảo dưỡng" prefWidth="160"/>
+                    <TableColumn fx:id="colPlanIntervalDays" text="Chu kỳ (ngày)" prefWidth="110"/>
+                    <TableColumn fx:id="colPlanIntervalKm" text="Chu kỳ (km)" prefWidth="100"/>
+                    <TableColumn fx:id="colPlanNextDueDate" text="Ngày đến hạn" prefWidth="130"/>
+                    <TableColumn fx:id="colPlanNextDueOdometer" text="ODO đến hạn" prefWidth="110"/>
+                    <TableColumn fx:id="colPlanActive" text="Trạng thái" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>
