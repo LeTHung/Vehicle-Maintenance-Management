@@ -120,6 +120,57 @@
     -fx-background-color: #fee2e2;
 }
 
+/* Sidebar scroll — ẩn viền, khớp màu nền sidebar */
+.sidebar-scroll {
+    -fx-background-color: -app-surface-low;
+    -fx-background: -app-surface-low;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.sidebar-scroll > .viewport {
+    -fx-background-color: -app-surface-low;
+}
+
+.sidebar-scroll > .scroll-bar:vertical {
+    -fx-pref-width: 4;
+    -fx-background-color: transparent;
+}
+
+.sidebar-scroll > .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(0, 74, 198, 0.22);
+    -fx-background-radius: 3;
+    -fx-background-insets: 1;
+}
+
+.sidebar-scroll > .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(0, 74, 198, 0.50);
+}
+
+.sidebar-scroll > .scroll-bar:vertical .track,
+.sidebar-scroll > .scroll-bar:vertical .track-background {
+    -fx-background-color: transparent;
+}
+
+.sidebar-scroll > .scroll-bar:vertical .increment-button,
+.sidebar-scroll > .scroll-bar:vertical .decrement-button {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
+.sidebar-scroll > .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
+.sidebar-scroll > .corner {
+    -fx-background-color: transparent;
+}
+
 .topbar {
     -fx-background-color: rgba(255,255,255,0.92);
     -fx-padding: 18 28;

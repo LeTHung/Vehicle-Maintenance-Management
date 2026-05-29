@@ -1,6 +1,7 @@
 package model.dao;
 
 import database.DatabaseConnection;
+import model.dto.MaintenanceDueAlertDTO;
 import model.entity.MaintenancePlan;
 
 import java.sql.*;
@@ -178,6 +179,36 @@ public class MaintenancePlanDAO {
         return false;
     }
 
+    public List<MaintenanceDueAlertDTO> findDueAlerts() {
+        List<MaintenanceDueAlertDTO> list = new ArrayList<>();
+
+        String sql = """
+                SELECT plan_id, vehicle_id, license_plate, vehicle_type,
+                       maintenance_name, current_odometer,
+                       next_due_date, next_due_odometer,
+                       effective_alert_days, effective_alert_km, due_status
+                FROM vw_due_maintenance_plans
+                WHERE due_status IN ('OVERDUE', 'COMING_DUE')
+                ORDER BY
+                    CASE due_status WHEN 'OVERDUE' THEN 0 ELSE 1 END,
+                    next_due_date ASC
+                """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(mapAlertRow(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
     public boolean deactivate(long planId) {
         String sql = "UPDATE maintenance_plans SET is_active = 0 WHERE plan_id = ?";
 
@@ -192,6 +223,33 @@ public class MaintenancePlanDAO {
         }
 
         return false;
+    }
+
+    private MaintenanceDueAlertDTO mapAlertRow(ResultSet rs) throws SQLException {
+        MaintenanceDueAlertDTO dto = new MaintenanceDueAlertDTO();
+        dto.setPlanId(rs.getLong("plan_id"));
+        dto.setVehicleId(rs.getLong("vehicle_id"));
+        dto.setLicensePlate(rs.getString("license_plate"));
+        dto.setVehicleType(rs.getString("vehicle_type"));
+        dto.setMaintenanceName(rs.getString("maintenance_name"));
+
+        int odo = rs.getInt("current_odometer");
+        dto.setCurrentOdometer(rs.wasNull() ? null : odo);
+
+        Date nextDate = rs.getDate("next_due_date");
+        dto.setNextDueDate(nextDate != null ? nextDate.toLocalDate() : null);
+
+        int nextOdo = rs.getInt("next_due_odometer");
+        dto.setNextDueOdometer(rs.wasNull() ? null : nextOdo);
+
+        int alertDays = rs.getInt("effective_alert_days");
+        dto.setEffectiveAlertDays(rs.wasNull() ? null : alertDays);
+
+        int alertKm = rs.getInt("effective_alert_km");
+        dto.setEffectiveAlertKm(rs.wasNull() ? null : alertKm);
+
+        dto.setDueStatus(rs.getString("due_status"));
+        return dto;
     }
 
     private void fillStatement(PreparedStatement ps, MaintenancePlan plan) throws SQLException {

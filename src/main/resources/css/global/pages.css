@@ -3,9 +3,54 @@
 .page-scroll {
     -fx-background-color: transparent;
     -fx-background: transparent;
+    -fx-fit-to-width: true;
+    -fx-fit-to-height: false;
 }
 
 .page-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Thanh cuộn dọc — luôn hiển thị, style hiện đại */
+.page-scroll > .scroll-bar:vertical {
+    -fx-pref-width: 10;
+    -fx-background-color: transparent;
+    -fx-opacity: 1;
+}
+
+.page-scroll > .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(0, 74, 198, 0.28);
+    -fx-background-radius: 5;
+    -fx-background-insets: 2;
+}
+
+.page-scroll > .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(0, 74, 198, 0.55);
+}
+
+.page-scroll > .scroll-bar:vertical .track,
+.page-scroll > .scroll-bar:vertical .track-background {
+    -fx-background-color: rgba(0, 0, 0, 0.04);
+    -fx-background-radius: 0;
+}
+
+.page-scroll > .scroll-bar:vertical .increment-button,
+.page-scroll > .scroll-bar:vertical .decrement-button {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
+/* Ẩn hoàn toàn thanh cuộn ngang */
+.page-scroll > .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
+.page-scroll > .corner {
     -fx-background-color: transparent;
 }
 

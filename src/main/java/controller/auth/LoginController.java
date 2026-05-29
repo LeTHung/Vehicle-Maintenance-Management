@@ -3,12 +3,14 @@ package controller.auth;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import service.AuthService;
 import service.AuthenticationException;
@@ -61,17 +63,21 @@ public class LoginController {
 
         Stage stage = (Stage) loginButton.getScene().getWindow();
         stage.setResizable(true);
-        stage.setMinWidth(0);
-        stage.setMinHeight(0);
+        stage.setMinWidth(900);
+        stage.setMinHeight(600);
         stage.setMaxWidth(Double.MAX_VALUE);
         stage.setMaxHeight(Double.MAX_VALUE);
         stage.setScene(scene);
         stage.setTitle("FleetCare - Quản lý hồ sơ & bảo dưỡng phương tiện");
-        stage.setMinWidth(1100);
-        stage.setMinHeight(720);
-        stage.setWidth(1280);
-        stage.setHeight(800);
-        stage.centerOnScreen();
+
+        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+        if (screen.getWidth() < 1280 || screen.getHeight() < 820) {
+            stage.setMaximized(true);
+        } else {
+            stage.setWidth(1280);
+            stage.setHeight(800);
+            stage.centerOnScreen();
+        }
     }
 
     private void applyAppStyles(Scene scene) {
