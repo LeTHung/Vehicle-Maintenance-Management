@@ -8,7 +8,8 @@ Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co s
 - Da co man hinh dang nhap, dang xuat, session va phan quyen menu theo role.
 - Da co quan ly tai khoan co ban: xem danh sach, them, sua, khoa/mo khoa user.
 - Da co seed du lieu role/user demo trong `data/seed-auth.sql`.
-- Cac man hinh vehicle/document/maintenance/report van do cac thanh vien/pham vi khac tiep tuc hoan thien.
+- Da co man hinh ho so phuong tien, giay to xe, canh bao giay to, ke hoach/canh bao/cap nhat bao duong va bao cao chi phi.
+- RBAC hien tai duoc guard o menu va handler: Admin quan ly tai khoan, Manager quan ly doi xe/bao cao, Technician xu ly bao duong.
 
 ## Muc tieu
 
@@ -78,43 +79,37 @@ Ket qua Maven nen hien thi Java `25.x`.
 
 ## Cau hinh MySQL
 
-Mac dinh project ket noi toi database:
-
-```text
-jdbc:mysql://localhost:3306/vehicle_maintenance_management
-user: root
-password: 123456
-```
-
-Thong tin ket noi nam trong file local:
-
-```text
-config/database.properties
-```
-
-File nay khong commit len git. Co the copy tu:
+App doc cau hinh database theo thu tu: system properties, bien moi truong, roi `config/database.properties`.
+File `config/database.properties` la file local va khong commit len git. Co the copy tu:
 
 ```text
 config/database.example.properties
 ```
 
-### Chay local
-
-Dat `DB_MODE=local`, sau do cau hinh trong `config/database.properties`:
+Vi du cau hinh local:
 
 ```properties
+DB_MODE=local
 DB_URL=jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh
 DB_USER=root
 DB_PASSWORD=mat_khau_mysql
 ```
 
-Neu muon cau hinh bang bien moi truong trong terminal:
+Neu MySQL local khong co mat khau, de trong `DB_PASSWORD=`.
+
+Thong tin ket noi bang bien moi truong cung duoc ho tro:
 
 ```powershell
+$env:DB_MODE = "local"
 $env:DB_URL = "jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh"
 $env:DB_USER = "root"
 $env:DB_PASSWORD = "mat_khau_mysql"
 ```
+
+### Chay local
+
+Khi dung file local, tao/cap nhat `config/database.properties` theo vi du tren.
+Khi dung bien moi truong, dat cac bien trong cung terminal truoc khi chay build hoac chay app.
 
 ### Chay Railway
 
@@ -158,6 +153,14 @@ Tai khoan demo:
 | `manager` | `123456` | `FLEET_MANAGER` |
 | `tech` | `123456` | `TECHNICIAN` |
 
+Pham vi demo theo role:
+
+| Username | Man hinh/chuc nang chinh |
+|---|---|
+| `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, placeholder Role/Permission va Audit logs |
+| `manager` | Dashboard doi xe, Ho so phuong tien, Giay to xe, Canh bao giay to, Ke hoach/canh bao bao duong, Bao cao chi phi |
+| `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong, lich su phieu co cot ky thuat vien |
+
 Kiem tra nhanh sau khi seed:
 
 ```sql
@@ -187,6 +190,33 @@ Luong dang nhap hien tai:
 - Admin co menu Quan ly nguoi dung.
 - Manager co menu phuong tien/giay to/canh bao/bao cao.
 - Technician co menu bao duong.
+
+## Checklist truoc khi demo/nop bai
+
+Chay build:
+
+```powershell
+.\mvnw clean package
+```
+
+Neu may moi chua co database, chay schema va seed:
+
+```powershell
+Get-Content data\Dump20260524.sql | mysql -u root -p
+Get-Content data\seed-auth.sql | mysql -u root -p
+```
+
+Chay ung dung va test 3 role:
+
+```powershell
+.\mvnw javafx:run
+```
+
+- `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can.
+- `manager/123456`: mo dashboard, ho so phuong tien, giay to xe, canh bao giay to va bao cao chi phi.
+- `tech/123456`: mo dashboard ky thuat, Xe can bao duong va Cap nhat bao duong.
+- Dang xuat sau moi role de xac nhan session duoc clear.
+- Neu thay loi ket noi DB, kiem tra lai `DB_MODE`, `DB_URL`, `DB_USER`, `DB_PASSWORD`.
 
 ## Quy uoc phat trien
 

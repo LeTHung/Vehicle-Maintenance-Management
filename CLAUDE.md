@@ -106,6 +106,9 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - Smoke check FXML: 13 file FXML, 12 controller, 0 lỗi binding `onAction`, 0 lỗi resource `.fxml`, 0 cảnh báo `fx:id`.
 - `MainLayoutController` siết thêm handler Admin và Hồ sơ phương tiện: admin-only cho user/role/audit, manager-only cho vehicle.
 - Build kiểm tra cuối Day 14: `.\mvnw clean package` → BUILD SUCCESS.
+- Day 15 đã hoàn thành trên branch stacked `feature/khoa-day15-demo-readme-check`: chốt README/demo checklist và kiểm tra đường chạy project.
+- `README.md` đã cập nhật trạng thái thật, cấu hình DB local/Railway, tài khoản demo, phạm vi demo theo role và checklist trước khi nộp.
+- Verify Day 15: Java 25.0.3 + Maven Wrapper 3.9.11, `.\mvnw clean package` pass, FXML smoke check pass, `.\mvnw javafx:run` mở được cửa sổ `FleetCare - Đăng nhập`.
 
 ### Đã hoàn thành — Day 1 (2026-05-24)
 
@@ -227,6 +230,15 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Documentation:** cập nhật trạng thái Day 14 và chuyển bước tiếp theo sang Day 15 chốt README/demo.
 - **Build check:** `.\mvnw clean package` pass.
 
+### Đã hoàn thành — Day 15 (2026-06-01)
+
+- **Branch:** `feature/khoa-day15-demo-readme-check` xếp trên Day 14 vì chuỗi PR #21-#28 chưa merge vào `dev`.
+- **README:** cập nhật trạng thái hiện tại sau Day 7-14, bỏ ghi chú cũ rằng các màn vehicle/document/maintenance/report vẫn đang chờ hoàn thiện.
+- **Demo guide:** bổ sung cấu hình DB local/Railway, tài khoản `admin/manager/tech` mật khẩu `123456`, phạm vi demo từng role và checklist trước khi nộp.
+- **Environment check:** `java -version` dùng Temurin 25.0.3; `.\mvnw -v` dùng Maven 3.9.11 với runtime `D:\Java\jdk-25.0.3`.
+- **Build/smoke check:** `.\mvnw clean package` pass; FXML smoke check pass với 13 FXML/12 controller/0 lỗi; `.\mvnw javafx:run` mở được cửa sổ `FleetCare - Đăng nhập`.
+- **Lưu ý:** workspace chưa có `config/database.properties`, nên chưa đăng nhập DB thật bằng 3 account trong lần smoke này; cần cấu hình DB + seed trước khi demo role thủ công.
+
 ### Trạng thái từng component
 
 | Component | File | Trạng thái |
@@ -252,7 +264,7 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 | MainApp | `app/MainApp.java` | ✅ Start từ login-view Day 4 |
 | UserController | `controller/UserController.java` | ✅ Hoàn chỉnh CRUD cơ bản Day 5 |
 | Seed auth data | `data/seed-auth.sql` | ✅ Hoàn chỉnh Day 6: idempotent, có hướng dẫn và SELECT kiểm tra |
-| README | `README.md` | ✅ Cập nhật Day 6, không còn mô tả MainApp/AuthService là skeleton |
+| README | `README.md` | ✅ Cập nhật Day 15: cấu hình DB, tài khoản demo, phạm vi demo theo role và checklist nộp bài |
 
 ### Bước tiếp theo
 
@@ -263,7 +275,8 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Review/Merge Day 11:** PR #25 (`feature/khoa-day11-maintenance-record-session-user` → `feature/khoa-day10-tech-maintenance-alert-rbac`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21-#24 merge.
 - **Review/Merge Day 12:** PR #26 (`feature/khoa-day12-maintenance-history-technician` → `feature/khoa-day11-maintenance-record-session-user`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21-#25 merge.
 - **Review/Merge Day 13:** PR #27 (`feature/khoa-day13-report-role-filter` → `feature/khoa-day12-maintenance-history-technician`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21-#26 merge.
-- **Publish Day 14:** push branch `feature/khoa-day14-integration-smoke-check` và mở draft PR base vào Day 13; retarget/rebase theo chuỗi sau khi PR #21-#27 merge.
+- **Review/Merge Day 14:** PR #28 (`feature/khoa-day14-integration-smoke-check` → `feature/khoa-day13-report-role-filter`) đang là draft; retarget/rebase theo chuỗi sau khi PR #21-#27 merge.
+- **Publish Day 15:** push branch `feature/khoa-day15-demo-readme-check` và mở draft PR base vào Day 14; retarget/rebase theo chuỗi sau khi PR #21-#28 merge.
 - **Verify Day 8:** đăng nhập `manager/123456`, từ dashboard bấm Hồ sơ phương tiện, Giấy tờ xe, Xem tất cả cảnh báo và Báo cáo chi phí; xác nhận các màn load đúng và RBAC Day 7 vẫn chặn admin/tech.
 - **Verify Day 9:** đăng nhập `tech/123456`, từ dashboard kỹ thuật bấm các nút bảo dưỡng; xác nhận mở đúng cảnh báo/cập nhật bảo dưỡng và không lỗi FXML handler.
 - **Verify Day 10:** đăng nhập `tech/123456`, kiểm tra sidebar có `Xe cần bảo dưỡng`; đăng nhập `admin/123456` xác nhận không mở được các handler bảo dưỡng nếu gọi nhầm.
@@ -271,7 +284,7 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Verify Day 12:** đăng nhập `tech/123456`, mở Cập nhật bảo dưỡng, lọc theo xe và xác nhận cột `Kỹ thuật viên` hiển thị đúng user phụ trách phiếu.
 - **Verify Day 13:** đăng nhập `manager/123456`, mở Báo cáo chi phí và lọc theo năm/xe; đăng nhập `tech/123456` hoặc `admin/123456` xác nhận không mở được report nếu gọi nhầm handler.
 - **Verify Day 14:** chạy lại FXML smoke check + `.\mvnw clean package`; đăng nhập thử `admin/manager/tech` để xác nhận sidebar và handler guard theo đúng role.
-- **Day 15:** chốt README, tài khoản demo và kiểm tra chạy project để chuẩn bị nộp/demo.
+- **Verify Day 15 thủ công:** sau khi có `config/database.properties` và seed DB, đăng nhập lần lượt `admin/manager/tech` để kiểm tra đúng phạm vi demo trong README.
 - **Tinh chỉnh encoding:** nếu nhóm thống nhất chuẩn UTF-8, chuyển dần text không dấu trong các file mới về tiếng Việt có dấu.
 
 ### Kế hoạch công việc Nguyễn Đăng Khoa
