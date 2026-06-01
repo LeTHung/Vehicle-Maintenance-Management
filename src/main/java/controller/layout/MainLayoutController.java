@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -48,12 +49,14 @@ public class MainLayoutController {
     @FXML private Button btnMaintenanceRecord;
     @FXML private Button btnMaintenanceHistory;
     @FXML private Button btnReport;
+    @FXML private Button btnTopbarNotification;
 
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_MANAGER = "MANAGER";
     private static final String ROLE_TECH = "TECH";
+    private static final String ROLE_UNKNOWN = "UNKNOWN";
 
-    private String currentRole = ROLE_MANAGER;
+    private String currentRole = ROLE_UNKNOWN;
 
     @FXML
     public void initialize() {
@@ -73,14 +76,14 @@ public class MainLayoutController {
         Role role = UserSession.getInstance().getCurrentRole();
         String roleCode = role == null ? null : role.getRoleCode();
         if (roleCode == null || roleCode.isBlank()) {
-            return ROLE_MANAGER;
+            return ROLE_UNKNOWN;
         }
 
         return switch (roleCode.trim().toUpperCase(Locale.ROOT)) {
             case ROLE_ADMIN -> ROLE_ADMIN;
             case "FLEET_MANAGER", ROLE_MANAGER -> ROLE_MANAGER;
             case "TECHNICIAN", ROLE_TECH -> ROLE_TECH;
-            default -> ROLE_MANAGER;
+            default -> ROLE_UNKNOWN;
         };
     }
 
@@ -96,6 +99,7 @@ public class MainLayoutController {
         hideGroup(groupManager);
         hideGroup(groupTechnician);
         hideGroup(groupReport);
+        setNodeVisible(btnTopbarNotification, false);
 
         switch (role) {
             case ROLE_ADMIN -> {
@@ -114,10 +118,11 @@ public class MainLayoutController {
                 lblRoleBadge.setText("MANAGER");
                 showGroup(groupManager);
                 showGroup(groupReport);
+                setNodeVisible(btnTopbarNotification, true);
             }
             default -> {
                 lblUserRole.setText("Chưa phân quyền");
-                lblRoleBadge.setText("UNKNOWN");
+                lblRoleBadge.setText(ROLE_UNKNOWN);
             }
         }
     }
@@ -136,14 +141,26 @@ public class MainLayoutController {
         }
     }
 
+    private void setNodeVisible(Node node, boolean visible) {
+        if (node != null) {
+            node.setVisible(visible);
+            node.setManaged(visible);
+            node.setDisable(!visible);
+        }
+    }
+
     @FXML
     private void openDashboard() {
         if (ROLE_ADMIN.equals(currentRole)) {
             loadPage("dashboard/admin-dashboard-view.fxml", "Dashboard quản trị", btnDashboard);
         } else if (ROLE_TECH.equals(currentRole)) {
             loadPage("dashboard/technician-dashboard-view.fxml", "Dashboard kỹ thuật", btnDashboard);
-        } else {
+        } else if (ROLE_MANAGER.equals(currentRole)) {
             loadPage("dashboard/manager-dashboard-view.fxml", "Dashboard đội xe", btnDashboard);
+        } else {
+            showPlaceholder("Không xác định quyền truy cập",
+                    "Không thể xác định vai trò người dùng. Vui lòng đăng xuất và đăng nhập lại.",
+                    btnDashboard);
         }
     }
 
@@ -173,11 +190,19 @@ public class MainLayoutController {
 
     @FXML
     private void openVehicleDocument() {
+        if (!ROLE_MANAGER.equals(currentRole)) {
+            showAccessDenied("Giấy tờ xe", btnVehicleDocument);
+            return;
+        }
         loadPage("vehicle/vehicle-document-view.fxml", "Giấy tờ xe", btnVehicleDocument);
     }
 
     @FXML
     private void openDocumentAlert() {
+        if (!ROLE_MANAGER.equals(currentRole)) {
+            showAccessDenied("Cảnh báo giấy tờ", btnDocumentAlert);
+            return;
+        }
         loadPage("vehicle/document-alert-view.fxml", "Cảnh báo giấy tờ", btnDocumentAlert);
     }
 
@@ -272,6 +297,12 @@ public class MainLayoutController {
         contentArea.getChildren().setAll(box);
         lblPageTitle.setText(title);
         setActiveButton(activeButton);
+    }
+
+    private void showAccessDenied(String featureName, Button activeButton) {
+        showPlaceholder("Không có quyền truy cập",
+                "Vai trò hiện tại không được phép mở màn hình " + featureName + ".",
+                activeButton);
     }
 
     private void setActiveButton(Button activeButton) {
