@@ -93,6 +93,9 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - Day 10 đã hoàn thành trên branch stacked `feature/khoa-day10-tech-maintenance-alert-rbac`: Tech có menu sidebar “Xe cần bảo dưỡng” để mở danh sách bảo dưỡng đến hạn.
 - `MainLayoutController` đã guard lại các handler bảo dưỡng: plan/history chỉ Manager, alert cho Manager/Tech, record chỉ Tech.
 - Build kiểm tra cuối Day 10: `.\mvnw clean package` → BUILD SUCCESS.
+- Day 11 đã hoàn thành trên branch stacked `feature/khoa-day11-maintenance-record-session-user`: phiếu bảo dưỡng lấy user kỹ thuật đang đăng nhập để ghi `technician_id`.
+- `MaintenanceRecordController` set `technicianId`, `createdBy`, `updatedBy` khi tạo phiếu và giữ kỹ thuật viên gốc khi cập nhật phiếu đã có.
+- Build kiểm tra cuối Day 11: `.\mvnw clean package` → BUILD SUCCESS.
 
 ### Đã hoàn thành — Day 1 (2026-05-24)
 
@@ -182,6 +185,14 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **RBAC bảo dưỡng:** `openMaintenancePlan()` và `openMaintenanceHistory()` chỉ cho `MANAGER`; `openMaintenanceAlert()` cho `MANAGER` hoặc `TECH`; `openMaintenanceRecord()` chỉ cho `TECH`.
 - **Build check:** `.\mvnw clean package` pass.
 
+### Đã hoàn thành — Day 11 (2026-06-01)
+
+- **Branch:** `feature/khoa-day11-maintenance-record-session-user` xếp trên Day 10 vì chuỗi PR #21-#24 chưa merge vào `dev`.
+- **MaintenanceRecordController:** khi lưu phiếu mới, lấy `UserSession.getCurrentUser().getUserId()` để set `technicianId`, `createdBy`, `updatedBy`.
+- **Update flow:** khi cập nhật phiếu, giữ `technicianId` và `createdBy` đã có; nếu phiếu cũ chưa có kỹ thuật viên thì gán user hiện tại; luôn set `updatedBy` là user hiện tại.
+- **Validation:** nếu không xác định được user đang đăng nhập thì báo lỗi rõ ràng và không lưu phiếu.
+- **Build check:** `.\mvnw clean package` pass.
+
 ### Trạng thái từng component
 
 | Component | File | Trạng thái |
@@ -202,6 +213,7 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 | ManagerDashboardController | `controller/dashboard/ManagerDashboardController.java` | ✅ Có số liệu/cảnh báo giấy tờ; Day 8 có nút điều hướng sang màn liên quan |
 | TechnicianDashboardController | `controller/dashboard/TechnicianDashboardController.java` | ✅ Day 9 điều hướng dashboard kỹ thuật sang cảnh báo/cập nhật bảo dưỡng |
 | MainLayoutController | `controller/MainLayoutController.java` | ✅ RBAC + logout; mở user-view thật; Day 7 guard giấy tờ xe; Day 8/9 inject navigation; Day 10 guard bảo dưỡng |
+| MaintenanceRecordController | `controller/maintenance/MaintenanceRecordController.java` | ✅ Day 11 gán kỹ thuật viên/audit user từ `UserSession` khi tạo/cập nhật phiếu |
 | MainApp | `app/MainApp.java` | ✅ Start từ login-view Day 4 |
 | UserController | `controller/UserController.java` | ✅ Hoàn chỉnh CRUD cơ bản Day 5 |
 | Seed auth data | `data/seed-auth.sql` | ✅ Hoàn chỉnh Day 6: idempotent, có hướng dẫn và SELECT kiểm tra |
@@ -212,11 +224,13 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Review/Merge Day 7:** PR #21 (`feature/khoa-day07-vehicle-document-rbac` → `dev`) đang là draft, mergeable; cần review trước khi merge.
 - **Review/Merge Day 8:** PR #22 (`feature/khoa-day08-dashboard-alert-navigation` → `feature/khoa-day07-vehicle-document-rbac`) đang là draft, mergeable; retarget về `dev` sau khi PR #21 merge.
 - **Review/Merge Day 9:** PR #23 (`feature/khoa-day09-maintenance-navigation` → `feature/khoa-day08-dashboard-alert-navigation`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21/#22 merge.
-- **Publish Day 10:** push branch `feature/khoa-day10-tech-maintenance-alert-rbac` và mở draft PR base vào Day 9; retarget/rebase theo chuỗi sau khi PR #21/#22/#23 merge.
+- **Review/Merge Day 10:** PR #24 (`feature/khoa-day10-tech-maintenance-alert-rbac` → `feature/khoa-day09-maintenance-navigation`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21/#22/#23 merge.
+- **Publish Day 11:** push branch `feature/khoa-day11-maintenance-record-session-user` và mở draft PR base vào Day 10; retarget/rebase theo chuỗi sau khi PR #21-#24 merge.
 - **Verify Day 8:** đăng nhập `manager/123456`, từ dashboard bấm Hồ sơ phương tiện, Giấy tờ xe, Xem tất cả cảnh báo và Báo cáo chi phí; xác nhận các màn load đúng và RBAC Day 7 vẫn chặn admin/tech.
 - **Verify Day 9:** đăng nhập `tech/123456`, từ dashboard kỹ thuật bấm các nút bảo dưỡng; xác nhận mở đúng cảnh báo/cập nhật bảo dưỡng và không lỗi FXML handler.
 - **Verify Day 10:** đăng nhập `tech/123456`, kiểm tra sidebar có `Xe cần bảo dưỡng`; đăng nhập `admin/123456` xác nhận không mở được các handler bảo dưỡng nếu gọi nhầm.
-- **Day 11:** cung cấp user kỹ thuật đang đăng nhập cho phiếu bảo dưỡng/sửa chữa nếu module record cần ghi `technician_id`.
+- **Verify Day 11:** đăng nhập `tech/123456`, tạo/cập nhật phiếu bảo dưỡng và kiểm tra DB `maintenance_records.technician_id`, `created_by`, `updated_by` nhận đúng `users.user_id` của tài khoản tech.
+- **Day 12:** phụ tùng + lịch sử bảo dưỡng; ưu tiên kiểm tra luồng tra cứu phiếu/lịch sử theo xe và dữ liệu kỹ thuật viên.
 - **Tinh chỉnh encoding:** nếu nhóm thống nhất chuẩn UTF-8, chuyển dần text không dấu trong các file mới về tiếng Việt có dấu.
 
 ### Kế hoạch công việc Nguyễn Đăng Khoa

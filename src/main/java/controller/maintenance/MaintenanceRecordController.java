@@ -14,7 +14,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import model.entity.MaintenanceRecord;
+import model.entity.User;
 import model.entity.Vehicle;
+import session.UserSession;
 import service.MaintenanceRecordService;
 
 import java.math.BigDecimal;
@@ -50,6 +52,8 @@ public class MaintenanceRecordController {
     @FXML private TableColumn<MaintenanceRecord, String> colRecordStatus;
 
     private Long selectedRecordId;
+    private Long selectedTechnicianId;
+    private Long selectedCreatedBy;
     private final Map<Long, String> vehicleNameMap = new HashMap<>();
 
     @FXML
@@ -125,6 +129,8 @@ public class MaintenanceRecordController {
     private void populateForm(MaintenanceRecord record) {
         if (record == null) return;
         selectedRecordId = record.getRecordId();
+        selectedTechnicianId = record.getTechnicianId();
+        selectedCreatedBy = record.getCreatedBy();
 
         cbVehicle.getItems().stream()
             .filter(v -> v.getVehicleId() == record.getVehicleId())
@@ -150,6 +156,10 @@ public class MaintenanceRecordController {
     private void handleSave() {
         try {
             MaintenanceRecord record = readFromForm();
+            Long currentUserId = requireCurrentUserId();
+            record.setTechnicianId(currentUserId);
+            record.setCreatedBy(currentUserId);
+            record.setUpdatedBy(currentUserId);
             service.save(record);
             loadTable(service.listAll());
             handleClear();
@@ -170,6 +180,10 @@ public class MaintenanceRecordController {
         try {
             MaintenanceRecord record = readFromForm();
             record.setRecordId(selectedRecordId);
+            Long currentUserId = requireCurrentUserId();
+            record.setTechnicianId(selectedTechnicianId != null ? selectedTechnicianId : currentUserId);
+            record.setCreatedBy(selectedCreatedBy);
+            record.setUpdatedBy(currentUserId);
             service.update(record);
             loadTable(service.listAll());
             handleClear();
@@ -194,6 +208,8 @@ public class MaintenanceRecordController {
         txtWorkSummary.clear();
         txtNotes.clear();
         selectedRecordId = null;
+        selectedTechnicianId = null;
+        selectedCreatedBy = null;
         tblRecord.getSelectionModel().clearSelection();
     }
 
@@ -225,6 +241,14 @@ public class MaintenanceRecordController {
         record.setWorkSummary(txtWorkSummary.getText().isBlank() ? null : txtWorkSummary.getText().trim());
         record.setNotes(txtNotes.getText().isBlank() ? null : txtNotes.getText().trim());
         return record;
+    }
+
+    private Long requireCurrentUserId() {
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser == null || currentUser.getUserId() == null || currentUser.getUserId() <= 0) {
+            throw new IllegalArgumentException("Không xác định được nhân viên kỹ thuật đang đăng nhập.");
+        }
+        return currentUser.getUserId();
     }
 
     private Integer parseOptionalInt(String text, String fieldName) {
