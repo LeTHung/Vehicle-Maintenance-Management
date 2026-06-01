@@ -48,6 +48,7 @@ public class MainLayoutController {
     @FXML private Button btnDocumentAlert;
     @FXML private Button btnMaintenancePlan;
     @FXML private Button btnMaintenanceAlert;
+    @FXML private Button btnTechMaintenanceAlert;
     @FXML private Button btnMaintenanceRecord;
     @FXML private Button btnMaintenanceHistory;
     @FXML private Button btnReport;
@@ -210,24 +211,48 @@ public class MainLayoutController {
 
     @FXML
     private void openMaintenancePlan() {
+        if (!ROLE_MANAGER.equals(currentRole)) {
+            showAccessDenied("Kế hoạch bảo dưỡng", btnMaintenancePlan);
+            return;
+        }
         loadPage("maintenance/maintenance-plan-view.fxml", "Kế hoạch bảo dưỡng", btnMaintenancePlan);
     }
 
     @FXML
     private void openMaintenanceAlert() {
-        loadPage("maintenance/maintenance-alert-view.fxml", "Cảnh báo bảo dưỡng", btnMaintenanceAlert);
+        if (!canOpenMaintenanceAlert()) {
+            showAccessDenied("Cảnh báo bảo dưỡng", resolveMaintenanceAlertButton());
+            return;
+        }
+        loadPage("maintenance/maintenance-alert-view.fxml", "Cảnh báo bảo dưỡng", resolveMaintenanceAlertButton());
     }
 
     @FXML
     private void openMaintenanceRecord() {
+        if (!ROLE_TECH.equals(currentRole)) {
+            showAccessDenied("Cập nhật bảo dưỡng", btnMaintenanceRecord);
+            return;
+        }
         loadPage("maintenance/maintenance-record-view.fxml", "Cập nhật bảo dưỡng", btnMaintenanceRecord);
     }
 
     @FXML
     private void openMaintenanceHistory() {
+        if (!ROLE_MANAGER.equals(currentRole)) {
+            showAccessDenied("Lịch sử bảo dưỡng", btnMaintenanceHistory);
+            return;
+        }
         showPlaceholder("Lịch sử bảo dưỡng",
                 "Màn hình lịch sử bảo dưỡng theo từng xe — sẽ hoàn thiện ở ngày 12.",
                 btnMaintenanceHistory);
+    }
+
+    private boolean canOpenMaintenanceAlert() {
+        return ROLE_MANAGER.equals(currentRole) || ROLE_TECH.equals(currentRole);
+    }
+
+    private Button resolveMaintenanceAlertButton() {
+        return ROLE_TECH.equals(currentRole) ? btnTechMaintenanceAlert : btnMaintenanceAlert;
     }
 
     @FXML
@@ -327,7 +352,8 @@ public class MainLayoutController {
         Button[] buttons = {
                 btnDashboard, btnAdminUsers, btnAdminRoles, btnAuditLog,
                 btnVehicle, btnVehicleDocument, btnDocumentAlert,
-                btnMaintenancePlan, btnMaintenanceAlert, btnMaintenanceRecord, btnMaintenanceHistory, btnReport
+                btnMaintenancePlan, btnMaintenanceAlert, btnTechMaintenanceAlert,
+                btnMaintenanceRecord, btnMaintenanceHistory, btnReport
         };
         for (Button button : buttons) {
             if (button != null) {
