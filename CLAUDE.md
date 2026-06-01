@@ -276,7 +276,7 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Review/Merge Day 12:** PR #26 (`feature/khoa-day12-maintenance-history-technician` → `feature/khoa-day11-maintenance-record-session-user`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21-#25 merge.
 - **Review/Merge Day 13:** PR #27 (`feature/khoa-day13-report-role-filter` → `feature/khoa-day12-maintenance-history-technician`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21-#26 merge.
 - **Review/Merge Day 14:** PR #28 (`feature/khoa-day14-integration-smoke-check` → `feature/khoa-day13-report-role-filter`) đang là draft; retarget/rebase theo chuỗi sau khi PR #21-#27 merge.
-- **Publish Day 15:** push branch `feature/khoa-day15-demo-readme-check` và mở draft PR base vào Day 14; retarget/rebase theo chuỗi sau khi PR #21-#28 merge.
+- **Review/Merge Day 15:** PR #29 (`feature/khoa-day15-demo-readme-check` → `feature/khoa-day14-integration-smoke-check`) đang là draft; retarget/rebase theo chuỗi sau khi PR #21-#28 merge.
 - **Verify Day 8:** đăng nhập `manager/123456`, từ dashboard bấm Hồ sơ phương tiện, Giấy tờ xe, Xem tất cả cảnh báo và Báo cáo chi phí; xác nhận các màn load đúng và RBAC Day 7 vẫn chặn admin/tech.
 - **Verify Day 9:** đăng nhập `tech/123456`, từ dashboard kỹ thuật bấm các nút bảo dưỡng; xác nhận mở đúng cảnh báo/cập nhật bảo dưỡng và không lỗi FXML handler.
 - **Verify Day 10:** đăng nhập `tech/123456`, kiểm tra sidebar có `Xe cần bảo dưỡng`; đăng nhập `admin/123456` xác nhận không mở được các handler bảo dưỡng nếu gọi nhầm.
