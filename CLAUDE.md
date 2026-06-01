@@ -84,6 +84,9 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - Day 7 đã hoàn thành trên branch `feature/khoa-day07-vehicle-document-rbac`: `dev` hiện đã có màn hình giấy tờ xe thật; phần của Khoa là siết RBAC/điều hướng cho role Quản lý đội xe.
 - `MainLayoutController` không còn fallback role lạ/null về `MANAGER`; topbar `Thông báo` chỉ hiện cho manager và các handler giấy tờ xe có guard quyền trực tiếp.
 - Build kiểm tra cuối Day 7: `.\mvnw clean package` → BUILD SUCCESS.
+- Day 8 đã hoàn thành trên branch stacked `feature/khoa-day08-dashboard-alert-navigation`: manager dashboard có nút điều hướng thật sang hồ sơ phương tiện, giấy tờ xe, cảnh báo giấy tờ và báo cáo chi phí.
+- `MainLayoutController.loadPage()` chuyển sang dùng `FXMLLoader` instance để inject navigation handler cho `ManagerDashboardController`.
+- Build kiểm tra cuối Day 8: `.\mvnw clean package` → BUILD SUCCESS.
 
 ### Đã hoàn thành — Day 1 (2026-05-24)
 
@@ -150,6 +153,14 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Topbar notification:** nút `Thông báo` có `fx:id=btnTopbarNotification` và chỉ hiển thị/enable cho `MANAGER`.
 - **Build check:** `.\mvnw clean package` pass.
 
+### Đã hoàn thành — Day 8 (2026-06-01)
+
+- **Branch:** `feature/khoa-day08-dashboard-alert-navigation` xếp trên Day 7 vì PR #21 chưa merge vào `dev`.
+- **Manager dashboard:** các nút hero đã có action thật: mở Hồ sơ phương tiện, Giấy tờ xe và Báo cáo chi phí.
+- **Cảnh báo giấy tờ:** panel “Cảnh báo giấy tờ ưu tiên” có nút `Xem tất cả` để mở màn hình `document-alert-view.fxml`.
+- **Navigation injection:** `MainLayoutController.loadPage()` dùng `FXMLLoader` instance để lấy controller sau khi load FXML và truyền callback điều hướng cho `ManagerDashboardController`.
+- **Build check:** `.\mvnw clean package` pass.
+
 ### Trạng thái từng component
 
 | Component | File | Trạng thái |
@@ -167,7 +178,8 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 | UserService | `service/UserService.java` | ✅ Hoàn chỉnh CRUD cơ bản Day 5 |
 | LoginController | `controller/LoginController.java` | ✅ Hoàn chỉnh Day 4 |
 | DashboardController | `controller/DashboardController.java` | ✅ Có số liệu dashboard; chưa gắn thông tin user |
-| MainLayoutController | `controller/MainLayoutController.java` | ✅ RBAC + logout; mở user-view thật; Day 7 guard giấy tờ xe + topbar notification |
+| ManagerDashboardController | `controller/dashboard/ManagerDashboardController.java` | ✅ Có số liệu/cảnh báo giấy tờ; Day 8 có nút điều hướng sang màn liên quan |
+| MainLayoutController | `controller/MainLayoutController.java` | ✅ RBAC + logout; mở user-view thật; Day 7 guard giấy tờ xe; Day 8 inject navigation handler |
 | MainApp | `app/MainApp.java` | ✅ Start từ login-view Day 4 |
 | UserController | `controller/UserController.java` | ✅ Hoàn chỉnh CRUD cơ bản Day 5 |
 | Seed auth data | `data/seed-auth.sql` | ✅ Hoàn chỉnh Day 6: idempotent, có hướng dẫn và SELECT kiểm tra |
@@ -175,10 +187,10 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 
 ### Bước tiếp theo
 
-- **Commit Day 7:** stage `src/main/java/controller/layout/MainLayoutController.java`, `src/main/resources/view/layout/main-layout.fxml` và `CLAUDE.md` bằng `git add -f CLAUDE.md`; không add file `nul` hoặc file tên lệnh Java bị tạo nhầm.
-- **Push/Merge Day 7:** push branch `feature/khoa-day07-vehicle-document-rbac` và merge vào `dev` sau khi review.
-- **Verify sau merge:** trên `dev`, chạy `.\mvnw clean package`, đăng nhập `admin/manager/tech` với mật khẩu `123456`, kiểm tra manager mở được giấy tờ/cảnh báo còn admin/tech không thấy nút topbar `Thông báo`.
-- **Day 8:** rà soát dashboard/cảnh báo sau RBAC, ưu tiên số cảnh báo giấy tờ và luồng điều hướng từ dashboard sang màn hình cảnh báo.
+- **Review/Merge Day 7:** PR #21 (`feature/khoa-day07-vehicle-document-rbac` → `dev`) đang là draft, mergeable; cần review trước khi merge.
+- **Publish Day 8:** push branch `feature/khoa-day08-dashboard-alert-navigation` và mở draft PR base vào branch Day 7 hoặc retarget về `dev` sau khi PR #21 merge.
+- **Verify Day 8:** đăng nhập `manager/123456`, từ dashboard bấm Hồ sơ phương tiện, Giấy tờ xe, Xem tất cả cảnh báo và Báo cáo chi phí; xác nhận các màn load đúng và RBAC Day 7 vẫn chặn admin/tech.
+- **Day 9:** sau khi Day 7/8 ổn, hỗ trợ điều hướng sang màn hình bảo dưỡng theo kế hoạch 15 ngày.
 - **Tinh chỉnh encoding:** nếu nhóm thống nhất chuẩn UTF-8, chuyển dần text không dấu trong các file mới về tiếng Việt có dấu.
 
 ### Kế hoạch công việc Nguyễn Đăng Khoa
