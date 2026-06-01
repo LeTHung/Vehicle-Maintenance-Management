@@ -67,6 +67,7 @@
                     <TableColumn fx:id="colRecordTitle" text="Tiêu đề" prefWidth="200"/>
                     <TableColumn fx:id="colRecordServiceDate" text="Ngày thực hiện" prefWidth="130"/>
                     <TableColumn fx:id="colRecordOdometer" text="ODO (km)" prefWidth="100"/>
+                    <TableColumn fx:id="colRecordTechnician" text="Kỹ thuật viên" prefWidth="160"/>
                     <TableColumn fx:id="colRecordTotalCost" text="Chi phí (VNĐ)" prefWidth="130"/>
                     <TableColumn fx:id="colRecordStatus" text="Trạng thái" prefWidth="120"/>
                 </columns>

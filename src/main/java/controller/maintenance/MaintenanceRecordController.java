@@ -13,6 +13,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
+import model.dao.UserDAO;
 import model.entity.MaintenanceRecord;
 import model.entity.User;
 import model.entity.Vehicle;
@@ -28,6 +29,7 @@ import java.util.Map;
 public class MaintenanceRecordController {
 
     private final MaintenanceRecordService service = new MaintenanceRecordService();
+    private final UserDAO userDAO = new UserDAO();
 
     @FXML private ComboBox<Vehicle> cbFilterVehicle;
     @FXML private ComboBox<Vehicle> cbVehicle;
@@ -48,6 +50,7 @@ public class MaintenanceRecordController {
     @FXML private TableColumn<MaintenanceRecord, String> colRecordTitle;
     @FXML private TableColumn<MaintenanceRecord, String> colRecordServiceDate;
     @FXML private TableColumn<MaintenanceRecord, Integer> colRecordOdometer;
+    @FXML private TableColumn<MaintenanceRecord, String> colRecordTechnician;
     @FXML private TableColumn<MaintenanceRecord, String> colRecordTotalCost;
     @FXML private TableColumn<MaintenanceRecord, String> colRecordStatus;
 
@@ -55,11 +58,13 @@ public class MaintenanceRecordController {
     private Long selectedTechnicianId;
     private Long selectedCreatedBy;
     private final Map<Long, String> vehicleNameMap = new HashMap<>();
+    private final Map<Long, String> technicianNameMap = new HashMap<>();
 
     @FXML
     public void initialize() {
         cbRecordType.getItems().addAll("PREVENTIVE", "CORRECTIVE");
         cbRecordStatus.getItems().addAll("OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED");
+        loadTechnicianNames();
         setupVehicleComboBoxes();
         configureTable();
         setupFilterListener();
@@ -98,6 +103,8 @@ public class MaintenanceRecordController {
         });
         colRecordOdometer.setCellValueFactory(c ->
             new SimpleObjectProperty<>(c.getValue().getOdometer()));
+        colRecordTechnician.setCellValueFactory(c ->
+            new SimpleStringProperty(resolveTechnicianName(c.getValue().getTechnicianId())));
         colRecordTotalCost.setCellValueFactory(c -> {
             BigDecimal cost = c.getValue().getTotalCost();
             return new SimpleStringProperty(cost == null ? "" : cost.toPlainString());
@@ -113,6 +120,15 @@ public class MaintenanceRecordController {
                 loadTable(service.listAll());
             } else {
                 loadTable(service.listByVehicle(selected.getVehicleId()));
+            }
+        });
+    }
+
+    private void loadTechnicianNames() {
+        technicianNameMap.clear();
+        userDAO.findAll().forEach(user -> {
+            if (user.getUserId() != null) {
+                technicianNameMap.put(user.getUserId(), resolveUserDisplayName(user));
             }
         });
     }
@@ -249,6 +265,23 @@ public class MaintenanceRecordController {
             throw new IllegalArgumentException("Không xác định được nhân viên kỹ thuật đang đăng nhập.");
         }
         return currentUser.getUserId();
+    }
+
+    private String resolveTechnicianName(Long technicianId) {
+        if (technicianId == null) {
+            return "";
+        }
+        return technicianNameMap.getOrDefault(technicianId, "#" + technicianId);
+    }
+
+    private String resolveUserDisplayName(User user) {
+        if (user.getFullName() != null && !user.getFullName().isBlank()) {
+            return user.getFullName().trim();
+        }
+        if (user.getUsername() != null && !user.getUsername().isBlank()) {
+            return user.getUsername().trim();
+        }
+        return "#" + user.getUserId();
     }
 
     private Integer parseOptionalInt(String text, String fieldName) {
