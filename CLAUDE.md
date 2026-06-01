@@ -108,7 +108,7 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - Build kiểm tra cuối Day 14: `.\mvnw clean package` → BUILD SUCCESS.
 - Day 15 đã hoàn thành trên branch stacked `feature/khoa-day15-demo-readme-check`: chốt README/demo checklist và kiểm tra đường chạy project.
 - `README.md` đã cập nhật trạng thái thật, cấu hình DB local/Railway, tài khoản demo, phạm vi demo theo role và checklist trước khi nộp.
-- Verify Day 15: Java 25.0.3 + Maven Wrapper 3.9.11, `.\mvnw clean package` pass, FXML smoke check pass, `.\mvnw javafx:run` mở được cửa sổ `FleetCare - Đăng nhập`.
+- Verify Day 15: Java 25.0.3 + Maven Wrapper 3.9.11, `.\mvnw clean package` pass, FXML smoke check pass, `.\mvnw javafx:run` mở được cửa sổ `FleetCare - Đăng nhập`, `AuthService.login()` pass cho `admin/manager/tech`.
 
 ### Đã hoàn thành — Day 1 (2026-05-24)
 
@@ -237,7 +237,7 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Demo guide:** bổ sung cấu hình DB local/Railway, tài khoản `admin/manager/tech` mật khẩu `123456`, phạm vi demo từng role và checklist trước khi nộp.
 - **Environment check:** `java -version` dùng Temurin 25.0.3; `.\mvnw -v` dùng Maven 3.9.11 với runtime `D:\Java\jdk-25.0.3`.
 - **Build/smoke check:** `.\mvnw clean package` pass; FXML smoke check pass với 13 FXML/12 controller/0 lỗi; `.\mvnw javafx:run` mở được cửa sổ `FleetCare - Đăng nhập`.
-- **Lưu ý:** workspace chưa có `config/database.properties`, nên chưa đăng nhập DB thật bằng 3 account trong lần smoke này; cần cấu hình DB + seed trước khi demo role thủ công.
+- **DB/auth smoke:** workspace chưa có `config/database.properties`, nên dùng biến môi trường tạm với MySQL local `root/123456`; `DatabaseConnection` kết nối DB `vehicle_maintenance_management` OK và `AuthService.login()` pass cho `admin`, `manager`, `tech` với mật khẩu `123456`.
 
 ### Trạng thái từng component
 
