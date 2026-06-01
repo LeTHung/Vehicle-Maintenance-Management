@@ -168,11 +168,19 @@ public class MainLayoutController {
 
     @FXML
     private void openAdminUsers() {
+        if (!ROLE_ADMIN.equals(currentRole)) {
+            showAccessDenied("Quản lý người dùng", btnAdminUsers);
+            return;
+        }
         loadPage("user/user-view.fxml", "Quản lý người dùng", btnAdminUsers);
     }
 
     @FXML
     private void openAdminRoles() {
+        if (!ROLE_ADMIN.equals(currentRole)) {
+            showAccessDenied("Vai trò & phân quyền", btnAdminRoles);
+            return;
+        }
         showPlaceholder("Vai trò & phân quyền",
                 "Màn hình này sẽ nối với Role/Permission sau khi có module phân quyền.",
                 btnAdminRoles);
@@ -180,6 +188,10 @@ public class MainLayoutController {
 
     @FXML
     private void openAuditLog() {
+        if (!ROLE_ADMIN.equals(currentRole)) {
+            showAccessDenied("Audit logs", btnAuditLog);
+            return;
+        }
         showPlaceholder("Audit logs",
                 "Khu vực theo dõi thao tác hệ thống và lịch sử hoạt động.",
                 btnAuditLog);
@@ -187,6 +199,10 @@ public class MainLayoutController {
 
     @FXML
     private void openVehicle() {
+        if (!ROLE_MANAGER.equals(currentRole)) {
+            showAccessDenied("Hồ sơ phương tiện", btnVehicle);
+            return;
+        }
         loadPage("vehicle/vehicle-view.fxml", "Quản lý phương tiện", btnVehicle);
     }
 

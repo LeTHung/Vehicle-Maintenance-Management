@@ -102,6 +102,10 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - Day 13 đã hoàn thành trên branch stacked `feature/khoa-day13-report-role-filter`: báo cáo chi phí load dữ liệu thật, lọc theo năm/xe và chỉ Manager được mở màn báo cáo.
 - `ReportController` bind bảng/tổng chi phí từ `ReportDAO` + `VehicleDAO`; `MainLayoutController.openReport()` guard role `MANAGER`.
 - Build kiểm tra cuối Day 13: `.\mvnw clean package` → BUILD SUCCESS.
+- Day 14 đã hoàn thành trên branch stacked `feature/khoa-day14-integration-smoke-check`: rà tích hợp auth/user/role/dashboard/RBAC theo chuỗi Day 7-13.
+- Smoke check FXML: 13 file FXML, 12 controller, 0 lỗi binding `onAction`, 0 lỗi resource `.fxml`, 0 cảnh báo `fx:id`.
+- `MainLayoutController` siết thêm handler Admin và Hồ sơ phương tiện: admin-only cho user/role/audit, manager-only cho vehicle.
+- Build kiểm tra cuối Day 14: `.\mvnw clean package` → BUILD SUCCESS.
 
 ### Đã hoàn thành — Day 1 (2026-05-24)
 
@@ -215,6 +219,14 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Report summary:** cập nhật tổng chi phí bảo dưỡng, giấy tờ và tổng cộng theo dữ liệu đang lọc; format tiền theo locale `vi-VN`.
 - **Build check:** `.\mvnw clean package` pass.
 
+### Đã hoàn thành — Day 14 (2026-06-01)
+
+- **Branch:** `feature/khoa-day14-integration-smoke-check` xếp trên Day 13 vì chuỗi PR #21-#27 chưa merge vào `dev`.
+- **FXML smoke check:** rà 13 file FXML với 12 controller; không thiếu handler `onAction`, không thiếu resource `.fxml`, không có `fx:id` lệch controller.
+- **RBAC integration:** ngoài giấy tờ/bảo dưỡng/report đã guard ở các ngày trước, `openAdminUsers()`, `openAdminRoles()`, `openAuditLog()` giờ chỉ cho `ADMIN`; `openVehicle()` chỉ cho `MANAGER`.
+- **Documentation:** cập nhật trạng thái Day 14 và chuyển bước tiếp theo sang Day 15 chốt README/demo.
+- **Build check:** `.\mvnw clean package` pass.
+
 ### Trạng thái từng component
 
 | Component | File | Trạng thái |
@@ -234,7 +246,7 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 | DashboardController | `controller/DashboardController.java` | ✅ Có số liệu dashboard; chưa gắn thông tin user |
 | ManagerDashboardController | `controller/dashboard/ManagerDashboardController.java` | ✅ Có số liệu/cảnh báo giấy tờ; Day 8 có nút điều hướng sang màn liên quan |
 | TechnicianDashboardController | `controller/dashboard/TechnicianDashboardController.java` | ✅ Day 9 điều hướng dashboard kỹ thuật sang cảnh báo/cập nhật bảo dưỡng |
-| MainLayoutController | `controller/MainLayoutController.java` | ✅ RBAC + logout; mở user-view thật; Day 7 guard giấy tờ xe; Day 8/9 inject navigation; Day 10 guard bảo dưỡng |
+| MainLayoutController | `controller/MainLayoutController.java` | ✅ RBAC + logout; mở user-view thật; Day 7 guard giấy tờ xe; Day 8/9 inject navigation; Day 10 guard bảo dưỡng; Day 14 guard admin/vehicle handlers |
 | MaintenanceRecordController | `controller/maintenance/MaintenanceRecordController.java` | ✅ Day 11 gán kỹ thuật viên/audit user; Day 12 hiển thị kỹ thuật viên trong lịch sử phiếu |
 | ReportController | `controller/maintenance/ReportController.java` | ✅ Day 13 bind dữ liệu báo cáo, lọc năm/xe và cập nhật tổng chi phí |
 | MainApp | `app/MainApp.java` | ✅ Start từ login-view Day 4 |
@@ -250,14 +262,16 @@ FXML (view) ↔ Controller → Service → DAO → DatabaseConnection → MySQL
 - **Review/Merge Day 10:** PR #24 (`feature/khoa-day10-tech-maintenance-alert-rbac` → `feature/khoa-day09-maintenance-navigation`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21/#22/#23 merge.
 - **Review/Merge Day 11:** PR #25 (`feature/khoa-day11-maintenance-record-session-user` → `feature/khoa-day10-tech-maintenance-alert-rbac`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21-#24 merge.
 - **Review/Merge Day 12:** PR #26 (`feature/khoa-day12-maintenance-history-technician` → `feature/khoa-day11-maintenance-record-session-user`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21-#25 merge.
-- **Publish Day 13:** push branch `feature/khoa-day13-report-role-filter` và mở draft PR base vào Day 12; retarget/rebase theo chuỗi sau khi PR #21-#26 merge.
+- **Review/Merge Day 13:** PR #27 (`feature/khoa-day13-report-role-filter` → `feature/khoa-day12-maintenance-history-technician`) đang là draft, mergeable; retarget/rebase theo chuỗi sau khi PR #21-#26 merge.
+- **Publish Day 14:** push branch `feature/khoa-day14-integration-smoke-check` và mở draft PR base vào Day 13; retarget/rebase theo chuỗi sau khi PR #21-#27 merge.
 - **Verify Day 8:** đăng nhập `manager/123456`, từ dashboard bấm Hồ sơ phương tiện, Giấy tờ xe, Xem tất cả cảnh báo và Báo cáo chi phí; xác nhận các màn load đúng và RBAC Day 7 vẫn chặn admin/tech.
 - **Verify Day 9:** đăng nhập `tech/123456`, từ dashboard kỹ thuật bấm các nút bảo dưỡng; xác nhận mở đúng cảnh báo/cập nhật bảo dưỡng và không lỗi FXML handler.
 - **Verify Day 10:** đăng nhập `tech/123456`, kiểm tra sidebar có `Xe cần bảo dưỡng`; đăng nhập `admin/123456` xác nhận không mở được các handler bảo dưỡng nếu gọi nhầm.
 - **Verify Day 11:** đăng nhập `tech/123456`, tạo/cập nhật phiếu bảo dưỡng và kiểm tra DB `maintenance_records.technician_id`, `created_by`, `updated_by` nhận đúng `users.user_id` của tài khoản tech.
 - **Verify Day 12:** đăng nhập `tech/123456`, mở Cập nhật bảo dưỡng, lọc theo xe và xác nhận cột `Kỹ thuật viên` hiển thị đúng user phụ trách phiếu.
 - **Verify Day 13:** đăng nhập `manager/123456`, mở Báo cáo chi phí và lọc theo năm/xe; đăng nhập `tech/123456` hoặc `admin/123456` xác nhận không mở được report nếu gọi nhầm handler.
-- **Day 14:** tích hợp và sửa lỗi: chạy build, rà FXML handler/controller binding, kiểm tra auth/user/role/dashboard/RBAC theo chuỗi Day 7-13.
+- **Verify Day 14:** chạy lại FXML smoke check + `.\mvnw clean package`; đăng nhập thử `admin/manager/tech` để xác nhận sidebar và handler guard theo đúng role.
+- **Day 15:** chốt README, tài khoản demo và kiểm tra chạy project để chuẩn bị nộp/demo.
 - **Tinh chỉnh encoding:** nếu nhóm thống nhất chuẩn UTF-8, chuyển dần text không dấu trong các file mới về tiếng Việt có dấu.
 
 ### Kế hoạch công việc Nguyễn Đăng Khoa
