@@ -1,16 +1,27 @@
 package controller.maintenance;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.util.StringConverter;
+import model.dao.ReportDAO;
+import model.dao.VehicleDAO;
 import model.dto.MonthlyCostReportDTO;
+import model.entity.Vehicle;
+
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
 
 public class ReportController {
 
     @FXML private ComboBox<String> cbYear;
-    @FXML private ComboBox<String> cbVehicle;
+    @FXML private ComboBox<Vehicle> cbVehicle;
 
     @FXML private Label lblTotalMaintenanceCost;
     @FXML private Label lblTotalDocumentCost;
@@ -23,25 +34,97 @@ public class ReportController {
     @FXML private TableColumn<MonthlyCostReportDTO, String> colReportDocumentCost;
     @FXML private TableColumn<MonthlyCostReportDTO, String> colReportTotalCost;
 
+    private final ReportDAO reportDAO = new ReportDAO();
+    private final VehicleDAO vehicleDAO = new VehicleDAO();
+    private final NumberFormat currencyFormat = NumberFormat.getNumberInstance(Locale.of("vi", "VN"));
+
     @FXML
     public void initialize() {
         cbYear.getItems().addAll("2024", "2025", "2026");
         cbYear.setValue("2026");
-        // TODO: load vehicles into cbVehicle, bind table columns, load report data
+        configureVehicleFilter();
+        configureTable();
+        loadReportData();
     }
 
     @FXML
     private void handleSearch() {
-        // TODO: call ReportService with selected year/vehicle, update table and summary labels
+        loadReportData();
     }
 
     @FXML
     private void handleRefresh() {
         cbVehicle.setValue(null);
         cbYear.setValue("2026");
-        lblTotalMaintenanceCost.setText("0 VNĐ");
-        lblTotalDocumentCost.setText("0 VNĐ");
-        lblGrandTotal.setText("0 VNĐ");
-        tblReport.getItems().clear();
+        loadReportData();
+    }
+
+    private void configureVehicleFilter() {
+        cbVehicle.setItems(FXCollections.observableArrayList(vehicleDAO.findAll()));
+        cbVehicle.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Vehicle vehicle) {
+                return vehicle == null ? "" : vehicle.getLicensePlate();
+            }
+
+            @Override
+            public Vehicle fromString(String value) {
+                return null;
+            }
+        });
+    }
+
+    private void configureTable() {
+        colReportLicensePlate.setCellValueFactory(cell ->
+                new SimpleStringProperty(nullToEmpty(cell.getValue().getLicensePlate())));
+        colReportPeriod.setCellValueFactory(cell ->
+                new SimpleStringProperty(nullToEmpty(cell.getValue().getPeriodYm())));
+        colReportMaintenanceCost.setCellValueFactory(cell ->
+                new SimpleStringProperty(formatCurrency(cell.getValue().getMaintenanceCost())));
+        colReportDocumentCost.setCellValueFactory(cell ->
+                new SimpleStringProperty(formatCurrency(cell.getValue().getDocumentCost())));
+        colReportTotalCost.setCellValueFactory(cell ->
+                new SimpleStringProperty(formatCurrency(cell.getValue().getTotalCost())));
+    }
+
+    private void loadReportData() {
+        String year = cbYear.getValue() == null || cbYear.getValue().isBlank()
+                ? "2026"
+                : cbYear.getValue();
+        Vehicle vehicle = cbVehicle.getValue();
+        List<MonthlyCostReportDTO> rows = vehicle == null
+                ? reportDAO.findMonthlyCostsByYear(year)
+                : reportDAO.findMonthlyCostsByVehicleAndYear(vehicle.getVehicleId(), year);
+
+        tblReport.setItems(FXCollections.observableArrayList(rows));
+        updateSummary(rows);
+    }
+
+    private void updateSummary(List<MonthlyCostReportDTO> rows) {
+        BigDecimal maintenanceTotal = BigDecimal.ZERO;
+        BigDecimal documentTotal = BigDecimal.ZERO;
+        BigDecimal grandTotal = BigDecimal.ZERO;
+
+        for (MonthlyCostReportDTO row : rows) {
+            maintenanceTotal = maintenanceTotal.add(nonNull(row.getMaintenanceCost()));
+            documentTotal = documentTotal.add(nonNull(row.getDocumentCost()));
+            grandTotal = grandTotal.add(nonNull(row.getTotalCost()));
+        }
+
+        lblTotalMaintenanceCost.setText(formatCurrency(maintenanceTotal));
+        lblTotalDocumentCost.setText(formatCurrency(documentTotal));
+        lblGrandTotal.setText(formatCurrency(grandTotal));
+    }
+
+    private BigDecimal nonNull(BigDecimal value) {
+        return value == null ? BigDecimal.ZERO : value;
+    }
+
+    private String formatCurrency(BigDecimal value) {
+        return currencyFormat.format(nonNull(value)) + " VNĐ";
+    }
+
+    private String nullToEmpty(String value) {
+        return value == null ? "" : value;
     }
 }

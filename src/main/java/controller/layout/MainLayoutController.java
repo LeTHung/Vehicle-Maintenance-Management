@@ -109,7 +109,6 @@ public class MainLayoutController {
                 lblUserRole.setText("Quản trị viên");
                 lblRoleBadge.setText("ADMIN");
                 showGroup(groupAdmin);
-                showGroup(groupReport);
             }
             case ROLE_TECH -> {
                 lblUserRole.setText("Nhân viên kỹ thuật");
@@ -257,6 +256,10 @@ public class MainLayoutController {
 
     @FXML
     private void openReport() {
+        if (!ROLE_MANAGER.equals(currentRole)) {
+            showAccessDenied("Báo cáo chi phí", btnReport);
+            return;
+        }
         loadPage("maintenance/report-view.fxml", "Báo cáo chi phí", btnReport);
     }
 
