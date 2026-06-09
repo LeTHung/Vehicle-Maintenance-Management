@@ -82,7 +82,7 @@
             <Region HBox.hgrow="ALWAYS"/>
 
             <TextField fx:id="txtQuickSearch" promptText="Tìm kiếm nhanh..." prefWidth="300" styleClass="search-field"/>
-            <Button text="Thông báo" onAction="#openDocumentAlert" styleClass="btn-soft"/>
+            <Button fx:id="btnTopbarNotification" text="Thông báo" onAction="#openDocumentAlert" styleClass="btn-soft"/>
         </HBox>
     </top>
 
