@@ -1,5 +1,6 @@
 package controller.layout;
 
+import controller.dashboard.ManagerDashboardController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -265,7 +266,9 @@ public class MainLayoutController {
                 showPlaceholder("Lỗi tải màn hình", "Không tìm thấy file: " + fxmlFile, activeButton);
                 return;
             }
-            Parent page = FXMLLoader.load(url);
+            FXMLLoader loader = new FXMLLoader(url);
+            Parent page = loader.load();
+            configureLoadedController(loader.getController());
             if (page instanceof ScrollPane sp) {
                 sp.setFitToWidth(true);
                 sp.setFitToHeight(false);
@@ -278,6 +281,16 @@ public class MainLayoutController {
         } catch (Exception e) {
             e.printStackTrace();
             showPlaceholder("Lỗi tải màn hình", "Không thể tải file: " + fxmlFile, activeButton);
+        }
+    }
+
+    private void configureLoadedController(Object controller) {
+        if (controller instanceof ManagerDashboardController managerDashboardController) {
+            managerDashboardController.setNavigationHandlers(
+                    this::openVehicle,
+                    this::openVehicleDocument,
+                    this::openDocumentAlert,
+                    this::openReport);
         }
     }
 

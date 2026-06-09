@@ -11,8 +11,9 @@
             <Label text="Fleet Operations Dashboard" styleClass="display-title"/>
             <Label text="Trung tâm điều phối đội xe: phương tiện, giấy tờ pháp lý, bảo dưỡng và chi phí." styleClass="hero-subtitle"/>
             <HBox spacing="12">
-                <Button text="+ Thêm xe mới" styleClass="btn-primary"/>
-                <Button text="Xuất báo cáo" styleClass="btn-ghost"/>
+                <Button text="Hồ sơ phương tiện" onAction="#handleOpenVehicle" styleClass="btn-primary"/>
+                <Button text="Giấy tờ xe" onAction="#handleOpenVehicleDocument" styleClass="btn-soft"/>
+                <Button text="Báo cáo chi phí" onAction="#handleOpenReport" styleClass="btn-ghost"/>
             </HBox>
         </VBox>
 
@@ -41,7 +42,11 @@
 
         <HBox spacing="22">
             <VBox spacing="16" styleClass="panel" HBox.hgrow="ALWAYS">
-                <Label text="Cảnh báo giấy tờ ưu tiên" styleClass="section-title"/>
+                <HBox spacing="12" styleClass="table-title-row">
+                    <Label text="Cảnh báo giấy tờ ưu tiên" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Xem tất cả" onAction="#handleOpenDocumentAlert" styleClass="btn-soft"/>
+                </HBox>
                 <VBox fx:id="alertList" spacing="12"/>
             </VBox>
 

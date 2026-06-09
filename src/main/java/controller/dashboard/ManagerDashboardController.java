@@ -14,6 +14,10 @@ public class ManagerDashboardController {
 
     private final VehicleDAO vehicleDAO = new VehicleDAO();
     private final DocumentAlertService documentAlertService = new DocumentAlertService();
+    private Runnable openVehicleHandler = () -> {};
+    private Runnable openVehicleDocumentHandler = () -> {};
+    private Runnable openDocumentAlertHandler = () -> {};
+    private Runnable openReportHandler = () -> {};
 
     @FXML private Label lblTotalVehicles;
     @FXML private Label lblActiveVehicles;
@@ -35,6 +39,36 @@ public class ManagerDashboardController {
 
         lblPriorityText.setText(resolvePriorityText(overdue, comingDue));
         renderAlertList(documentAlertService.listAlerts());
+    }
+
+    public void setNavigationHandlers(Runnable openVehicleHandler,
+                                      Runnable openVehicleDocumentHandler,
+                                      Runnable openDocumentAlertHandler,
+                                      Runnable openReportHandler) {
+        this.openVehicleHandler = safeHandler(openVehicleHandler);
+        this.openVehicleDocumentHandler = safeHandler(openVehicleDocumentHandler);
+        this.openDocumentAlertHandler = safeHandler(openDocumentAlertHandler);
+        this.openReportHandler = safeHandler(openReportHandler);
+    }
+
+    @FXML
+    private void handleOpenVehicle() {
+        openVehicleHandler.run();
+    }
+
+    @FXML
+    private void handleOpenVehicleDocument() {
+        openVehicleDocumentHandler.run();
+    }
+
+    @FXML
+    private void handleOpenDocumentAlert() {
+        openDocumentAlertHandler.run();
+    }
+
+    @FXML
+    private void handleOpenReport() {
+        openReportHandler.run();
     }
 
     private long countByStatus(List<Vehicle> vehicles, String status) {
@@ -96,5 +130,9 @@ public class ManagerDashboardController {
 
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
+    }
+
+    private Runnable safeHandler(Runnable handler) {
+        return handler == null ? () -> {} : handler;
     }
 }
