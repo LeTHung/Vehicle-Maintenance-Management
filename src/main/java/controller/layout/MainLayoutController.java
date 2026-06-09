@@ -1,6 +1,7 @@
 package controller.layout;
 
 import controller.dashboard.ManagerDashboardController;
+import controller.dashboard.TechnicianDashboardController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -291,6 +292,10 @@ public class MainLayoutController {
                     this::openVehicleDocument,
                     this::openDocumentAlert,
                     this::openReport);
+        } else if (controller instanceof TechnicianDashboardController technicianDashboardController) {
+            technicianDashboardController.setNavigationHandlers(
+                    this::openMaintenanceAlert,
+                    this::openMaintenanceRecord);
         }
     }
 
