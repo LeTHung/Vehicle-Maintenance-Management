@@ -241,9 +241,7 @@ public class MainLayoutController {
             showAccessDenied("Lịch sử bảo dưỡng", btnMaintenanceHistory);
             return;
         }
-        showPlaceholder("Lịch sử bảo dưỡng",
-                "Màn hình lịch sử bảo dưỡng theo từng xe — sẽ hoàn thiện ở ngày 12.",
-                btnMaintenanceHistory);
+        loadPage("maintenance/maintenance-history-view.fxml", "Lịch sử bảo dưỡng", btnMaintenanceHistory);
     }
 
     private boolean canOpenMaintenanceAlert() {
