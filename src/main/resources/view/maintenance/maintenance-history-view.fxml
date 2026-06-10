@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.maintenance.MaintenanceHistoryController"
+            fitToWidth="true"
+            styleClass="page-scroll">
+    <VBox spacing="24" styleClass="page">
+        <VBox styleClass="page-header">
+            <Label text="Lịch sử bảo dưỡng" styleClass="page-title"/>
+            <Label text="Tra cứu các lần bảo dưỡng theo xe, trạng thái và kỹ thuật viên phụ trách." styleClass="page-subtitle"/>
+        </VBox>
+
+        <HBox spacing="12" styleClass="toolbar-panel">
+            <ComboBox fx:id="cbFilterVehicle" promptText="Lọc theo xe..." prefWidth="220"/>
+            <ComboBox fx:id="cbFilterStatus" promptText="Lọc trạng thái..." prefWidth="180"/>
+            <Button text="Làm mới" onAction="#handleRefresh" styleClass="btn-soft"/>
+        </HBox>
+
+        <VBox styleClass="table-panel">
+            <HBox styleClass="table-title-row">
+                <Label text="Danh sách lịch sử bảo dưỡng" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <TableView fx:id="tblHistory" prefHeight="500" VBox.vgrow="ALWAYS" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="colHistoryId" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="colHistoryLicensePlate" text="Biển số" prefWidth="120"/>
+                    <TableColumn fx:id="colHistoryType" text="Loại" prefWidth="120"/>
+                    <TableColumn fx:id="colHistoryTitle" text="Tiêu đề" prefWidth="190"/>
+                    <TableColumn fx:id="colHistoryServiceDate" text="Ngày thực hiện" prefWidth="130"/>
+                    <TableColumn fx:id="colHistoryOdometer" text="ODO (km)" prefWidth="100"/>
+                    <TableColumn fx:id="colHistoryTechnician" text="Kỹ thuật viên" prefWidth="160"/>
+                    <TableColumn fx:id="colHistoryProvider" text="Nhà cung cấp" prefWidth="150"/>
+                    <TableColumn fx:id="colHistoryTotalCost" text="Chi phí (VNĐ)" prefWidth="130"/>
+                    <TableColumn fx:id="colHistoryStatus" text="Trạng thái" prefWidth="120"/>
+                    <TableColumn fx:id="colHistoryWorkSummary" text="Nội dung công việc" prefWidth="240"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>

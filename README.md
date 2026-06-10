@@ -158,8 +158,8 @@ Pham vi demo theo role:
 | Username | Man hinh/chuc nang chinh |
 |---|---|
 | `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, placeholder Role/Permission va Audit logs |
-| `manager` | Dashboard doi xe, Ho so phuong tien, Giay to xe, Canh bao giay to, Ke hoach/canh bao bao duong, Bao cao chi phi |
-| `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong, lich su phieu co cot ky thuat vien |
+| `manager` | Dashboard doi xe, Ho so phuong tien, Giay to xe, Canh bao giay to, Ke hoach/canh bao/lich su bao duong, Bao cao chi phi |
+| `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong |
 
 Kiem tra nhanh sau khi seed:
 
@@ -188,7 +188,7 @@ Luong dang nhap hien tai:
 
 - Dang nhap bang tai khoan demo.
 - Admin co menu Quan ly nguoi dung.
-- Manager co menu phuong tien/giay to/canh bao/bao cao.
+- Manager co menu phuong tien/giay to/canh bao/lich su bao duong/bao cao.
 - Technician co menu bao duong.
 
 ## Checklist truoc khi demo/nop bai
@@ -213,7 +213,7 @@ Chay ung dung va test 3 role:
 ```
 
 - `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can.
-- `manager/123456`: mo dashboard, ho so phuong tien, giay to xe, canh bao giay to va bao cao chi phi.
+- `manager/123456`: mo dashboard, ho so phuong tien, giay to xe, canh bao giay to, lich su bao duong va bao cao chi phi.
 - `tech/123456`: mo dashboard ky thuat, Xe can bao duong va Cap nhat bao duong.
 - Dang xuat sau moi role de xac nhan session duoc clear.
 - Neu thay loi ket noi DB, kiem tra lai `DB_MODE`, `DB_URL`, `DB_USER`, `DB_PASSWORD`.
