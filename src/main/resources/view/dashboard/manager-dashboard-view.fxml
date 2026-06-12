@@ -8,7 +8,7 @@
             styleClass="page-scroll">
     <VBox spacing="28" styleClass="page">
         <VBox styleClass="hero-manager">
-            <Label text="Fleet Operations Dashboard" styleClass="display-title"/>
+            <Label text="Bảng điều phối đội xe" styleClass="display-title"/>
             <Label text="Trung tâm điều phối đội xe: phương tiện, giấy tờ pháp lý, bảo dưỡng và chi phí." styleClass="hero-subtitle"/>
             <HBox spacing="12">
                 <Button text="Hồ sơ phương tiện" onAction="#handleOpenVehicle" styleClass="btn-primary"/>
@@ -21,12 +21,12 @@
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
                 <Label text="Tổng phương tiện" styleClass="metric-label"/>
                 <Label fx:id="lblTotalVehicles" text="0" styleClass="metric-value"/>
-                <Label text="Dữ liệu từ bảng vehicles" styleClass="metric-trend-primary"/>
+                <Label text="Dữ liệu từ hồ sơ phương tiện" styleClass="metric-trend-primary"/>
             </VBox>
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
                 <Label text="Đang hoạt động" styleClass="metric-label"/>
                 <Label fx:id="lblActiveVehicles" text="0" styleClass="metric-value"/>
-                <Label text="Trạng thái ACTIVE" styleClass="metric-trend-success"/>
+                <Label text="Trạng thái đang hoạt động" styleClass="metric-trend-success"/>
             </VBox>
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
                 <Label text="Giấy tờ sắp hạn" styleClass="metric-label"/>

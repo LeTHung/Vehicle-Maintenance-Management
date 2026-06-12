@@ -96,7 +96,11 @@ public class MaintenanceHistoryController {
 
     private void setupStatusFilter() {
         cbFilterStatus.setItems(FXCollections.observableArrayList(
-            ALL_STATUSES, "OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED"
+            ALL_STATUSES,
+            recordStatusLabel("OPEN"),
+            recordStatusLabel("IN_PROGRESS"),
+            recordStatusLabel("COMPLETED"),
+            recordStatusLabel("CANCELLED")
         ));
         cbFilterStatus.setValue(ALL_STATUSES);
     }
@@ -107,7 +111,7 @@ public class MaintenanceHistoryController {
         colHistoryLicensePlate.setCellValueFactory(c ->
             new SimpleStringProperty(vehicleNameMap.getOrDefault(c.getValue().getVehicleId(), "")));
         colHistoryType.setCellValueFactory(c ->
-            new SimpleStringProperty(nullToEmpty(c.getValue().getRecordType())));
+            new SimpleStringProperty(recordTypeLabel(c.getValue().getRecordType())));
         colHistoryTitle.setCellValueFactory(c ->
             new SimpleStringProperty(nullToEmpty(c.getValue().getTitle())));
         colHistoryServiceDate.setCellValueFactory(c ->
@@ -121,7 +125,7 @@ public class MaintenanceHistoryController {
         colHistoryTotalCost.setCellValueFactory(c ->
             new SimpleStringProperty(formatCost(c.getValue().getTotalCost())));
         colHistoryStatus.setCellValueFactory(c ->
-            new SimpleStringProperty(nullToEmpty(c.getValue().getRecordStatus())));
+            new SimpleStringProperty(recordStatusLabel(c.getValue().getRecordStatus())));
         colHistoryWorkSummary.setCellValueFactory(c ->
             new SimpleStringProperty(nullToEmpty(c.getValue().getWorkSummary())));
     }
@@ -141,7 +145,7 @@ public class MaintenanceHistoryController {
 
         if (selectedStatus != null && !ALL_STATUSES.equals(selectedStatus)) {
             records = records.stream()
-                .filter(record -> selectedStatus.equals(record.getRecordStatus()))
+                .filter(record -> recordStatusValue(selectedStatus).equals(record.getRecordStatus()))
                 .toList();
         }
 
@@ -195,5 +199,42 @@ public class MaintenanceHistoryController {
 
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
+    }
+
+    private String recordTypeLabel(String type) {
+        if (type == null || type.isBlank()) {
+            return "";
+        }
+        return switch (type) {
+            case "PREVENTIVE" -> "Bảo dưỡng định kỳ";
+            case "CORRECTIVE" -> "Sửa chữa phát sinh";
+            default -> type;
+        };
+    }
+
+    private String recordStatusLabel(String status) {
+        if (status == null || status.isBlank()) {
+            return "";
+        }
+        return switch (status) {
+            case "OPEN" -> "Chờ xử lý";
+            case "IN_PROGRESS" -> "Đang xử lý";
+            case "COMPLETED" -> "Hoàn thành";
+            case "CANCELLED" -> "Đã hủy";
+            default -> status;
+        };
+    }
+
+    private String recordStatusValue(String label) {
+        if (label == null || label.isBlank()) {
+            return "";
+        }
+        return switch (label) {
+            case "Chờ xử lý" -> "OPEN";
+            case "Đang xử lý" -> "IN_PROGRESS";
+            case "Hoàn thành" -> "COMPLETED";
+            case "Đã hủy" -> "CANCELLED";
+            default -> label;
+        };
     }
 }

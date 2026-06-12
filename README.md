@@ -8,7 +8,9 @@ Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co s
 - Da co man hinh dang nhap, dang xuat, session va phan quyen menu theo role.
 - Da co quan ly tai khoan co ban: xem danh sach, them, sua, khoa/mo khoa user.
 - Da co seed du lieu role/user demo trong `data/seed-auth.sql`.
+- Da bo sung seed demo thuc te trong `data/seed-demo-realistic.sql`: 6 xe, 18 giay to, canh bao theo ngay hien tai, ke hoach/lich su bao duong va chi phi bao cao.
 - Da co man hinh ho so phuong tien, giay to xe, canh bao giay to, ke hoach/canh bao/cap nhat bao duong va bao cao chi phi.
+- Dashboard Admin, Manager va Technician uu tien lay so lieu tu DB thay vi dung so lieu ao/hard-code.
 - RBAC hien tai duoc guard o menu va handler: Admin quan ly tai khoan, Manager quan ly doi xe/bao cao, Technician xu ly bao duong.
 
 ## Muc tieu
@@ -50,8 +52,12 @@ src/main/resources
 `-- view         # File FXML
 
 data
-|-- Dump20260524.sql
-`-- seed-auth.sql
+|-- Dump20260524.sql              # Schema goc va danh muc nen
+|-- seed-auth.sql                 # Tai khoan demo admin/manager/tech
+|-- seed-demo-realistic.sql       # Seed demo tong hop, nen dung khi demo
+|-- data-vehicles.sql             # Seed rieng cho xe + giay to xe
+|-- seed-maintenance-plans.sql    # Seed rieng cho ke hoach bao duong
+`-- seed-maintenance.sql          # Seed rieng cho phieu/lich su bao duong
 ```
 
 ## Yeu cau moi truong
@@ -131,7 +137,7 @@ MYSQLUSER=user
 MYSQLPASSWORD=password
 ```
 
-## Tao database va seed tai khoan demo
+## Tao database va seed du lieu demo
 
 Chay schema goc neu database chua co bang:
 
@@ -143,6 +149,27 @@ Chay seed auth/user/role:
 
 ```powershell
 Get-Content data\seed-auth.sql | mysql -u root -p
+```
+
+Chay seed demo thuc te de thay du lieu ao/hard-code:
+
+```powershell
+Get-Content data\seed-demo-realistic.sql | mysql -u root -p
+```
+
+File `seed-demo-realistic.sql` se nap lai du lieu nghiep vu demo gom:
+
+- 6 phuong tien voi bien so, so khung, so may, ODO va trang thai gan voi nghiep vu doi xe.
+- 18 giay to phap ly, moi xe co Dang kiem, Bao hiem va Phi duong bo.
+- Ngay het han dung `CURDATE()` nen khi demo se luon co ca nhom qua han, sap het han trong 15 ngay va con hieu luc.
+- Ke hoach bao duong theo ngay/km, phieu bao duong, phu tung/cong viec va chi phi bao cao.
+
+Neu muon nap rieng tung module, chay theo thu tu:
+
+```powershell
+Get-Content data\data-vehicles.sql | mysql -u root -p
+Get-Content data\seed-maintenance-plans.sql | mysql -u root -p
+Get-Content data\seed-maintenance.sql | mysql -u root -p
 ```
 
 Tai khoan demo:
@@ -157,7 +184,7 @@ Pham vi demo theo role:
 
 | Username | Man hinh/chuc nang chinh |
 |---|---|
-| `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, placeholder Role/Permission va Audit logs |
+| `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, dashboard tong hop user/role/xe/canh bao lay tu DB |
 | `manager` | Dashboard doi xe, Ho so phuong tien, Giay to xe, Canh bao giay to, Ke hoach/canh bao/lich su bao duong, Bao cao chi phi |
 | `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong |
 
@@ -204,6 +231,7 @@ Neu may moi chua co database, chay schema va seed:
 ```powershell
 Get-Content data\Dump20260524.sql | mysql -u root -p
 Get-Content data\seed-auth.sql | mysql -u root -p
+Get-Content data\seed-demo-realistic.sql | mysql -u root -p
 ```
 
 Chay ung dung va test 3 role:

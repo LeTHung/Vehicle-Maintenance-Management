@@ -1,80 +1,24 @@
--- Dữ liệu mẫu kế hoạch bảo dưỡng
--- Chạy sau khi đã import Dump20260524.sql + seed-auth.sql + data-vehicles.sql
--- Tạo 5 kế hoạch với trạng thái OVERDUE, COMING_DUE, NORMAL để demo
+-- Realistic seed data cho kế hoạch bảo dưỡng
+-- Chạy sau data/Dump20260524.sql + data/seed-auth.sql + data/data-vehicles.sql.
 
+SET NAMES utf8mb4;
 USE vehicle_maintenance_management;
 
--- ─── Kế hoạch 1: 51A-12345 + Thay dầu → OVERDUE (quá hạn theo ngày và ODO) ───
-INSERT INTO maintenance_plans (
-    vehicle_id, maintenance_type_id,
-    interval_days, interval_km,
-    last_service_date, last_service_odometer,
-    next_due_date, next_due_odometer,
-    is_active, notes
-)
-SELECT v.vehicle_id, 2,
-       180, 5000,
-       '2025-11-11', 30000,
-       '2026-05-10', 35000,
-       1, 'Thay dầu định kỳ — đã quá hạn'
-FROM vehicles v WHERE v.license_plate = '51A-12345';
+SET FOREIGN_KEY_CHECKS = 0;
+DELETE FROM alerts;
+DELETE FROM maintenance_record_items;
+DELETE FROM maintenance_records;
+DELETE FROM maintenance_plans;
+SET FOREIGN_KEY_CHECKS = 1;
 
--- ─── Kế hoạch 2: 51A-12345 + Kiểm tra phanh → COMING_DUE (sắp đến hạn theo ngày) ───
-INSERT INTO maintenance_plans (
-    vehicle_id, maintenance_type_id,
-    interval_days,
-    last_service_date,
-    next_due_date, next_due_odometer,
-    is_active, notes
-)
-SELECT v.vehicle_id, 3,
-       180,
-       '2025-12-02',
-       '2026-06-01', 45000,
-       1, 'Kiểm tra phanh — sắp đến hạn (còn 3 ngày)'
-FROM vehicles v WHERE v.license_plate = '51A-12345';
-
--- ─── Kế hoạch 3: 51B-67890 + Bảo dưỡng định kỳ → OVERDUE (quá hạn theo ngày) ───
-INSERT INTO maintenance_plans (
-    vehicle_id, maintenance_type_id,
-    interval_days, interval_km,
-    last_service_date, last_service_odometer,
-    next_due_date, next_due_odometer,
-    is_active, notes
-)
-SELECT v.vehicle_id, 1,
-       90, 10000,
-       '2026-01-15', 56000,
-       '2026-04-15', 67000,
-       1, 'Bảo dưỡng định kỳ — quá hạn 44 ngày'
-FROM vehicles v WHERE v.license_plate = '51B-67890';
-
--- ─── Kế hoạch 4: 51B-67890 + Lốp → COMING_DUE (sắp đến hạn theo ODO) ───
-INSERT INTO maintenance_plans (
-    vehicle_id, maintenance_type_id,
-    interval_km,
-    last_service_odometer,
-    next_due_date, next_due_odometer,
-    is_active, notes
-)
-SELECT v.vehicle_id, 4,
-       20000,
-       42000,
-       '2026-10-20', 62300,
-       1, 'Thay lốp — sắp đến hạn theo ODO (còn 300 km)'
-FROM vehicles v WHERE v.license_plate = '51B-67890';
-
--- ─── Kế hoạch 5: 51C-24680 + Bảo dưỡng định kỳ → NORMAL (chưa đến hạn) ───
-INSERT INTO maintenance_plans (
-    vehicle_id, maintenance_type_id,
-    interval_days, interval_km,
-    last_service_date, last_service_odometer,
-    next_due_date, next_due_odometer,
-    is_active, notes
-)
-SELECT v.vehicle_id, 1,
-       180, 5000,
-       '2026-03-01', 23000,
-       '2026-08-28', 33000,
-       1, 'Bảo dưỡng định kỳ — còn 91 ngày và 5000 km'
-FROM vehicles v WHERE v.license_plate = '51C-24680';
+-- 4. Kế hoạch bảo dưỡng: có xe quá hạn, sắp đến hạn theo ngày và sắp đến hạn theo ODO.
+INSERT INTO maintenance_plans
+(vehicle_id, maintenance_type_id, interval_days, interval_km, last_service_date, last_service_odometer,
+ next_due_date, next_due_odometer, alert_before_days, alert_before_km, is_active, notes, created_by, updated_by)
+VALUES
+((SELECT vehicle_id FROM vehicles WHERE license_plate='51C-256.89'), 2, 180, 5000, DATE_SUB(CURDATE(), INTERVAL 176 DAY), 43200, DATE_ADD(CURDATE(), INTERVAL 4 DAY), 48700, 15, 700, 1, 'Thay dầu sắp đến hạn theo ngày và ODO', (SELECT user_id FROM users WHERE username='manager' LIMIT 1), (SELECT user_id FROM users WHERE username='manager' LIMIT 1)),
+((SELECT vehicle_id FROM vehicles WHERE license_plate='50H-112.35'), 3, 180, 10000, DATE_SUB(CURDATE(), INTERVAL 205 DAY), 63000, DATE_SUB(CURDATE(), INTERVAL 15 DAY), 73000, 15, 500, 1, 'Kiểm tra phanh đã quá hạn, xe đang ở xưởng', (SELECT user_id FROM users WHERE username='manager' LIMIT 1), (SELECT user_id FROM users WHERE username='manager' LIMIT 1)),
+((SELECT vehicle_id FROM vehicles WHERE license_plate='51B-345.67'), 1, 90, 10000, DATE_SUB(CURDATE(), INTERVAL 105 DAY), 86000, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 96500, 15, 700, 1, 'Bảo dưỡng định kỳ đến hạn theo ODO', (SELECT user_id FROM users WHERE username='manager' LIMIT 1), (SELECT user_id FROM users WHERE username='manager' LIMIT 1)),
+((SELECT vehicle_id FROM vehicles WHERE license_plate='60C-990.12'), 5, 180, 10000, DATE_SUB(CURDATE(), INTERVAL 60 DAY), 26000, DATE_ADD(CURDATE(), INTERVAL 120 DAY), 36000, 15, 500, 1, 'Kiểm tra hệ thống làm mát còn hạn', (SELECT user_id FROM users WHERE username='manager' LIMIT 1), (SELECT user_id FROM users WHERE username='manager' LIMIT 1)),
+((SELECT vehicle_id FROM vehicles WHERE license_plate='51F-888.66'), 4, 365, 20000, DATE_SUB(CURDATE(), INTERVAL 350 DAY), 9000, DATE_ADD(CURDATE(), INTERVAL 10 DAY), 29000, 15, 500, 1, 'Đảo lốp/cân bằng động sắp đến hạn theo ngày', (SELECT user_id FROM users WHERE username='manager' LIMIT 1), (SELECT user_id FROM users WHERE username='manager' LIMIT 1)),
+((SELECT vehicle_id FROM vehicles WHERE license_plate='51LD-123.45'), 1, 180, 5000, DATE_SUB(CURDATE(), INTERVAL 210 DAY), 63800, DATE_SUB(CURDATE(), INTERVAL 30 DAY), 68800, 15, 500, 1, 'Xe tạm ngưng nhưng vẫn có kế hoạch bảo dưỡng quá hạn', (SELECT user_id FROM users WHERE username='manager' LIMIT 1), (SELECT user_id FROM users WHERE username='manager' LIMIT 1));

@@ -40,7 +40,11 @@ public class DocumentAlertController {
 
     @FXML
     public void initialize() {
-        cbAlertType.getItems().setAll(ALL_OPTION, "OVERDUE", "COMING_DUE", "NORMAL");
+        cbAlertType.getItems().setAll(
+                ALL_OPTION,
+                dueStatusLabel("OVERDUE"),
+                dueStatusLabel("COMING_DUE"),
+                dueStatusLabel("NORMAL"));
         cbAlertType.setValue(ALL_OPTION);
         configureTable();
         loadAlertData();
@@ -56,13 +60,13 @@ public class DocumentAlertController {
         colIssuerName.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getIssuerName())));
         colExpiryDate.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getExpiryDate()));
         colDaysToExpiry.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getDaysToExpiry()).asObject());
-        colDueStatus.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDueStatus())));
+        colDueStatus.setCellValueFactory(cell -> new SimpleStringProperty(dueStatusLabel(cell.getValue().getDueStatus())));
     }
 
     @FXML
     private void handleSearchAlert() {
         tblAlert.setItems(FXCollections.observableArrayList(
-                documentAlertService.searchAlerts(txtSearch.getText(), cbAlertType.getValue())));
+                documentAlertService.searchAlerts(txtSearch.getText(), dueStatusValue(cbAlertType.getValue()))));
         updateSummary();
     }
 
@@ -88,5 +92,29 @@ public class DocumentAlertController {
 
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
+    }
+
+    private String dueStatusLabel(String status) {
+        if (status == null || status.isBlank()) {
+            return "";
+        }
+        return switch (status) {
+            case "OVERDUE" -> "Quá hạn";
+            case "COMING_DUE" -> "Sắp hết hạn";
+            case "NORMAL" -> "Bình thường";
+            default -> status;
+        };
+    }
+
+    private String dueStatusValue(String label) {
+        if (label == null || label.isBlank() || ALL_OPTION.equals(label)) {
+            return label;
+        }
+        return switch (label) {
+            case "Quá hạn" -> "OVERDUE";
+            case "Sắp hết hạn" -> "COMING_DUE";
+            case "Bình thường" -> "NORMAL";
+            default -> label;
+        };
     }
 }

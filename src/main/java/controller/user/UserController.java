@@ -257,7 +257,7 @@ public class UserController {
         form.setHgap(12);
         form.setVgap(12);
         form.setPadding(new Insets(12));
-        form.add(new Label("Username"), 0, 0);
+        form.add(new Label("Tên đăng nhập"), 0, 0);
         form.add(usernameField, 1, 0);
 
         int row = 1;
@@ -318,7 +318,7 @@ public class UserController {
                                 TextField fullNameField,
                                 ComboBox<Role> roleComboBox) {
         if (isBlank(usernameField.getText())) {
-            return "Vui long nhap username.";
+            return "Vui lòng nhập tên đăng nhập.";
         }
         if (!editMode && isBlank(passwordField.getText())) {
             return "Vui long nhap mat khau.";
@@ -374,7 +374,7 @@ public class UserController {
     private String resolveRoleName(Long roleId) {
         Role role = roleById.get(roleId);
         if (role == null) {
-            return roleId == null ? "" : "Role #" + roleId;
+            return roleId == null ? "" : "Vai trò #" + roleId;
         }
 
         return formatRole(role);

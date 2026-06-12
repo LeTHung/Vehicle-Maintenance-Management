@@ -83,7 +83,11 @@ public class VehicleController {
     @FXML
     public void initialize() {
         cbVehicleType.getItems().setAll("Xe tải", "Xe khách", "Xe con", "Xe bán tải", "Xe chuyên dụng");
-        cbVehicleStatus.getItems().setAll("ACTIVE", "UNDER_MAINTENANCE", "INACTIVE", "DISPOSED");
+        cbVehicleStatus.getItems().setAll(
+                vehicleStatusLabel("ACTIVE"),
+                vehicleStatusLabel("UNDER_MAINTENANCE"),
+                vehicleStatusLabel("INACTIVE"),
+                vehicleStatusLabel("DISPOSED"));
         configureTable();
         loadVehicleData();
     }
@@ -109,7 +113,7 @@ public class VehicleController {
         colCurrentOdometer.setCellValueFactory(
                 cell -> new SimpleIntegerProperty(cell.getValue().getCurrentOdometer()).asObject());
         colVehicleStatus
-                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getVehicleStatus())));
+                .setCellValueFactory(cell -> new SimpleStringProperty(vehicleStatusLabel(cell.getValue().getVehicleStatus())));
 
         tblVehicle.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> populateForm(newValue));
@@ -196,7 +200,7 @@ public class VehicleController {
         vehicle.setEngineNumber(txtEngineNumber.getText());
         vehicle.setColor(txtColor.getText());
         vehicle.setCurrentOdometer(parseRequiredInteger(txtCurrentOdometer.getText(), "ODO hiện tại"));
-        vehicle.setVehicleStatus(cbVehicleStatus.getValue());
+        vehicle.setVehicleStatus(vehicleStatusValue(cbVehicleStatus.getValue()));
         vehicle.setNotes(txtNotes.getText());
         return vehicle;
     }
@@ -240,7 +244,7 @@ public class VehicleController {
         txtEngineNumber.setText(nullToEmpty(vehicle.getEngineNumber()));
         txtColor.setText(nullToEmpty(vehicle.getColor()));
         txtCurrentOdometer.setText(String.valueOf(vehicle.getCurrentOdometer()));
-        cbVehicleStatus.setValue(vehicle.getVehicleStatus());
+        cbVehicleStatus.setValue(vehicleStatusLabel(vehicle.getVehicleStatus()));
         txtNotes.setText(nullToEmpty(vehicle.getNotes()));
     }
 
@@ -306,5 +310,31 @@ public class VehicleController {
 
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
+    }
+
+    private String vehicleStatusLabel(String status) {
+        if (status == null || status.isBlank()) {
+            return "";
+        }
+        return switch (status) {
+            case "ACTIVE" -> "Đang hoạt động";
+            case "UNDER_MAINTENANCE" -> "Đang bảo dưỡng";
+            case "INACTIVE" -> "Ngừng hoạt động";
+            case "DISPOSED" -> "Đã thanh lý";
+            default -> status;
+        };
+    }
+
+    private String vehicleStatusValue(String label) {
+        if (label == null || label.isBlank()) {
+            return null;
+        }
+        return switch (label) {
+            case "Đang hoạt động" -> "ACTIVE";
+            case "Đang bảo dưỡng" -> "UNDER_MAINTENANCE";
+            case "Ngừng hoạt động" -> "INACTIVE";
+            case "Đã thanh lý" -> "DISPOSED";
+            default -> label;
+        };
     }
 }

@@ -1,5 +1,6 @@
 package controller.layout;
 
+import controller.dashboard.AdminDashboardController;
 import controller.dashboard.ManagerDashboardController;
 import controller.dashboard.TechnicianDashboardController;
 import javafx.fxml.FXML;
@@ -26,33 +27,58 @@ import java.util.Locale;
 
 public class MainLayoutController {
 
-    @FXML private StackPane contentArea;
-    @FXML private Label lblPageTitle;
-    @FXML private Label lblUserName;
-    @FXML private Label lblUserRole;
-    @FXML private Label lblRoleBadge;
-    @FXML private TextField txtQuickSearch;
-    @FXML private ComboBox<String> cbRolePreview;
+    @FXML
+    private StackPane contentArea;
+    @FXML
+    private Label lblPageTitle;
+    @FXML
+    private Label lblUserName;
+    @FXML
+    private Label lblUserRole;
+    @FXML
+    private Label lblRoleBadge;
+    @FXML
+    private TextField txtQuickSearch;
+    @FXML
+    private ComboBox<String> cbRolePreview;
 
-    @FXML private VBox groupAdmin;
-    @FXML private VBox groupManager;
-    @FXML private VBox groupTechnician;
-    @FXML private VBox groupReport;
+    @FXML
+    private VBox groupAdmin;
+    @FXML
+    private VBox groupManager;
+    @FXML
+    private VBox groupTechnician;
+    @FXML
+    private VBox groupReport;
 
-    @FXML private Button btnDashboard;
-    @FXML private Button btnAdminUsers;
-    @FXML private Button btnAdminRoles;
-    @FXML private Button btnAuditLog;
-    @FXML private Button btnVehicle;
-    @FXML private Button btnVehicleDocument;
-    @FXML private Button btnDocumentAlert;
-    @FXML private Button btnMaintenancePlan;
-    @FXML private Button btnMaintenanceAlert;
-    @FXML private Button btnTechMaintenanceAlert;
-    @FXML private Button btnMaintenanceRecord;
-    @FXML private Button btnMaintenanceHistory;
-    @FXML private Button btnReport;
-    @FXML private Button btnTopbarNotification;
+    @FXML
+    private Button btnDashboard;
+    @FXML
+    private Button btnAdminUsers;
+    @FXML
+    private Button btnAdminRoles;
+    @FXML
+    private Button btnAuditLog;
+    @FXML
+    private Button btnVehicle;
+    @FXML
+    private Button btnVehicleDocument;
+    @FXML
+    private Button btnDocumentAlert;
+    @FXML
+    private Button btnMaintenancePlan;
+    @FXML
+    private Button btnMaintenanceAlert;
+    @FXML
+    private Button btnTechMaintenanceAlert;
+    @FXML
+    private Button btnMaintenanceRecord;
+    @FXML
+    private Button btnMaintenanceHistory;
+    @FXML
+    private Button btnReport;
+    @FXML
+    private Button btnTopbarNotification;
 
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_MANAGER = "MANAGER";
@@ -107,24 +133,24 @@ public class MainLayoutController {
         switch (role) {
             case ROLE_ADMIN -> {
                 lblUserRole.setText("Quản trị viên");
-                lblRoleBadge.setText("ADMIN");
+                lblRoleBadge.setText("QUẢN TRỊ");
                 showGroup(groupAdmin);
             }
             case ROLE_TECH -> {
                 lblUserRole.setText("Nhân viên kỹ thuật");
-                lblRoleBadge.setText("TECH");
+                lblRoleBadge.setText("KỸ THUẬT");
                 showGroup(groupTechnician);
             }
             case ROLE_MANAGER -> {
                 lblUserRole.setText("Quản lý đội xe");
-                lblRoleBadge.setText("MANAGER");
+                lblRoleBadge.setText("QUẢN LÝ");
                 showGroup(groupManager);
                 showGroup(groupReport);
                 setNodeVisible(btnTopbarNotification, true);
             }
             default -> {
                 lblUserRole.setText("Chưa phân quyền");
-                lblRoleBadge.setText(ROLE_UNKNOWN);
+                lblRoleBadge.setText("CHƯA RÕ");
             }
         }
     }
@@ -154,11 +180,11 @@ public class MainLayoutController {
     @FXML
     private void openDashboard() {
         if (ROLE_ADMIN.equals(currentRole)) {
-            loadPage("dashboard/admin-dashboard-view.fxml", "Dashboard quản trị", btnDashboard);
+            loadPage("dashboard/admin-dashboard-view.fxml", "Tổng quan quản trị", btnDashboard);
         } else if (ROLE_TECH.equals(currentRole)) {
-            loadPage("dashboard/technician-dashboard-view.fxml", "Dashboard kỹ thuật", btnDashboard);
+            loadPage("dashboard/technician-dashboard-view.fxml", "Tổng quan kỹ thuật", btnDashboard);
         } else if (ROLE_MANAGER.equals(currentRole)) {
-            loadPage("dashboard/manager-dashboard-view.fxml", "Dashboard đội xe", btnDashboard);
+            loadPage("dashboard/manager-dashboard-view.fxml", "Tổng quan đội xe", btnDashboard);
         } else {
             showPlaceholder("Không xác định quyền truy cập",
                     "Không thể xác định vai trò người dùng. Vui lòng đăng xuất và đăng nhập lại.",
@@ -182,18 +208,19 @@ public class MainLayoutController {
             return;
         }
         showPlaceholder("Vai trò & phân quyền",
-                "Màn hình này sẽ nối với Role/Permission sau khi có module phân quyền.",
+                "Hệ thống đang áp dụng phân quyền cơ bản theo 3 vai trò: quản trị, quản lý và kỹ thuật. "
+                        + "Menu chức năng được ẩn/hiện theo vai trò đăng nhập.",
                 btnAdminRoles);
     }
 
     @FXML
     private void openAuditLog() {
         if (!ROLE_ADMIN.equals(currentRole)) {
-            showAccessDenied("Audit logs", btnAuditLog);
+            showAccessDenied("nhật ký thao tác", btnAuditLog);
             return;
         }
-        showPlaceholder("Audit logs",
-                "Khu vực theo dõi thao tác hệ thống và lịch sử hoạt động.",
+        showPlaceholder("Nhật ký thao tác",
+                "Nhật ký thao tác là phần mở rộng. Trong phạm vi demo hiện tại, nhóm tập trung vào đăng nhập, phân quyền, phương tiện, giấy tờ và bảo dưỡng.",
                 btnAuditLog);
     }
 
@@ -328,7 +355,11 @@ public class MainLayoutController {
     }
 
     private void configureLoadedController(Object controller) {
-        if (controller instanceof ManagerDashboardController managerDashboardController) {
+        if (controller instanceof AdminDashboardController adminDashboardController) {
+            adminDashboardController.setNavigationHandlers(
+                    this::openAdminUsers,
+                    this::openAdminRoles);
+        } else if (controller instanceof ManagerDashboardController managerDashboardController) {
             managerDashboardController.setNavigationHandlers(
                     this::openVehicle,
                     this::openVehicleDocument,
