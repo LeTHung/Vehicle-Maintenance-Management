@@ -29,6 +29,15 @@
     -fx-min-height: 110;
 }
 
+.clickable-card {
+    -fx-cursor: hand;
+}
+
+.clickable-card:hover {
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.10), 24, 0, 0, 10);
+}
+
 .toolbar-panel {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 16;

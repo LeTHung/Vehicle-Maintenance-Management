@@ -33,9 +33,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Controller cho man hinh quan ly nguoi dung.
+ * Controller cho màn hình quản lý người dùng.
  *
- * <p>Day 5: them / sua / khoa - mo khoa tai khoan qua UserService.</p>
+ * <p>Day 5: thêm / sửa / khóa - mở khóa tài khoản qua UserService.</p>
  */
 public class UserController {
 
@@ -85,6 +85,10 @@ public class UserController {
 
     @FXML
     private void onAddClick() {
+        openCreateUserDialog();
+    }
+
+    public void openCreateUserDialog() {
         Optional<UserFormData> formData = showUserDialog(null);
         if (formData.isEmpty()) {
             return;
@@ -100,7 +104,7 @@ public class UserController {
                     data.phone(),
                     data.roleId());
             reloadData();
-            showInfo("Da tao tai khoan moi.");
+            showInfo("Đã tạo tài khoản mới.");
         } catch (RuntimeException e) {
             showError(e.getMessage());
         }
@@ -110,7 +114,7 @@ public class UserController {
     private void onEditClick() {
         User selected = getSelectedUser();
         if (selected == null) {
-            showWarning("Vui long chon tai khoan can sua.");
+            showWarning("Vui lòng chọn tài khoản cần sửa.");
             return;
         }
 
@@ -134,7 +138,7 @@ public class UserController {
             userService.updateUser(updated);
             reloadData();
             selectUser(updated.getUserId());
-            showInfo("Da cap nhat tai khoan.");
+            showInfo("Đã cập nhật tài khoản.");
         } catch (RuntimeException e) {
             showError(e.getMessage());
         }
@@ -144,18 +148,18 @@ public class UserController {
     private void onLockClick() {
         User selected = getSelectedUser();
         if (selected == null) {
-            showWarning("Vui long chon tai khoan.");
+            showWarning("Vui lòng chọn tài khoản.");
             return;
         }
 
         boolean locked = isLocked(selected);
         if (!locked && isCurrentUser(selected)) {
-            showWarning("Khong the khoa chinh tai khoan dang dang nhap.");
+            showWarning("Không thể khóa chính tài khoản đang đăng nhập.");
             return;
         }
 
-        String action = locked ? "mo khoa" : "khoa";
-        if (!confirm("Xac nhan " + action, "Ban co muon " + action + " tai khoan " + selected.getUsername() + "?")) {
+        String action = locked ? "mở khóa" : "khóa";
+        if (!confirm("Xác nhận " + action, "Bạn có muốn " + action + " tài khoản " + selected.getUsername() + "?")) {
             return;
         }
 
@@ -168,7 +172,7 @@ public class UserController {
 
             reloadData();
             selectUser(selected.getUserId());
-            showInfo("Da cap nhat trang thai tai khoan.");
+            showInfo("Đã cập nhật trạng thái tài khoản.");
         } catch (RuntimeException e) {
             showError(e.getMessage());
         }
@@ -190,6 +194,7 @@ public class UserController {
         colLastLogin.setCellValueFactory(cell -> new SimpleStringProperty(formatDateTime(cell.getValue().getLastLoginAt())));
 
         userTable.setItems(users);
+        userTable.setPlaceholder(new Label("Không có tài khoản người dùng"));
         userTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         userTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && getSelectedUser() != null) {
@@ -211,7 +216,7 @@ public class UserController {
             users.setAll(userService.listUsers());
             updateLockButton(getSelectedUser());
         } catch (RuntimeException e) {
-            showError("Khong the tai danh sach tai khoan. " + nullToEmpty(e.getMessage()));
+            showError("Không thể tải danh sách tài khoản. " + nullToEmpty(e.getMessage()));
         }
     }
 
@@ -227,11 +232,12 @@ public class UserController {
         boolean editMode = existingUser != null;
 
         Dialog<UserFormData> dialog = new Dialog<>();
-        dialog.setTitle(editMode ? "Sua tai khoan" : "Them tai khoan");
-        dialog.setHeaderText(editMode ? "Cap nhat thong tin tai khoan" : "Tao tai khoan dang nhap moi");
+        dialog.setTitle(editMode ? "Sửa tài khoản" : "Thêm tài khoản");
+        dialog.setHeaderText(editMode ? "Cập nhật thông tin tài khoản" : "Tạo tài khoản đăng nhập mới");
 
-        ButtonType saveButtonType = new ButtonType(editMode ? "Cap nhat" : "Tao moi", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+        ButtonType saveButtonType = new ButtonType(editMode ? "Cập nhật" : "Tạo mới", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, cancelButtonType);
 
         TextField usernameField = new TextField(editMode ? existingUser.getUsername() : "");
         PasswordField passwordField = new PasswordField();
@@ -241,10 +247,11 @@ public class UserController {
         ComboBox<Role> roleComboBox = new ComboBox<>();
 
         usernameField.setPromptText("VD: admin");
-        passwordField.setPromptText("Mat khau");
-        fullNameField.setPromptText("Ho ten");
+        passwordField.setPromptText("Mật khẩu");
+        fullNameField.setPromptText("Họ tên");
         emailField.setPromptText("email@fleetcare.local");
-        phoneField.setPromptText("So dien thoai");
+        phoneField.setPromptText("Số điện thoại");
+        roleComboBox.setPromptText("Chọn vai trò");
 
         roleComboBox.getItems().setAll(roleById.values());
         roleComboBox.setCellFactory(comboBox -> new RoleListCell());
@@ -262,18 +269,18 @@ public class UserController {
 
         int row = 1;
         if (!editMode) {
-            form.add(new Label("Mat khau"), 0, row);
+            form.add(new Label("Mật khẩu"), 0, row);
             form.add(passwordField, 1, row);
             row++;
         }
 
-        form.add(new Label("Ho ten"), 0, row);
+        form.add(new Label("Họ tên"), 0, row);
         form.add(fullNameField, 1, row++);
         form.add(new Label("Email"), 0, row);
         form.add(emailField, 1, row++);
-        form.add(new Label("Dien thoai"), 0, row);
+        form.add(new Label("Điện thoại"), 0, row);
         form.add(phoneField, 1, row++);
-        form.add(new Label("Vai tro"), 0, row);
+        form.add(new Label("Vai trò"), 0, row);
         form.add(roleComboBox, 1, row);
 
         usernameField.setPrefWidth(280);
@@ -318,16 +325,16 @@ public class UserController {
                                 TextField fullNameField,
                                 ComboBox<Role> roleComboBox) {
         if (isBlank(usernameField.getText())) {
-            return "Vui long nhap username.";
+            return "Vui lòng nhập username.";
         }
         if (!editMode && isBlank(passwordField.getText())) {
-            return "Vui long nhap mat khau.";
+            return "Vui lòng nhập mật khẩu.";
         }
         if (isBlank(fullNameField.getText())) {
-            return "Vui long nhap ho ten.";
+            return "Vui lòng nhập họ tên.";
         }
         if (roleComboBox.getValue() == null) {
-            return "Vui long chon vai tro.";
+            return "Vui lòng chọn vai trò.";
         }
 
         return "";
@@ -356,7 +363,7 @@ public class UserController {
             return;
         }
 
-        lockButton.setText(user != null && isLocked(user) ? "Mo khoa" : "Khoa");
+        lockButton.setText(user != null && isLocked(user) ? "Mở khóa" : "Khóa");
     }
 
     private boolean isCurrentUser(User user) {
@@ -395,10 +402,10 @@ public class UserController {
 
     private String resolveStatusLabel(String status) {
         if (STATUS_LOCKED.equalsIgnoreCase(nullToEmpty(status))) {
-            return "LOCKED";
+            return "Đã khóa";
         }
 
-        return STATUS_ACTIVE;
+        return "Hoạt động";
     }
 
     private String formatDateTime(LocalDateTime value) {
@@ -415,15 +422,15 @@ public class UserController {
     }
 
     private void showInfo(String message) {
-        showAlert(Alert.AlertType.INFORMATION, "Thong bao", message);
+        showAlert(Alert.AlertType.INFORMATION, "Thông báo", message);
     }
 
     private void showWarning(String message) {
-        showAlert(Alert.AlertType.WARNING, "Canh bao", message);
+        showAlert(Alert.AlertType.WARNING, "Cảnh báo", message);
     }
 
     private void showError(String message) {
-        showAlert(Alert.AlertType.ERROR, "Loi", message == null || message.isBlank() ? "Da co loi xay ra." : message);
+        showAlert(Alert.AlertType.ERROR, "Lỗi", message == null || message.isBlank() ? "Đã có lỗi xảy ra." : message);
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

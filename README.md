@@ -8,6 +8,7 @@ Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co s
 - Da co man hinh dang nhap, dang xuat, session va phan quyen menu theo role.
 - Da co quan ly tai khoan co ban: xem danh sach, them, sua, khoa/mo khoa user.
 - Da co seed du lieu role/user demo trong `data/seed-auth.sql`.
+- Da co Audit logs doc du lieu tu database, tu tao bang `audit_logs` khi can va ghi log dang nhap/dang xuat, quan tri user.
 - Da co man hinh ho so phuong tien, giay to xe, canh bao giay to, ke hoach/canh bao/cap nhat bao duong va bao cao chi phi.
 - RBAC hien tai duoc guard o menu va handler: Admin quan ly tai khoan, Manager quan ly doi xe/bao cao, Technician xu ly bao duong.
 
@@ -15,6 +16,7 @@ Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co s
 
 - Quan ly ho so phuong tien.
 - Quan ly tai khoan va vai tro nguoi dung.
+- Theo doi nhat ky hoat dong quan tri va dang nhap.
 - Theo doi canh bao lien quan den giay to, bao duong va trang thai phuong tien.
 - Ket noi MySQL qua JDBC.
 
@@ -50,6 +52,7 @@ src/main/resources
 `-- view         # File FXML
 
 data
+|-- audit-logs.sql
 |-- Dump20260524.sql
 `-- seed-auth.sql
 ```
@@ -145,6 +148,12 @@ Chay seed auth/user/role:
 Get-Content data\seed-auth.sql | mysql -u root -p
 ```
 
+Audit logs tu tao bang `audit_logs` khi app ghi/doc log. Neu muon nap du lieu demo hoac kiem tra thu cong bang mysql CLI, chay them:
+
+```powershell
+Get-Content data\audit-logs.sql | mysql -u root -p
+```
+
 Tai khoan demo:
 
 | Username | Password | Role |
@@ -157,7 +166,7 @@ Pham vi demo theo role:
 
 | Username | Man hinh/chuc nang chinh |
 |---|---|
-| `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, placeholder Role/Permission va Audit logs |
+| `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, Audit logs doc DB va ghi log auth/user admin |
 | `manager` | Dashboard doi xe, Ho so phuong tien, Giay to xe, Canh bao giay to, Ke hoach/canh bao/lich su bao duong, Bao cao chi phi |
 | `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong |
 
@@ -166,6 +175,7 @@ Kiem tra nhanh sau khi seed:
 ```sql
 SELECT role_id, role_code, role_name, is_active FROM roles;
 SELECT user_id, username, full_name, role_id, account_status FROM users;
+SELECT audit_log_id, username, action, created_at FROM audit_logs ORDER BY created_at DESC LIMIT 10;
 ```
 
 ## Build project
@@ -187,7 +197,7 @@ Neu build loi do Java version, kiem tra lai `JAVA_HOME` dang tro dung JDK 25.
 Luong dang nhap hien tai:
 
 - Dang nhap bang tai khoan demo.
-- Admin co menu Quan ly nguoi dung.
+- Admin co menu Quan ly nguoi dung va Audit logs.
 - Manager co menu phuong tien/giay to/canh bao/lich su bao duong/bao cao.
 - Technician co menu bao duong.
 
@@ -204,7 +214,10 @@ Neu may moi chua co database, chay schema va seed:
 ```powershell
 Get-Content data\Dump20260524.sql | mysql -u root -p
 Get-Content data\seed-auth.sql | mysql -u root -p
+Get-Content data\audit-logs.sql | mysql -u root -p
 ```
+
+Dong `audit-logs.sql` trong checklist la tuy chon de nap demo data; neu bo qua, app van tu tao bang khi mo/ghi Audit logs.
 
 Chay ung dung va test 3 role:
 
@@ -212,7 +225,7 @@ Chay ung dung va test 3 role:
 .\mvnw javafx:run
 ```
 
-- `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can.
+- `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can, mo Audit logs, loc theo hanh dong/ngay va thu tim kiem nhanh.
 - `manager/123456`: mo dashboard, ho so phuong tien, giay to xe, canh bao giay to, lich su bao duong va bao cao chi phi.
 - `tech/123456`: mo dashboard ky thuat, Xe can bao duong va Cap nhat bao duong.
 - Dang xuat sau moi role de xac nhan session duoc clear.

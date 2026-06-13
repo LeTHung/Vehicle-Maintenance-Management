@@ -29,7 +29,6 @@
                     <VBox fx:id="groupAdmin">
                         <Label text="QUẢN TRỊ HỆ THỐNG" styleClass="nav-title"/>
                         <Button fx:id="btnAdminUsers" text="Quản lý người dùng" onAction="#openAdminUsers" maxWidth="Infinity" styleClass="nav-button"/>
-                        <Button fx:id="btnAdminRoles" text="Vai trò &amp; phân quyền" onAction="#openAdminRoles" maxWidth="Infinity" styleClass="nav-button"/>
                         <Button fx:id="btnAuditLog" text="Audit logs" onAction="#openAuditLog" maxWidth="Infinity" styleClass="nav-button"/>
                     </VBox>
 

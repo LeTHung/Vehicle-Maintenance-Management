@@ -2,6 +2,9 @@ package controller.layout;
 
 import controller.dashboard.ManagerDashboardController;
 import controller.dashboard.TechnicianDashboardController;
+import controller.dashboard.AdminDashboardController;
+import controller.user.UserController;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -18,11 +21,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.entity.Role;
 import model.entity.User;
+import service.AuthService;
 import session.UserSession;
 import util.StylesheetLoader;
 
 import java.net.URL;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 public class MainLayoutController {
 
@@ -41,7 +46,6 @@ public class MainLayoutController {
 
     @FXML private Button btnDashboard;
     @FXML private Button btnAdminUsers;
-    @FXML private Button btnAdminRoles;
     @FXML private Button btnAuditLog;
     @FXML private Button btnVehicle;
     @FXML private Button btnVehicleDocument;
@@ -59,7 +63,10 @@ public class MainLayoutController {
     private static final String ROLE_TECH = "TECH";
     private static final String ROLE_UNKNOWN = "UNKNOWN";
 
+    private final AuthService authService = new AuthService();
+
     private String currentRole = ROLE_UNKNOWN;
+    private ChangeListener<String> quickSearchListener;
 
     @FXML
     public void initialize() {
@@ -175,15 +182,16 @@ public class MainLayoutController {
         loadPage("user/user-view.fxml", "Quản lý người dùng", btnAdminUsers);
     }
 
-    @FXML
-    private void openAdminRoles() {
+    private void openAdminUserCreateForm() {
         if (!ROLE_ADMIN.equals(currentRole)) {
-            showAccessDenied("Vai trò & phân quyền", btnAdminRoles);
+            showAccessDenied("Quản lý người dùng", btnAdminUsers);
             return;
         }
-        showPlaceholder("Vai trò & phân quyền",
-                "Màn hình này sẽ nối với Role/Permission sau khi có module phân quyền.",
-                btnAdminRoles);
+        loadPage("user/user-view.fxml", "Quản lý người dùng", btnAdminUsers, controller -> {
+            if (controller instanceof UserController userController) {
+                userController.openCreateUserDialog();
+            }
+        });
     }
 
     @FXML
@@ -192,9 +200,7 @@ public class MainLayoutController {
             showAccessDenied("Audit logs", btnAuditLog);
             return;
         }
-        showPlaceholder("Audit logs",
-                "Khu vực theo dõi thao tác hệ thống và lịch sử hoạt động.",
-                btnAuditLog);
+        loadPage("admin/audit-log-view.fxml", "Audit logs", btnAuditLog);
     }
 
     @FXML
@@ -279,7 +285,7 @@ public class MainLayoutController {
 
     @FXML
     private void handleLogout() {
-        UserSession.getInstance().clear();
+        authService.logout();
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/auth/login-view.fxml"));
             Scene scene = new Scene(root, 420, 360);
@@ -303,6 +309,10 @@ public class MainLayoutController {
     }
 
     private void loadPage(String fxmlFile, String title, Button activeButton) {
+        loadPage(fxmlFile, title, activeButton, controller -> {});
+    }
+
+    private void loadPage(String fxmlFile, String title, Button activeButton, Consumer<Object> controllerCallback) {
         try {
             URL url = getClass().getResource("/view/" + fxmlFile);
             if (url == null) {
@@ -312,6 +322,7 @@ public class MainLayoutController {
             FXMLLoader loader = new FXMLLoader(url);
             Parent page = loader.load();
             configureLoadedController(loader.getController());
+            bindQuickSearchController(loader.getController());
             if (page instanceof ScrollPane sp) {
                 sp.setFitToWidth(true);
                 sp.setFitToHeight(false);
@@ -321,6 +332,7 @@ public class MainLayoutController {
             contentArea.getChildren().setAll(page);
             lblPageTitle.setText(title);
             setActiveButton(activeButton);
+            controllerCallback.accept(loader.getController());
         } catch (Exception e) {
             e.printStackTrace();
             showPlaceholder("Lỗi tải màn hình", "Không thể tải file: " + fxmlFile, activeButton);
@@ -328,7 +340,12 @@ public class MainLayoutController {
     }
 
     private void configureLoadedController(Object controller) {
-        if (controller instanceof ManagerDashboardController managerDashboardController) {
+        if (controller instanceof AdminDashboardController adminDashboardController) {
+            adminDashboardController.setNavigationHandlers(
+                    this::openAdminUsers,
+                    this::openAdminUserCreateForm,
+                    this::openAuditLog);
+        } else if (controller instanceof ManagerDashboardController managerDashboardController) {
             managerDashboardController.setNavigationHandlers(
                     this::openVehicle,
                     this::openVehicleDocument,
@@ -341,7 +358,31 @@ public class MainLayoutController {
         }
     }
 
+    private void bindQuickSearchController(Object controller) {
+        clearQuickSearchBinding();
+        if (controller instanceof QuickSearchAware quickSearchAware && txtQuickSearch != null) {
+            quickSearchListener = (observable, oldValue, newValue) -> quickSearchAware.applyQuickSearch(newValue);
+            txtQuickSearch.textProperty().addListener(quickSearchListener);
+            quickSearchAware.applyQuickSearch(txtQuickSearch.getText());
+        }
+    }
+
+    private void clearQuickSearchBinding() {
+        if (txtQuickSearch == null) {
+            return;
+        }
+        if (quickSearchListener != null) {
+            txtQuickSearch.textProperty().removeListener(quickSearchListener);
+            quickSearchListener = null;
+        }
+        if (!txtQuickSearch.getText().isEmpty()) {
+            txtQuickSearch.clear();
+        }
+    }
+
     private void showPlaceholder(String title, String message, Button activeButton) {
+        clearQuickSearchBinding();
+
         VBox box = new VBox(12);
         box.setAlignment(Pos.CENTER);
         box.getStyleClass().add("placeholder-box");
@@ -367,7 +408,7 @@ public class MainLayoutController {
 
     private void setActiveButton(Button activeButton) {
         Button[] buttons = {
-                btnDashboard, btnAdminUsers, btnAdminRoles, btnAuditLog,
+                btnDashboard, btnAdminUsers, btnAuditLog,
                 btnVehicle, btnVehicleDocument, btnDocumentAlert,
                 btnMaintenancePlan, btnMaintenanceAlert, btnTechMaintenanceAlert,
                 btnMaintenanceRecord, btnMaintenanceHistory, btnReport

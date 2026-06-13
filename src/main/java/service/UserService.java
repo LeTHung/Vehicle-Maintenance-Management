@@ -11,9 +11,9 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
- * Service quan ly tai khoan nguoi dung.
+ * Service quản lý tài khoản người dùng.
  *
- * <p>Day 5: implement CRUD co ban cho man hinh quan tri user.</p>
+ * <p>Day 5: implement CRUD cơ bản cho màn hình quản trị user.</p>
  */
 public class UserService {
 
@@ -22,9 +22,10 @@ public class UserService {
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
+    private final AuditLogService auditLogService = new AuditLogService();
 
     /**
-     * Tao moi mot tai khoan nguoi dung.
+     * Tạo mới một tài khoản người dùng.
      */
     public User createUser(String username,
                            String rawPassword,
@@ -32,9 +33,9 @@ public class UserService {
                            String email,
                            String phone,
                            Long roleId) {
-        String normalizedUsername = requireText(username, "Ten dang nhap khong duoc de trong.");
-        String normalizedPassword = requireText(rawPassword, "Mat khau khong duoc de trong.");
-        String normalizedFullName = requireText(fullName, "Ho ten khong duoc de trong.");
+        String normalizedUsername = requireText(username, "Tên đăng nhập không được để trống.");
+        String normalizedPassword = requireText(rawPassword, "Mật khẩu không được để trống.");
+        String normalizedFullName = requireText(fullName, "Họ tên không được để trống.");
 
         validateUsernameAvailable(normalizedUsername, null);
         validateRole(roleId);
@@ -51,22 +52,24 @@ public class UserService {
 
         Long generatedId = userDAO.insert(user);
         if (generatedId == null) {
-            throw new IllegalStateException("Khong the tao tai khoan. Vui long kiem tra du lieu va thu lai.");
+            throw new IllegalStateException("Không thể tạo tài khoản. Vui lòng kiểm tra dữ liệu và thử lại.");
         }
 
-        return userDAO.findById(generatedId).orElse(user);
+        User createdUser = userDAO.findById(generatedId).orElse(user);
+        auditLogService.recordUserCreated(createdUser);
+        return createdUser;
     }
 
     /**
-     * Cap nhat thong tin tai khoan, khong doi mat khau o method nay.
+     * Cập nhật thông tin tài khoản, không đổi mật khẩu ở method này.
      */
     public User updateUser(User user) {
         if (user == null || user.getUserId() == null) {
-            throw new IllegalArgumentException("Vui long chon tai khoan can cap nhat.");
+            throw new IllegalArgumentException("Vui lòng chọn tài khoản cần cập nhật.");
         }
 
-        String normalizedUsername = requireText(user.getUsername(), "Ten dang nhap khong duoc de trong.");
-        String normalizedFullName = requireText(user.getFullName(), "Ho ten khong duoc de trong.");
+        String normalizedUsername = requireText(user.getUsername(), "Tên đăng nhập không được để trống.");
+        String normalizedFullName = requireText(user.getFullName(), "Họ tên không được để trống.");
         String normalizedStatus = normalizeStatus(user.getAccountStatus());
 
         validateUsernameAvailable(normalizedUsername, user.getUserId());
@@ -79,48 +82,59 @@ public class UserService {
         user.setAccountStatus(normalizedStatus);
 
         if (!userDAO.update(user)) {
-            throw new IllegalStateException("Khong the cap nhat tai khoan. Vui long thu lai.");
+            throw new IllegalStateException("Không thể cập nhật tài khoản. Vui lòng thử lại.");
         }
 
-        return userDAO.findById(user.getUserId()).orElse(user);
+        User updatedUser = userDAO.findById(user.getUserId()).orElse(user);
+        auditLogService.recordUserUpdated(updatedUser);
+        return updatedUser;
     }
 
     /**
-     * Khoa tai khoan: chuyen account_status sang LOCKED.
+     * Khóa tài khoản: chuyển account_status sang LOCKED.
      */
     public void lockUser(Long userId) {
-        updateAccountStatus(userId, STATUS_LOCKED);
+        User updatedUser = updateAccountStatus(userId, STATUS_LOCKED);
+        auditLogService.recordUserLocked(updatedUser);
     }
 
     /**
-     * Mo khoa tai khoan: chuyen account_status sang ACTIVE.
+     * Mở khóa tài khoản: chuyển account_status sang ACTIVE.
      */
     public void unlockUser(Long userId) {
-        updateAccountStatus(userId, STATUS_ACTIVE);
+        User updatedUser = updateAccountStatus(userId, STATUS_ACTIVE);
+        auditLogService.recordUserUnlocked(updatedUser);
     }
 
     /**
-     * Liet ke toan bo user phuc vu trang quan tri.
+     * Liệt kê toàn bộ user phục vụ trang quản trị.
      */
     public List<User> listUsers() {
         return userDAO.findAll();
     }
 
     /**
-     * Liet ke role dang active de hien thi trong form them/sua user.
+     * Liệt kê role đang active để hiển thị trong form thêm/sửa user.
      */
     public List<Role> listActiveRoles() {
         return roleDAO.findAllActive();
     }
 
-    private void updateAccountStatus(Long userId, String status) {
+    private User updateAccountStatus(Long userId, String status) {
         if (userId == null) {
-            throw new IllegalArgumentException("Vui long chon tai khoan.");
+            throw new IllegalArgumentException("Vui lòng chọn tài khoản.");
         }
 
         if (!userDAO.updateAccountStatus(userId, status)) {
-            throw new IllegalStateException("Khong the cap nhat trang thai tai khoan. Vui long thu lai.");
+            throw new IllegalStateException("Không thể cập nhật trạng thái tài khoản. Vui lòng thử lại.");
         }
+
+        return userDAO.findById(userId).orElseGet(() -> {
+            User user = new User();
+            user.setUserId(userId);
+            user.setAccountStatus(status);
+            return user;
+        });
     }
 
     private void validateUsernameAvailable(String username, Long currentUserId) {
@@ -131,27 +145,27 @@ public class UserService {
 
         Long existingId = existing.get().getUserId();
         if (currentUserId == null || !currentUserId.equals(existingId)) {
-            throw new IllegalArgumentException("Ten dang nhap da ton tai.");
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại.");
         }
     }
 
     private void validateRole(Long roleId) {
         if (roleId == null) {
-            throw new IllegalArgumentException("Vui long chon vai tro.");
+            throw new IllegalArgumentException("Vui lòng chọn vai trò.");
         }
 
         Role role = roleDAO.findById(roleId)
-                .orElseThrow(() -> new IllegalArgumentException("Vai tro khong ton tai."));
+                .orElseThrow(() -> new IllegalArgumentException("Vai trò không tồn tại."));
 
         if (!role.isActive()) {
-            throw new IllegalArgumentException("Vai tro da bi vo hieu hoa.");
+            throw new IllegalArgumentException("Vai trò đã bị vô hiệu hóa.");
         }
     }
 
     private String normalizeStatus(String status) {
         String normalizedStatus = status == null ? STATUS_ACTIVE : status.trim().toUpperCase(Locale.ROOT);
         if (!STATUS_ACTIVE.equals(normalizedStatus) && !STATUS_LOCKED.equals(normalizedStatus)) {
-            throw new IllegalArgumentException("Trang thai tai khoan khong hop le.");
+            throw new IllegalArgumentException("Trạng thái tài khoản không hợp lệ.");
         }
 
         return normalizedStatus;

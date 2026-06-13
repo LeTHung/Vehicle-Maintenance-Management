@@ -88,7 +88,7 @@ public class DashboardController {
                 "Bị khóa", lockedUsers, "Tài khoản cần xem lại",
                 "Phương tiện", vehicleDAO.findAll().size(), "Dữ liệu nghiệp vụ hiện có");
         setModules("Quản lý người dùng", "Tạo tài khoản, sửa thông tin, khóa và mở khóa.", "ADMIN",
-                "Vai trò & phân quyền", "Kiểm tra nhóm quyền cho Admin, Manager và Tech.", "RBAC",
+                "Audit logs", "Theo dõi đăng nhập, đăng xuất và thao tác quản trị user.", "AUDIT",
                 "Tổng quan hệ thống", "Theo dõi số liệu tổng hợp khi demo và nghiệm thu.", "OVERVIEW",
                 "Báo cáo", "Truy cập dữ liệu tổng hợp để đối chiếu nhanh.", "READ ONLY");
         setFocus("Cần kiểm tra trước khi bàn giao",
