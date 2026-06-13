@@ -16,12 +16,12 @@
             <VBox styleClass="summary-danger" HBox.hgrow="ALWAYS">
                 <Label text="Đã hết hạn" styleClass="metric-label"/>
                 <Label fx:id="lblExpiredCount" text="0" styleClass="metric-value-danger"/>
-                <Label text="OVERDUE" styleClass="metric-trend-danger"/>
+                <Label text="Quá hạn" styleClass="metric-trend-danger"/>
             </VBox>
             <VBox styleClass="summary-warning" HBox.hgrow="ALWAYS">
                 <Label text="Sắp hết hạn" styleClass="metric-label"/>
                 <Label fx:id="lblWarningCount" text="0" styleClass="metric-value-warning"/>
-                <Label text="COMING_DUE" styleClass="metric-trend-warning"/>
+                <Label text="Sắp hết hạn" styleClass="metric-trend-warning"/>
             </VBox>
             <VBox styleClass="summary-primary" HBox.hgrow="ALWAYS">
                 <Label text="Tổng cảnh báo" styleClass="metric-label"/>
@@ -47,8 +47,8 @@
             </HBox>
             <TableView fx:id="tblAlert" prefHeight="410" styleClass="data-table">
                 <columns>
-                    <TableColumn fx:id="colDocumentId" text="Document ID" prefWidth="100"/>
-                    <TableColumn fx:id="colVehicleId" text="Vehicle ID" prefWidth="90"/>
+                    <TableColumn fx:id="colDocumentId" text="Mã giấy tờ" prefWidth="100"/>
+                    <TableColumn fx:id="colVehicleId" text="Mã xe" prefWidth="90"/>
                     <TableColumn fx:id="colLicensePlate" text="Biển số" prefWidth="120"/>
                     <TableColumn fx:id="colVehicleType" text="Loại xe" prefWidth="120"/>
                     <TableColumn fx:id="colDocumentTypeName" text="Loại giấy tờ" prefWidth="150"/>

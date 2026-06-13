@@ -24,13 +24,13 @@
             <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="sidebar-scroll">
                 <VBox styleClass="nav-wrap">
                     <Label text="TỔNG QUAN" styleClass="nav-title"/>
-                    <Button fx:id="btnDashboard" text="Dashboard" onAction="#openDashboard" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnDashboard" text="Tổng quan" onAction="#openDashboard" maxWidth="Infinity" styleClass="nav-button"/>
 
                     <VBox fx:id="groupAdmin">
                         <Label text="QUẢN TRỊ HỆ THỐNG" styleClass="nav-title"/>
                         <Button fx:id="btnAdminUsers" text="Quản lý người dùng" onAction="#openAdminUsers" maxWidth="Infinity" styleClass="nav-button"/>
                         <Button fx:id="btnAdminRoles" text="Vai trò &amp; phân quyền" onAction="#openAdminRoles" maxWidth="Infinity" styleClass="nav-button"/>
-                        <Button fx:id="btnAuditLog" text="Audit logs" onAction="#openAuditLog" maxWidth="Infinity" styleClass="nav-button"/>
+                        <Button fx:id="btnAuditLog" text="Nhật ký thao tác" onAction="#openAuditLog" maxWidth="Infinity" styleClass="nav-button"/>
                     </VBox>
 
                     <VBox fx:id="groupManager">
@@ -74,8 +74,8 @@
         <HBox styleClass="topbar">
             <VBox>
                 <HBox spacing="10">
-                    <Label fx:id="lblPageTitle" text="Dashboard" styleClass="topbar-title"/>
-                    <Label fx:id="lblRoleBadge" text="ROLE" styleClass="role-badge"/>
+                    <Label fx:id="lblPageTitle" text="Tổng quan" styleClass="topbar-title"/>
+                    <Label fx:id="lblRoleBadge" text="VAI TRÒ" styleClass="role-badge"/>
                 </HBox>
                 <Label text="Hệ thống quản lý hồ sơ, giấy tờ và bảo dưỡng phương tiện." styleClass="topbar-subtitle"/>
             </VBox>

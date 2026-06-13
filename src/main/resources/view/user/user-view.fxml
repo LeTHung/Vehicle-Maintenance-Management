@@ -33,7 +33,7 @@
     <TableView fx:id="userTable" VBox.vgrow="ALWAYS" styleClass="data-table">
         <columns>
             <TableColumn fx:id="colUserId" text="ID" prefWidth="70"/>
-            <TableColumn fx:id="colUsername" text="Username" prefWidth="140"/>
+            <TableColumn fx:id="colUsername" text="Tên đăng nhập" prefWidth="140"/>
             <TableColumn fx:id="colFullName" text="Ho ten" prefWidth="190"/>
             <TableColumn fx:id="colEmail" text="Email" prefWidth="210"/>
             <TableColumn fx:id="colPhone" text="Dien thoai" prefWidth="130"/>

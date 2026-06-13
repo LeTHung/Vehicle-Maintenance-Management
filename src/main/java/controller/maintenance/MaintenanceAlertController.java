@@ -34,7 +34,7 @@ public class MaintenanceAlertController {
 
     @FXML
     public void initialize() {
-        cbFilterStatus.getItems().addAll("Tất cả", "OVERDUE", "COMING_DUE");
+        cbFilterStatus.getItems().addAll("Tất cả", dueStatusLabel("OVERDUE"), dueStatusLabel("COMING_DUE"));
         cbFilterStatus.setValue("Tất cả");
         cbFilterStatus.setOnAction(e -> applyFilter());
 
@@ -99,7 +99,7 @@ public class MaintenanceAlertController {
         String filter = cbFilterStatus.getValue();
         List<MaintenanceDueAlertDTO> displayed = "Tất cả".equals(filter)
             ? all
-            : all.stream().filter(d -> filter.equals(d.getDueStatus())).toList();
+            : all.stream().filter(d -> dueStatusValue(filter).equals(d.getDueStatus())).toList();
 
         tblAlert.setItems(FXCollections.observableArrayList(displayed));
     }
@@ -127,6 +127,28 @@ public class MaintenanceAlertController {
             case "OVERDUE"    -> "Quá hạn";
             case "COMING_DUE" -> "Sắp đến hạn";
             default           -> status;
+        };
+    }
+
+    private String dueStatusLabel(String status) {
+        if (status == null || status.isBlank()) {
+            return "";
+        }
+        return switch (status) {
+            case "OVERDUE" -> "Quá hạn";
+            case "COMING_DUE" -> "Sắp đến hạn";
+            default -> status;
+        };
+    }
+
+    private String dueStatusValue(String label) {
+        if (label == null || label.isBlank()) {
+            return "";
+        }
+        return switch (label) {
+            case "Quá hạn", "QuÃ¡ háº¡n" -> "OVERDUE";
+            case "Sắp đến hạn", "Sáº¯p Ä‘áº¿n háº¡n" -> "COMING_DUE";
+            default -> label;
         };
     }
 }
