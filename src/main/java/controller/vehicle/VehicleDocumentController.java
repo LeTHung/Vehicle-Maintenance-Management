@@ -21,6 +21,7 @@ import service.VehicleDocumentService;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class VehicleDocumentController {
@@ -32,34 +33,65 @@ public class VehicleDocumentController {
     private final Map<String, DocumentType> documentTypeByLabel = new HashMap<>();
     private Long selectedDocumentId;
 
-    @FXML private ComboBox<String> cbVehicleFilter;
-    @FXML private ComboBox<String> cbDocumentTypeFilter;
-    @FXML private ComboBox<String> cbVehicle;
-    @FXML private ComboBox<String> cbDocumentType;
-    @FXML private TextField txtDocumentNumber;
-    @FXML private TextField txtIssuerName;
-    @FXML private DatePicker dpIssueDate;
-    @FXML private DatePicker dpEffectiveDate;
-    @FXML private DatePicker dpExpiryDate;
-    @FXML private TextField txtFeeAmount;
-    @FXML private DatePicker dpPaidDate;
-    @FXML private ComboBox<String> cbDocumentStatus;
-    @FXML private CheckBox chkIsCurrent;
-    @FXML private TextField txtNote;
+    @FXML
+    private ComboBox<String> cbVehicleFilter;
+    @FXML
+    private ComboBox<String> cbDocumentTypeFilter;
+    @FXML
+    private ComboBox<String> cbVehicle;
+    @FXML
+    private ComboBox<String> cbDocumentType;
+    @FXML
+    private TextField txtDocumentNumber;
+    @FXML
+    private TextField txtIssuerName;
+    @FXML
+    private DatePicker dpIssueDate;
+    @FXML
+    private DatePicker dpEffectiveDate;
+    @FXML
+    private DatePicker dpExpiryDate;
+    @FXML
+    private TextField txtFeeAmount;
+    @FXML
+    private DatePicker dpPaidDate;
+    @FXML
+    private ComboBox<String> cbDocumentStatus;
+    @FXML
+    private CheckBox chkIsCurrent;
+    @FXML
+    private TextField txtNote;
+    @FXML
+    private TextField txtDocumentKeyword;
+    @FXML
+    private ComboBox<String> cbStatusFilter;
 
-    @FXML private TableView<VehicleDocumentViewDTO> tblDocument;
-    @FXML private TableColumn<VehicleDocumentViewDTO, Long> colDocumentId;
-    @FXML private TableColumn<VehicleDocumentViewDTO, String> colLicensePlate;
-    @FXML private TableColumn<VehicleDocumentViewDTO, String> colDocumentTypeName;
-    @FXML private TableColumn<VehicleDocumentViewDTO, String> colDocumentNumber;
-    @FXML private TableColumn<VehicleDocumentViewDTO, String> colIssuerName;
-    @FXML private TableColumn<VehicleDocumentViewDTO, Object> colIssueDate;
-    @FXML private TableColumn<VehicleDocumentViewDTO, Object> colEffectiveDate;
-    @FXML private TableColumn<VehicleDocumentViewDTO, Object> colExpiryDate;
-    @FXML private TableColumn<VehicleDocumentViewDTO, Object> colFeeAmount;
-    @FXML private TableColumn<VehicleDocumentViewDTO, Object> colPaidDate;
-    @FXML private TableColumn<VehicleDocumentViewDTO, String> colDocumentStatus;
-    @FXML private TableColumn<VehicleDocumentViewDTO, Boolean> colIsCurrent;
+    @FXML
+    private TableView<VehicleDocumentViewDTO> tblDocument;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, Long> colDocumentId;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, String> colLicensePlate;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, String> colDocumentTypeName;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, String> colDocumentNumber;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, String> colIssuerName;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, Object> colIssueDate;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, Object> colEffectiveDate;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, Object> colExpiryDate;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, Object> colFeeAmount;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, Object> colPaidDate;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, String> colDocumentStatus;
+    @FXML
+    private TableColumn<VehicleDocumentViewDTO, Boolean> colIsCurrent;
 
     @FXML
     public void initialize() {
@@ -69,7 +101,11 @@ public class VehicleDocumentController {
     }
 
     private void configureOptions() {
-        cbDocumentStatus.getItems().setAll("VALID", "EXPIRED", "REPLACED", "CANCELLED");
+        cbDocumentStatus.getItems().setAll(
+                documentStatusLabel("VALID"),
+                documentStatusLabel("EXPIRED"),
+                documentStatusLabel("REPLACED"),
+                documentStatusLabel("CANCELLED"));
         chkIsCurrent.setSelected(true);
 
         vehicleByLabel.clear();
@@ -93,20 +129,33 @@ public class VehicleDocumentController {
             cbDocumentTypeFilter.getItems().add(label);
         }
         cbDocumentTypeFilter.setValue(ALL_OPTION);
+
+        cbStatusFilter.getItems().setAll(
+                ALL_OPTION,
+                documentStatusLabel("VALID"),
+                documentStatusLabel("EXPIRED"),
+                documentStatusLabel("REPLACED"),
+                documentStatusLabel("CANCELLED"));
+        cbStatusFilter.setValue(ALL_OPTION);
     }
 
     private void configureTable() {
         colDocumentId.setCellValueFactory(cell -> new SimpleLongProperty(cell.getValue().getDocumentId()).asObject());
-        colLicensePlate.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getLicensePlate())));
-        colDocumentTypeName.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDocumentTypeName())));
-        colDocumentNumber.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDocumentNumber())));
-        colIssuerName.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getIssuerName())));
+        colLicensePlate
+                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getLicensePlate())));
+        colDocumentTypeName.setCellValueFactory(
+                cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDocumentTypeName())));
+        colDocumentNumber.setCellValueFactory(
+                cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDocumentNumber())));
+        colIssuerName
+                .setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getIssuerName())));
         colIssueDate.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getIssueDate()));
         colEffectiveDate.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getEffectiveDate()));
         colExpiryDate.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getExpiryDate()));
         colFeeAmount.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getFeeAmount()));
         colPaidDate.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getPaidDate()));
-        colDocumentStatus.setCellValueFactory(cell -> new SimpleStringProperty(nullToEmpty(cell.getValue().getDocumentStatus())));
+        colDocumentStatus.setCellValueFactory(
+                cell -> new SimpleStringProperty(documentStatusLabel(cell.getValue().getDocumentStatus())));
         colIsCurrent.setCellValueFactory(cell -> new SimpleBooleanProperty(cell.getValue().isCurrent()));
 
         tblDocument.getSelectionModel().selectedItemProperty()
@@ -117,15 +166,32 @@ public class VehicleDocumentController {
     private void handleFilterDocument() {
         Vehicle vehicle = vehicleByLabel.get(cbVehicleFilter.getValue());
         DocumentType type = documentTypeByLabel.get(cbDocumentTypeFilter.getValue());
-        tblDocument.setItems(FXCollections.observableArrayList(
-                vehicleDocumentService.filterDocuments(
-                        vehicle == null ? null : vehicle.getVehicleId(),
-                        type == null ? null : type.getDocumentTypeId())));
+
+        String keyword = txtDocumentKeyword == null ? "" : txtDocumentKeyword.getText();
+        String status = cbStatusFilter == null ? ALL_OPTION : cbStatusFilter.getValue();
+
+        List<VehicleDocumentViewDTO> documents = vehicleDocumentService.searchDocuments(keyword);
+
+        documents = documents.stream()
+                .filter(document -> vehicle == null || document.getVehicleId() == vehicle.getVehicleId())
+                .filter(document -> type == null || document.getDocumentTypeId() == type.getDocumentTypeId())
+                .filter(document -> status == null
+                        || ALL_OPTION.equals(status)
+                        || documentStatusValue(status).equalsIgnoreCase(nullToEmpty(document.getDocumentStatus())))
+                .toList();
+
+        tblDocument.setItems(FXCollections.observableArrayList(documents));
     }
 
     @FXML
     private void handleRefreshDocument() {
         configureOptions();
+        if (txtDocumentKeyword != null) {
+            txtDocumentKeyword.clear();
+        }
+        if (cbStatusFilter != null) {
+            cbStatusFilter.setValue(ALL_OPTION);
+        }
         handleClearDocumentForm();
         loadDocumentData();
     }
@@ -197,7 +263,7 @@ public class VehicleDocumentController {
         document.setExpiryDate(dpExpiryDate.getValue());
         document.setFeeAmount(parseBigDecimal(txtFeeAmount.getText()));
         document.setPaidDate(dpPaidDate.getValue());
-        document.setDocumentStatus(cbDocumentStatus.getValue());
+        document.setDocumentStatus(documentStatusValue(cbDocumentStatus.getValue()));
         document.setCurrent(chkIsCurrent.isSelected());
         document.setNote(txtNote.getText());
         return document;
@@ -218,7 +284,7 @@ public class VehicleDocumentController {
         dpExpiryDate.setValue(document.getExpiryDate());
         txtFeeAmount.setText(document.getFeeAmount() == null ? "" : document.getFeeAmount().toPlainString());
         dpPaidDate.setValue(document.getPaidDate());
-        cbDocumentStatus.setValue(document.getDocumentStatus());
+        cbDocumentStatus.setValue(documentStatusLabel(document.getDocumentStatus()));
         chkIsCurrent.setSelected(document.isCurrent());
         txtNote.setText(nullToEmpty(document.getNote()));
     }
@@ -292,5 +358,31 @@ public class VehicleDocumentController {
 
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
+    }
+
+    private String documentStatusLabel(String status) {
+        if (status == null || status.isBlank()) {
+            return "";
+        }
+        return switch (status) {
+            case "VALID" -> "Còn hiệu lực";
+            case "EXPIRED" -> "Hết hạn";
+            case "REPLACED" -> "Đã thay thế";
+            case "CANCELLED" -> "Đã hủy";
+            default -> status;
+        };
+    }
+
+    private String documentStatusValue(String label) {
+        if (label == null || label.isBlank()) {
+            return "";
+        }
+        return switch (label) {
+            case "Còn hiệu lực" -> "VALID";
+            case "Hết hạn" -> "EXPIRED";
+            case "Đã thay thế" -> "REPLACED";
+            case "Đã hủy" -> "CANCELLED";
+            default -> label;
+        };
     }
 }

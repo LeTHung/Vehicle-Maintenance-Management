@@ -8,7 +8,7 @@
             styleClass="page-scroll">
     <VBox spacing="28" styleClass="page">
         <VBox styleClass="hero-tech">
-            <Label text="Technician Maintenance Dashboard" styleClass="display-title"/>
+            <Label text="Bảng công việc kỹ thuật bảo dưỡng" styleClass="display-title"/>
             <Label text="Theo dõi lịch bảo dưỡng, phiếu sửa chữa, vật tư và lịch sử kỹ thuật của từng phương tiện." styleClass="hero-subtitle"/>
             <HBox spacing="12">
                 <Button text="+ Tạo phiếu bảo dưỡng" onAction="#handleOpenMaintenanceRecord" styleClass="btn-primary"/>
@@ -16,9 +16,23 @@
             </HBox>
         </VBox>
         <HBox spacing="18">
-            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS"><Label text="Lệnh chờ xử lý" styleClass="metric-label"/><Label text="12" styleClass="metric-value"/><Label text="5 mức ưu tiên cao" styleClass="metric-trend-warning"/></VBox>
-            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS"><Label text="Đang sửa chữa" styleClass="metric-label"/><Label text="7" styleClass="metric-value-warning"/><Label text="Theo dõi trong xưởng" styleClass="metric-trend-primary"/></VBox>
-            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS"><Label text="Hoàn tất hôm nay" styleClass="metric-label"/><Label text="4" styleClass="metric-value"/><Label text="Cần cập nhật ODO" styleClass="metric-trend-success"/></VBox>
+            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                <Label text="Lệnh chờ xử lý" styleClass="metric-label"/>
+                <Label fx:id="lblPendingWorkOrders" text="0" styleClass="metric-value"/>
+                <Label fx:id="lblPendingHint" text="Kế hoạch đến hạn + phiếu chờ xử lý" styleClass="metric-trend-warning"/>
+            </VBox>
+
+            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                <Label text="Đang sửa chữa" styleClass="metric-label"/>
+                <Label fx:id="lblInProgressRecords" text="0" styleClass="metric-value-warning"/>
+                <Label fx:id="lblInProgressHint" text="Theo dõi trong xưởng" styleClass="metric-trend-primary"/>
+            </VBox>
+
+            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                <Label text="Hoàn tất hôm nay" styleClass="metric-label"/>
+                <Label fx:id="lblCompletedToday" text="0" styleClass="metric-value"/>
+                <Label fx:id="lblCompletedHint" text="Lấy từ phiếu bảo dưỡng" styleClass="metric-trend-success"/>
+            </VBox>
         </HBox>
         <VBox spacing="14" styleClass="panel">
             <Label text="Công việc kỹ thuật" styleClass="section-title"/>

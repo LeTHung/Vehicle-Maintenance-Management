@@ -3,18 +3,24 @@ package controller.dashboard;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import model.dao.RoleDAO;
-import model.dao.UserDAO;
+import model.dao.VehicleDAO;
 import model.entity.AuditLog;
 import model.entity.User;
 import service.AuditLogService;
+import service.DocumentAlertService;
+import service.MaintenanceAlertService;
+import service.UserService;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class AdminDashboardController {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserService userService = new UserService();
     private final RoleDAO roleDAO = new RoleDAO();
+    private final VehicleDAO vehicleDAO = new VehicleDAO();
+    private final DocumentAlertService documentAlertService = new DocumentAlertService();
+    private final MaintenanceAlertService maintenanceAlertService = new MaintenanceAlertService();
     private final AuditLogService auditLogService = new AuditLogService();
 
     private Runnable openUserManagementHandler = () -> {};
@@ -25,10 +31,12 @@ public class AdminDashboardController {
     @FXML private Label lblTotalUsersHint;
     @FXML private Label lblLockedUsers;
     @FXML private Label lblLockedUsersHint;
-    @FXML private Label lblActiveRoles;
-    @FXML private Label lblActiveRolesHint;
+    @FXML private Label lblSystemAlerts;
+    @FXML private Label lblSystemAlertsHint;
     @FXML private Label lblRecentAuditLogs;
     @FXML private Label lblRecentAuditLogsHint;
+    @FXML private Label lblVehicleCount;
+    @FXML private Label lblDocumentAlertCount;
 
     @FXML
     public void initialize() {
@@ -59,17 +67,23 @@ public class AdminDashboardController {
     }
 
     private void refreshMetrics() {
-        List<User> users = userDAO.findAll();
+        List<User> users = userService.listUsers();
         long lockedUsers = users.stream()
                 .filter(user -> "LOCKED".equalsIgnoreCase(nullToEmpty(user.getAccountStatus())))
                 .count();
+        int activeRoles = roleDAO.findAllActive().size();
+        int vehicleCount = vehicleDAO.findAll().size();
+        int documentAlerts = documentAlertService.countExpired() + documentAlertService.countComingDue();
+        int maintenanceAlerts = maintenanceAlertService.listDueAlerts().size();
 
         lblTotalUsers.setText(String.valueOf(users.size()));
-        lblTotalUsersHint.setText("Đang quản lý");
+        lblTotalUsersHint.setText(activeRoles + " vai trò hoạt động");
         lblLockedUsers.setText(String.valueOf(lockedUsers));
         lblLockedUsersHint.setText(lockedUsers > 0 ? "Cần rà soát" : "Đang ổn định");
-        lblActiveRoles.setText(String.valueOf(roleDAO.findAllActive().size()));
-        lblActiveRolesHint.setText("Vai trò đang hoạt động");
+        lblSystemAlerts.setText(String.valueOf(documentAlerts + maintenanceAlerts));
+        lblSystemAlertsHint.setText("Giấy tờ + bảo dưỡng");
+        lblVehicleCount.setText(vehicleCount + " phương tiện");
+        lblDocumentAlertCount.setText(documentAlerts + " cảnh báo giấy tờ");
 
         renderAuditMetric();
     }

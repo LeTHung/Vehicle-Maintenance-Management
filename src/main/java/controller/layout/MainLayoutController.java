@@ -1,16 +1,16 @@
 package controller.layout;
 
+import controller.dashboard.AdminDashboardController;
 import controller.dashboard.ManagerDashboardController;
 import controller.dashboard.TechnicianDashboardController;
-import controller.dashboard.AdminDashboardController;
 import controller.user.UserController;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -114,24 +114,24 @@ public class MainLayoutController {
         switch (role) {
             case ROLE_ADMIN -> {
                 lblUserRole.setText("Quản trị viên");
-                lblRoleBadge.setText("ADMIN");
+                lblRoleBadge.setText("QUẢN TRỊ");
                 showGroup(groupAdmin);
             }
             case ROLE_TECH -> {
                 lblUserRole.setText("Nhân viên kỹ thuật");
-                lblRoleBadge.setText("TECH");
+                lblRoleBadge.setText("KỸ THUẬT");
                 showGroup(groupTechnician);
             }
             case ROLE_MANAGER -> {
                 lblUserRole.setText("Quản lý đội xe");
-                lblRoleBadge.setText("MANAGER");
+                lblRoleBadge.setText("QUẢN LÝ");
                 showGroup(groupManager);
                 showGroup(groupReport);
                 setNodeVisible(btnTopbarNotification, true);
             }
             default -> {
                 lblUserRole.setText("Chưa phân quyền");
-                lblRoleBadge.setText(ROLE_UNKNOWN);
+                lblRoleBadge.setText("CHƯA RÕ");
             }
         }
     }
@@ -161,11 +161,11 @@ public class MainLayoutController {
     @FXML
     private void openDashboard() {
         if (ROLE_ADMIN.equals(currentRole)) {
-            loadPage("dashboard/admin-dashboard-view.fxml", "Dashboard quản trị", btnDashboard);
+            loadPage("dashboard/admin-dashboard-view.fxml", "Tổng quan quản trị", btnDashboard);
         } else if (ROLE_TECH.equals(currentRole)) {
-            loadPage("dashboard/technician-dashboard-view.fxml", "Dashboard kỹ thuật", btnDashboard);
+            loadPage("dashboard/technician-dashboard-view.fxml", "Tổng quan kỹ thuật", btnDashboard);
         } else if (ROLE_MANAGER.equals(currentRole)) {
-            loadPage("dashboard/manager-dashboard-view.fxml", "Dashboard đội xe", btnDashboard);
+            loadPage("dashboard/manager-dashboard-view.fxml", "Tổng quan đội xe", btnDashboard);
         } else {
             showPlaceholder("Không xác định quyền truy cập",
                     "Không thể xác định vai trò người dùng. Vui lòng đăng xuất và đăng nhập lại.",

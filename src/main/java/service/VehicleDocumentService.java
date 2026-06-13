@@ -84,7 +84,6 @@ public class VehicleDocumentService {
 
         document.setDocumentNumber(normalizeOptional(document.getDocumentNumber()));
         document.setIssuerName(normalizeOptional(document.getIssuerName()));
-        document.setDocumentStatus(normalizeStatus(document.getDocumentStatus()));
         document.setNote(normalizeOptional(document.getNote()));
 
         if (document.getExpiryDate() == null) {
@@ -92,6 +91,8 @@ public class VehicleDocumentService {
         }
 
         validateDateRange(document.getIssueDate(), document.getEffectiveDate(), document.getExpiryDate());
+        document.setDocumentStatus(normalizeStatus(
+                resolveStatusByExpiryDate(document.getExpiryDate(), document.getDocumentStatus())));
 
         if (document.getFeeAmount() == null) {
             document.setFeeAmount(BigDecimal.ZERO);
@@ -111,6 +112,10 @@ public class VehicleDocumentService {
     }
 
     private void validateDateRange(LocalDate issueDate, LocalDate effectiveDate, LocalDate expiryDate) {
+        if (issueDate != null && expiryDate.isBefore(issueDate)) {
+            throw new IllegalArgumentException("Ngày hết hạn phải lớn hơn hoặc bằng ngày cấp.");
+        }
+
         if (effectiveDate != null && expiryDate.isBefore(effectiveDate)) {
             throw new IllegalArgumentException("Ngày hết hạn phải lớn hơn hoặc bằng ngày hiệu lực.");
         }
@@ -133,5 +138,19 @@ public class VehicleDocumentService {
 
     private String normalizeOptional(String value) {
         return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private String resolveStatusByExpiryDate(LocalDate expiryDate, String selectedStatus) {
+        if (selectedStatus != null && !selectedStatus.isBlank()
+                && (STATUS_REPLACED.equalsIgnoreCase(selectedStatus)
+                        || STATUS_CANCELLED.equalsIgnoreCase(selectedStatus))) {
+            return selectedStatus.trim().toUpperCase(Locale.ROOT);
+        }
+
+        if (expiryDate != null && expiryDate.isBefore(LocalDate.now())) {
+            return STATUS_EXPIRED;
+        }
+
+        return STATUS_VALID;
     }
 }

@@ -62,8 +62,12 @@ public class MaintenanceRecordController {
 
     @FXML
     public void initialize() {
-        cbRecordType.getItems().addAll("PREVENTIVE", "CORRECTIVE");
-        cbRecordStatus.getItems().addAll("OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED");
+        cbRecordType.getItems().addAll(recordTypeLabel("PREVENTIVE"), recordTypeLabel("CORRECTIVE"));
+        cbRecordStatus.getItems().addAll(
+                recordStatusLabel("OPEN"),
+                recordStatusLabel("IN_PROGRESS"),
+                recordStatusLabel("COMPLETED"),
+                recordStatusLabel("CANCELLED"));
         loadTechnicianNames();
         setupVehicleComboBoxes();
         configureTable();
@@ -94,7 +98,7 @@ public class MaintenanceRecordController {
         colRecordLicensePlate.setCellValueFactory(c ->
             new SimpleStringProperty(vehicleNameMap.getOrDefault(c.getValue().getVehicleId(), "")));
         colRecordType.setCellValueFactory(c ->
-            new SimpleStringProperty(c.getValue().getRecordType() == null ? "" : c.getValue().getRecordType()));
+            new SimpleStringProperty(recordTypeLabel(c.getValue().getRecordType())));
         colRecordTitle.setCellValueFactory(c ->
             new SimpleStringProperty(c.getValue().getTitle() == null ? "" : c.getValue().getTitle()));
         colRecordServiceDate.setCellValueFactory(c -> {
@@ -110,7 +114,7 @@ public class MaintenanceRecordController {
             return new SimpleStringProperty(cost == null ? "" : cost.toPlainString());
         });
         colRecordStatus.setCellValueFactory(c ->
-            new SimpleStringProperty(c.getValue().getRecordStatus() == null ? "" : c.getValue().getRecordStatus()));
+            new SimpleStringProperty(recordStatusLabel(c.getValue().getRecordStatus())));
     }
 
     private void setupFilterListener() {
@@ -152,8 +156,8 @@ public class MaintenanceRecordController {
             .filter(v -> v.getVehicleId() == record.getVehicleId())
             .findFirst().ifPresent(cbVehicle::setValue);
 
-        cbRecordType.setValue(record.getRecordType());
-        cbRecordStatus.setValue(record.getRecordStatus());
+        cbRecordType.setValue(recordTypeLabel(record.getRecordType()));
+        cbRecordStatus.setValue(recordStatusLabel(record.getRecordStatus()));
         txtTitle.setText(record.getTitle() == null ? "" : record.getTitle());
         dpServiceDate.setValue(record.getServiceDate());
         txtOdometer.setText(record.getOdometer() == null ? "" : String.valueOf(record.getOdometer()));
@@ -239,7 +243,7 @@ public class MaintenanceRecordController {
         Vehicle vehicle = cbVehicle.getValue();
         if (vehicle == null) throw new IllegalArgumentException("Vui lòng chọn xe.");
 
-        String recordType = cbRecordType.getValue();
+        String recordType = recordTypeValue(cbRecordType.getValue());
         if (recordType == null) throw new IllegalArgumentException("Vui lòng chọn loại phiếu.");
 
         LocalDate serviceDate = dpServiceDate.getValue();
@@ -248,7 +252,7 @@ public class MaintenanceRecordController {
         MaintenanceRecord record = new MaintenanceRecord();
         record.setVehicleId(vehicle.getVehicleId());
         record.setRecordType(recordType);
-        record.setRecordStatus(cbRecordStatus.getValue() != null ? cbRecordStatus.getValue() : "OPEN");
+        record.setRecordStatus(cbRecordStatus.getValue() != null ? recordStatusValue(cbRecordStatus.getValue()) : "OPEN");
         record.setTitle(txtTitle.getText().isBlank() ? null : txtTitle.getText().trim());
         record.setServiceDate(serviceDate);
         record.setOdometer(parseOptionalInt(txtOdometer.getText(), "ODO"));
@@ -312,5 +316,53 @@ public class MaintenanceRecordController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
         alert.setHeaderText(null);
         alert.showAndWait();
+    }
+
+    private String recordTypeLabel(String type) {
+        if (type == null || type.isBlank()) {
+            return "";
+        }
+        return switch (type) {
+            case "PREVENTIVE" -> "Bảo dưỡng định kỳ";
+            case "CORRECTIVE" -> "Sửa chữa phát sinh";
+            default -> type;
+        };
+    }
+
+    private String recordTypeValue(String label) {
+        if (label == null || label.isBlank()) {
+            return null;
+        }
+        return switch (label) {
+            case "Bảo dưỡng định kỳ" -> "PREVENTIVE";
+            case "Sửa chữa phát sinh" -> "CORRECTIVE";
+            default -> label;
+        };
+    }
+
+    private String recordStatusLabel(String status) {
+        if (status == null || status.isBlank()) {
+            return "";
+        }
+        return switch (status) {
+            case "OPEN" -> "Chờ xử lý";
+            case "IN_PROGRESS" -> "Đang xử lý";
+            case "COMPLETED" -> "Hoàn thành";
+            case "CANCELLED" -> "Đã hủy";
+            default -> status;
+        };
+    }
+
+    private String recordStatusValue(String label) {
+        if (label == null || label.isBlank()) {
+            return "";
+        }
+        return switch (label) {
+            case "Chờ xử lý" -> "OPEN";
+            case "Đang xử lý" -> "IN_PROGRESS";
+            case "Hoàn thành" -> "COMPLETED";
+            case "Đã hủy" -> "CANCELLED";
+            default -> label;
+        };
     }
 }
