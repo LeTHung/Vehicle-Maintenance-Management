@@ -33,6 +33,7 @@ public class MaintenancePlanService {
 
     public Long save(MaintenancePlan plan) {
         validate(plan);
+        checkNoDuplicateActive(plan.getVehicleId(), plan.getMaintenanceTypeId(), -1L);
         Long id = planDAO.insert(plan);
         if (id == null) {
             throw new IllegalStateException("Không thể lưu kế hoạch bảo dưỡng. Vui lòng thử lại.");
@@ -45,10 +46,25 @@ public class MaintenancePlanService {
             throw new IllegalArgumentException("Vui lòng chọn kế hoạch cần cập nhật.");
         }
         validate(plan);
+        if (plan.isActive()) {
+            checkNoDuplicateActive(plan.getVehicleId(), plan.getMaintenanceTypeId(), plan.getPlanId());
+        }
         if (!planDAO.update(plan)) {
             throw new IllegalStateException("Không thể cập nhật kế hoạch. Vui lòng thử lại.");
         }
         return true;
+    }
+
+    private void checkNoDuplicateActive(long vehicleId, int typeId, long excludePlanId) {
+        boolean duplicate = planDAO.findByVehicleId(vehicleId).stream()
+                .anyMatch(p -> p.isActive()
+                        && p.getMaintenanceTypeId() == typeId
+                        && p.getPlanId() != excludePlanId);
+        if (duplicate) {
+            throw new IllegalArgumentException(
+                "Xe này đã có kế hoạch bảo dưỡng loại này đang hoạt động.\n" +
+                "Hủy kích hoạt kế hoạch cũ trước khi tạo kế hoạch mới.");
+        }
     }
 
     public boolean deactivate(long planId) {

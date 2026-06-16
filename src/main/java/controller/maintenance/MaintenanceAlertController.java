@@ -12,6 +12,7 @@ import javafx.scene.control.TableView;
 import model.dto.MaintenanceDueAlertDTO;
 import service.MaintenanceAlertService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MaintenanceAlertController {
@@ -31,6 +32,8 @@ public class MaintenanceAlertController {
     @FXML private TableColumn<MaintenanceDueAlertDTO, String> colAlertNextDueDate;
     @FXML private TableColumn<MaintenanceDueAlertDTO, String> colAlertNextDueOdo;
     @FXML private TableColumn<MaintenanceDueAlertDTO, String> colAlertStatus;
+
+    private List<MaintenanceDueAlertDTO> allAlerts = new ArrayList<>();
 
     @FXML
     public void initialize() {
@@ -93,19 +96,17 @@ public class MaintenanceAlertController {
     }
 
     private void loadTable() {
-        List<MaintenanceDueAlertDTO> all = service.listDueAlerts();
-        updateCounters(all);
-
-        String filter = cbFilterStatus.getValue();
-        List<MaintenanceDueAlertDTO> displayed = "Tất cả".equals(filter)
-            ? all
-            : all.stream().filter(d -> filter.equals(d.getDueStatus())).toList();
-
-        tblAlert.setItems(FXCollections.observableArrayList(displayed));
+        allAlerts = service.listDueAlerts();
+        updateCounters(allAlerts);
+        applyFilter();
     }
 
     private void applyFilter() {
-        loadTable();
+        String filter = cbFilterStatus.getValue();
+        List<MaintenanceDueAlertDTO> displayed = (filter == null || "Tất cả".equals(filter))
+            ? allAlerts
+            : allAlerts.stream().filter(d -> filter.equals(d.getDueStatus())).toList();
+        tblAlert.setItems(FXCollections.observableArrayList(displayed));
     }
 
     @FXML

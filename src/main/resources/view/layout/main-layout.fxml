@@ -46,7 +46,9 @@
 
                     <VBox fx:id="groupTechnician">
                         <Label text="KỸ THUẬT BẢO DƯỠNG" styleClass="nav-title"/>
+                        <Button fx:id="btnTechMaintenanceAlert" text="Cảnh báo bảo dưỡng" onAction="#openMaintenanceAlertTech" maxWidth="Infinity" styleClass="nav-button"/>
                         <Button fx:id="btnMaintenanceRecord" text="Cập nhật bảo dưỡng" onAction="#openMaintenanceRecord" maxWidth="Infinity" styleClass="nav-button"/>
+                        <Button fx:id="btnTechMaintenanceHistory" text="Lịch sử bảo dưỡng" onAction="#openMaintenanceHistoryTech" maxWidth="Infinity" styleClass="nav-button"/>
                     </VBox>
 
                     <VBox fx:id="groupReport">

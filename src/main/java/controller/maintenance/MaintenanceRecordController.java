@@ -227,13 +227,15 @@ public class MaintenanceRecordController {
         try {
             MaintenanceRecord record = readFromForm();
             Long recordId = service.save(record);
+            int itemCount = currentItems.size();
             for (MaintenanceItemDetail item : currentItems) {
                 item.setRecordId(recordId);
                 service.saveItem(item);
             }
+            cbFilterVehicle.setValue(null);
             loadTable(service.listAll());
             handleClear();
-            showInfo("Đã lưu phiếu bảo dưỡng (" + currentItems.size() + " hạng mục).");
+            showInfo("Đã lưu phiếu bảo dưỡng (" + itemCount + " hạng mục).");
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
         } catch (Exception e) {
@@ -253,6 +255,7 @@ public class MaintenanceRecordController {
                 item.setRecordId(selectedRecordId);
                 service.saveItem(item);
             }
+            cbFilterVehicle.setValue(null);
             loadTable(service.listAll());
             handleClear();
             showInfo("Đã cập nhật phiếu bảo dưỡng.");

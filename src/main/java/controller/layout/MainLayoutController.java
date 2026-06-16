@@ -47,6 +47,8 @@ public class MainLayoutController {
     @FXML private Button btnMaintenanceAlert;
     @FXML private Button btnMaintenanceRecord;
     @FXML private Button btnMaintenanceHistory;
+    @FXML private Button btnTechMaintenanceAlert;
+    @FXML private Button btnTechMaintenanceHistory;
     @FXML private Button btnReport;
 
     private static final String ROLE_ADMIN = "ADMIN";
@@ -202,6 +204,16 @@ public class MainLayoutController {
     }
 
     @FXML
+    private void openMaintenanceAlertTech() {
+        loadPage("maintenance/maintenance-alert-view.fxml", "Cảnh báo bảo dưỡng", btnTechMaintenanceAlert);
+    }
+
+    @FXML
+    private void openMaintenanceHistoryTech() {
+        loadPage("maintenance/maintenance-history-view.fxml", "Lịch sử bảo dưỡng", btnTechMaintenanceHistory);
+    }
+
+    @FXML
     private void openReport() {
         loadPage("maintenance/report-view.fxml", "Báo cáo chi phí", btnReport);
     }
@@ -276,7 +288,8 @@ public class MainLayoutController {
         Button[] buttons = {
                 btnDashboard, btnAdminUsers, btnAdminRoles, btnAuditLog,
                 btnVehicle, btnVehicleDocument, btnDocumentAlert,
-                btnMaintenancePlan, btnMaintenanceAlert, btnMaintenanceRecord, btnMaintenanceHistory, btnReport
+                btnMaintenancePlan, btnMaintenanceAlert, btnMaintenanceRecord, btnMaintenanceHistory,
+                btnTechMaintenanceAlert, btnTechMaintenanceHistory, btnReport
         };
         for (Button button : buttons) {
             if (button != null) {

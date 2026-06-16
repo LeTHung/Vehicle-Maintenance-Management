@@ -51,6 +51,7 @@ public class MaintenancePlanController {
     @FXML private TableColumn<MaintenancePlan, String> colPlanActive;
 
     private Long selectedPlanId;
+    private boolean selectedPlanActive = true;
     private final Map<Long, String> vehicleNameMap = new HashMap<>();
     private final Map<Integer, String> typeNameMap = new HashMap<>();
 
@@ -135,6 +136,7 @@ public class MaintenancePlanController {
     private void populateForm(MaintenancePlan plan) {
         if (plan == null) return;
         selectedPlanId = plan.getPlanId();
+        selectedPlanActive = plan.isActive();
 
         cbVehicle.getItems().stream()
             .filter(v -> v.getVehicleId() == plan.getVehicleId())
@@ -160,6 +162,7 @@ public class MaintenancePlanController {
         try {
             MaintenancePlan plan = readFromForm();
             service.save(plan);
+            cbFilterVehicle.setValue(null);
             loadTable(service.listPlans());
             handleClear();
             showInfo("Đã lưu kế hoạch bảo dưỡng.");
@@ -180,6 +183,7 @@ public class MaintenancePlanController {
             MaintenancePlan plan = readFromForm();
             plan.setPlanId(selectedPlanId);
             service.update(plan);
+            cbFilterVehicle.setValue(null);
             loadTable(service.listPlans());
             handleClear();
             showInfo("Đã cập nhật kế hoạch bảo dưỡng.");
@@ -196,7 +200,11 @@ public class MaintenancePlanController {
             showError("Vui lòng chọn kế hoạch cần hủy kích hoạt.");
             return;
         }
-        service.deactivate(selectedPlanId);
+        if (!service.deactivate(selectedPlanId)) {
+            showError("Không thể hủy kích hoạt kế hoạch. Vui lòng thử lại.");
+            return;
+        }
+        cbFilterVehicle.setValue(null);
         loadTable(service.listPlans());
         handleClear();
         showInfo("Đã hủy kích hoạt kế hoạch.");
@@ -216,6 +224,7 @@ public class MaintenancePlanController {
         txtAlertBeforeKm.clear();
         txtNotes.clear();
         selectedPlanId = null;
+        selectedPlanActive = true;
         tblPlan.getSelectionModel().clearSelection();
     }
 
@@ -244,7 +253,7 @@ public class MaintenancePlanController {
         plan.setAlertBeforeDays(parseOptionalInt(txtAlertBeforeDays.getText(), "Cảnh báo trước (ngày)"));
         plan.setAlertBeforeKm(parseOptionalInt(txtAlertBeforeKm.getText(), "Cảnh báo trước (km)"));
         plan.setNotes(txtNotes.getText().isBlank() ? null : txtNotes.getText().trim());
-        plan.setActive(true);
+        plan.setActive(selectedPlanActive);
         return plan;
     }
 
