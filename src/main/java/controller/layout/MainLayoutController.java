@@ -76,6 +76,8 @@ public class MainLayoutController {
     @FXML
     private Button btnMaintenanceHistory;
     @FXML
+    private Button btnTechMaintenanceHistory;
+    @FXML
     private Button btnReport;
     @FXML
     private Button btnTopbarNotification;
@@ -280,11 +282,11 @@ public class MainLayoutController {
 
     @FXML
     private void openMaintenanceHistory() {
-        if (!ROLE_MANAGER.equals(currentRole)) {
-            showAccessDenied("Lịch sử bảo dưỡng", btnMaintenanceHistory);
+        if (!canOpenMaintenanceHistory()) {
+            showAccessDenied("Lịch sử bảo dưỡng", resolveMaintenanceHistoryButton());
             return;
         }
-        loadPage("maintenance/maintenance-history-view.fxml", "Lịch sử bảo dưỡng", btnMaintenanceHistory);
+        loadPage("maintenance/maintenance-history-view.fxml", "Lịch sử bảo dưỡng", resolveMaintenanceHistoryButton());
     }
 
     private boolean canOpenMaintenanceAlert() {
@@ -293,6 +295,14 @@ public class MainLayoutController {
 
     private Button resolveMaintenanceAlertButton() {
         return ROLE_TECH.equals(currentRole) ? btnTechMaintenanceAlert : btnMaintenanceAlert;
+    }
+
+    private boolean canOpenMaintenanceHistory() {
+        return ROLE_MANAGER.equals(currentRole) || ROLE_TECH.equals(currentRole);
+    }
+
+    private Button resolveMaintenanceHistoryButton() {
+        return ROLE_TECH.equals(currentRole) ? btnTechMaintenanceHistory : btnMaintenanceHistory;
     }
 
     @FXML
@@ -401,7 +411,7 @@ public class MainLayoutController {
                 btnDashboard, btnAdminUsers, btnAdminRoles, btnAuditLog,
                 btnVehicle, btnVehicleDocument, btnDocumentAlert,
                 btnMaintenancePlan, btnMaintenanceAlert, btnTechMaintenanceAlert,
-                btnMaintenanceRecord, btnMaintenanceHistory, btnReport
+                btnMaintenanceRecord, btnMaintenanceHistory, btnTechMaintenanceHistory, btnReport
         };
         for (Button button : buttons) {
             if (button != null) {

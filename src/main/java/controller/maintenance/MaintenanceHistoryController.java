@@ -10,15 +10,18 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.util.StringConverter;
 import model.dao.UserDAO;
+import model.entity.MaintenanceItemDetail;
 import model.entity.MaintenanceRecord;
 import model.entity.User;
 import model.entity.Vehicle;
 import service.MaintenanceRecordService;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MaintenanceHistoryController {
@@ -46,13 +49,24 @@ public class MaintenanceHistoryController {
     @FXML private TableColumn<MaintenanceRecord, String> colHistoryStatus;
     @FXML private TableColumn<MaintenanceRecord, String> colHistoryWorkSummary;
 
+    @FXML private TableView<MaintenanceItemDetail> tblItems;
+    @FXML private TableColumn<MaintenanceItemDetail, String> colItemType;
+    @FXML private TableColumn<MaintenanceItemDetail, String> colItemDesc;
+    @FXML private TableColumn<MaintenanceItemDetail, String> colItemQty;
+    @FXML private TableColumn<MaintenanceItemDetail, String> colItemUnit;
+    @FXML private TableColumn<MaintenanceItemDetail, String> colItemUnitCost;
+    @FXML private TableColumn<MaintenanceItemDetail, String> colItemLineTotal;
+
     @FXML
     public void initialize() {
         loadLookupData();
         setupVehicleFilter();
         setupStatusFilter();
         configureTable();
+        configureItemTable();
         setupFilterListeners();
+        tblHistory.getSelectionModel().selectedItemProperty()
+            .addListener((obs, oldVal, newVal) -> loadItems(newVal));
         applyFilters();
     }
 
@@ -128,6 +142,35 @@ public class MaintenanceHistoryController {
             new SimpleStringProperty(recordStatusLabel(c.getValue().getRecordStatus())));
         colHistoryWorkSummary.setCellValueFactory(c ->
             new SimpleStringProperty(nullToEmpty(c.getValue().getWorkSummary())));
+    }
+
+    private void configureItemTable() {
+        colItemType.setCellValueFactory(c ->
+            new SimpleStringProperty(c.getValue().getItemType() != null ? c.getValue().getItemType() : ""));
+        colItemDesc.setCellValueFactory(c ->
+            new SimpleStringProperty(c.getValue().getDescription() != null ? c.getValue().getDescription() : ""));
+        colItemQty.setCellValueFactory(c ->
+            new SimpleStringProperty(c.getValue().getQuantity() != null ? c.getValue().getQuantity().toPlainString() : ""));
+        colItemUnit.setCellValueFactory(c ->
+            new SimpleStringProperty(c.getValue().getUnit() != null ? c.getValue().getUnit() : ""));
+        colItemUnitCost.setCellValueFactory(c ->
+            new SimpleStringProperty(formatMoney(c.getValue().getUnitCost())));
+        colItemLineTotal.setCellValueFactory(c ->
+            new SimpleStringProperty(formatMoney(c.getValue().getLineTotal())));
+    }
+
+    private void loadItems(MaintenanceRecord record) {
+        if (record == null) {
+            tblItems.getItems().clear();
+            return;
+        }
+        List<MaintenanceItemDetail> items = service.listItems(record.getRecordId());
+        tblItems.setItems(FXCollections.observableArrayList(items));
+    }
+
+    private String formatMoney(BigDecimal value) {
+        if (value == null) return "0";
+        return NumberFormat.getNumberInstance(Locale.of("vi", "VN")).format(value);
     }
 
     private void setupFilterListeners() {
