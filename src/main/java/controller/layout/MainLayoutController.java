@@ -425,6 +425,7 @@ public class MainLayoutController {
                     this::openVehicle,
                     this::openVehicleDocument,
                     this::openDocumentAlert,
+                    this::openMaintenanceAlert,
                     this::openReport);
         } else if (controller instanceof TechnicianDashboardController technicianDashboardController) {
             technicianDashboardController.setNavigationHandlers(

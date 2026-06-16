@@ -54,5 +54,14 @@
                 </VBox>
             </HBox>
         </VBox>
+
+        <VBox spacing="16" styleClass="panel">
+            <HBox spacing="12" styleClass="table-title-row">
+                <Label text="Xe đến hạn bảo dưỡng" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Xem tất cả" onAction="#handleOpenMaintenanceAlert" styleClass="btn-soft"/>
+            </HBox>
+            <VBox fx:id="maintenanceAlertList" spacing="12"/>
+        </VBox>
     </VBox>
 </ScrollPane>
