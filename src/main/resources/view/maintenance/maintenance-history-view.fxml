@@ -23,7 +23,7 @@
                 <Label text="Danh sách lịch sử bảo dưỡng" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblHistory" prefHeight="500" VBox.vgrow="ALWAYS" styleClass="data-table">
+            <TableView fx:id="tblHistory" prefHeight="320" minHeight="260" fixedCellSize="44" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colHistoryId" text="ID" prefWidth="60"/>
                     <TableColumn fx:id="colHistoryLicensePlate" text="Biển số" prefWidth="120"/>
@@ -36,6 +36,23 @@
                     <TableColumn fx:id="colHistoryTotalCost" text="Chi phí (VNĐ)" prefWidth="130"/>
                     <TableColumn fx:id="colHistoryStatus" text="Trạng thái" prefWidth="120"/>
                     <TableColumn fx:id="colHistoryWorkSummary" text="Nội dung công việc" prefWidth="240"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <VBox styleClass="table-panel">
+            <HBox styleClass="table-title-row">
+                <Label text="Chi tiết hạng mục / phụ tùng của phiếu đã chọn" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <TableView fx:id="tblItems" prefHeight="200" fixedCellSize="44" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="colItemType"      text="Loại"       prefWidth="80"/>
+                    <TableColumn fx:id="colItemDesc"      text="Mô tả"      prefWidth="280"/>
+                    <TableColumn fx:id="colItemQty"       text="SL"         prefWidth="65"/>
+                    <TableColumn fx:id="colItemUnit"      text="Đơn vị"     prefWidth="80"/>
+                    <TableColumn fx:id="colItemUnitCost"  text="Đơn giá"    prefWidth="120"/>
+                    <TableColumn fx:id="colItemLineTotal" text="Thành tiền" prefWidth="120"/>
                 </columns>
             </TableView>
         </VBox>

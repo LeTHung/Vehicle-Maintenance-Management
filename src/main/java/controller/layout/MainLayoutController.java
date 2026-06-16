@@ -49,20 +49,38 @@ public class MainLayoutController {
     @FXML private VBox groupTechnician;
     @FXML private VBox groupReport;
 
-    @FXML private Button btnDashboard;
-    @FXML private Button btnAdminUsers;
-    @FXML private Button btnAlertSettings;
-    @FXML private Button btnAuditLog;
-    @FXML private Button btnVehicle;
-    @FXML private Button btnVehicleDocument;
-    @FXML private Button btnDocumentAlert;
-    @FXML private Button btnMaintenancePlan;
-    @FXML private Button btnMaintenanceAlert;
-    @FXML private Button btnTechMaintenanceAlert;
-    @FXML private Button btnMaintenanceRecord;
-    @FXML private Button btnMaintenanceHistory;
-    @FXML private Button btnReport;
-    @FXML private Button btnTopbarNotification;
+    @FXML
+    private Button btnDashboard;
+    @FXML
+    private Button btnAdminUsers;
+    @FXML
+    private Button btnAdminRoles;
+    @FXML
+    private Button btnAlertSettings;
+    @FXML
+    private Button btnAuditLog;
+    @FXML
+    private Button btnVehicle;
+    @FXML
+    private Button btnVehicleDocument;
+    @FXML
+    private Button btnDocumentAlert;
+    @FXML
+    private Button btnMaintenancePlan;
+    @FXML
+    private Button btnMaintenanceAlert;
+    @FXML
+    private Button btnTechMaintenanceAlert;
+    @FXML
+    private Button btnMaintenanceRecord;
+    @FXML
+    private Button btnMaintenanceHistory;
+    @FXML
+    private Button btnTechMaintenanceHistory;
+    @FXML
+    private Button btnReport;
+    @FXML
+    private Button btnTopbarNotification;
 
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_MANAGER = "MANAGER";
@@ -202,6 +220,18 @@ public class MainLayoutController {
     }
 
     @FXML
+    private void openAdminRoles() {
+        if (!ROLE_ADMIN.equals(currentRole)) {
+            showAccessDenied("Vai trò & phân quyền", btnAdminRoles);
+            return;
+        }
+        showPlaceholder("Vai trò & phân quyền",
+                "Hệ thống đang áp dụng phân quyền cơ bản theo 3 vai trò: quản trị, quản lý và kỹ thuật. "
+                        + "Menu chức năng được ẩn/hiện theo vai trò đăng nhập.",
+                btnAdminRoles);
+    }
+
+    @FXML
     private void openAuditLog() {
         if (!ROLE_ADMIN.equals(currentRole)) {
             showAccessDenied("Audit logs", btnAuditLog);
@@ -275,11 +305,11 @@ public class MainLayoutController {
 
     @FXML
     private void openMaintenanceHistory() {
-        if (!ROLE_MANAGER.equals(currentRole)) {
-            showAccessDenied("Lịch sử bảo dưỡng", btnMaintenanceHistory);
+        if (!canOpenMaintenanceHistory()) {
+            showAccessDenied("Lịch sử bảo dưỡng", resolveMaintenanceHistoryButton());
             return;
         }
-        loadPage("maintenance/maintenance-history-view.fxml", "Lịch sử bảo dưỡng", btnMaintenanceHistory);
+        loadPage("maintenance/maintenance-history-view.fxml", "Lịch sử bảo dưỡng", resolveMaintenanceHistoryButton());
     }
 
     private boolean canOpenMaintenanceAlert() {
@@ -288,6 +318,14 @@ public class MainLayoutController {
 
     private Button resolveMaintenanceAlertButton() {
         return ROLE_TECH.equals(currentRole) ? btnTechMaintenanceAlert : btnMaintenanceAlert;
+    }
+
+    private boolean canOpenMaintenanceHistory() {
+        return ROLE_MANAGER.equals(currentRole) || ROLE_TECH.equals(currentRole);
+    }
+
+    private Button resolveMaintenanceHistoryButton() {
+        return ROLE_TECH.equals(currentRole) ? btnTechMaintenanceHistory : btnMaintenanceHistory;
     }
 
     @FXML
@@ -379,6 +417,7 @@ public class MainLayoutController {
             adminDashboardController.setNavigationHandlers(
                     this::openAdminUsers,
                     this::openAdminUserCreateForm,
+                    this::openAdminRoles,
                     this::openAuditLog,
                     this::openAlertSettings);
         } else if (controller instanceof ManagerDashboardController managerDashboardController) {
@@ -444,10 +483,10 @@ public class MainLayoutController {
 
     private void setActiveButton(Button activeButton) {
         Button[] buttons = {
-                btnDashboard, btnAdminUsers, btnAlertSettings, btnAuditLog,
+                btnDashboard, btnAdminUsers, btnAdminRoles, btnAlertSettings, btnAuditLog,
                 btnVehicle, btnVehicleDocument, btnDocumentAlert,
                 btnMaintenancePlan, btnMaintenanceAlert, btnTechMaintenanceAlert,
-                btnMaintenanceRecord, btnMaintenanceHistory, btnReport
+                btnMaintenanceRecord, btnMaintenanceHistory, btnTechMaintenanceHistory, btnReport
         };
         for (Button button : buttons) {
             if (button != null) {

@@ -2,6 +2,7 @@ package service;
 
 import model.dao.MaintenanceRecordDAO;
 import model.dao.VehicleDAO;
+import model.entity.MaintenanceItemDetail;
 import model.entity.MaintenanceRecord;
 import model.entity.Vehicle;
 
@@ -42,6 +43,23 @@ public class MaintenanceRecordService {
             throw new IllegalStateException("Không thể cập nhật phiếu bảo dưỡng. Vui lòng thử lại.");
         }
         return true;
+    }
+
+    public List<MaintenanceItemDetail> listItems(long recordId) {
+        return recordDAO.findItemsByRecordId(recordId);
+    }
+
+    public Long saveItem(MaintenanceItemDetail item) {
+        if (item == null) throw new IllegalArgumentException("Hạng mục không hợp lệ.");
+        if (item.getDescription() == null || item.getDescription().isBlank())
+            throw new IllegalArgumentException("Vui lòng nhập mô tả hạng mục.");
+        if (item.getQuantity() == null) throw new IllegalArgumentException("Vui lòng nhập số lượng.");
+        if (item.getUnitCost() == null) throw new IllegalArgumentException("Vui lòng nhập đơn giá.");
+        return recordDAO.insertItem(item);
+    }
+
+    public boolean deleteItems(long recordId) {
+        return recordDAO.deleteItemsByRecordId(recordId);
     }
 
     private void validate(MaintenanceRecord record) {

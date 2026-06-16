@@ -25,6 +25,7 @@ public class AdminDashboardController {
 
     private Runnable openUserManagementHandler = () -> {};
     private Runnable createUserHandler = () -> {};
+    private Runnable openRoleManagementHandler = () -> {};
     private Runnable openAuditLogHandler = () -> {};
     private Runnable openAlertSettingsHandler = () -> {};
 
@@ -46,10 +47,12 @@ public class AdminDashboardController {
 
     public void setNavigationHandlers(Runnable openUserManagementHandler,
                                       Runnable createUserHandler,
+                                      Runnable openRoleManagementHandler,
                                       Runnable openAuditLogHandler,
                                       Runnable openAlertSettingsHandler) {
         this.openUserManagementHandler = safeHandler(openUserManagementHandler);
         this.createUserHandler = safeHandler(createUserHandler);
+        this.openRoleManagementHandler = safeHandler(openRoleManagementHandler);
         this.openAuditLogHandler = safeHandler(openAuditLogHandler);
         this.openAlertSettingsHandler = safeHandler(openAlertSettingsHandler);
     }
@@ -62,6 +65,11 @@ public class AdminDashboardController {
     @FXML
     private void handleCreateUser() {
         createUserHandler.run();
+    }
+
+    @FXML
+    private void handleOpenRoleManagement() {
+        openRoleManagementHandler.run();
     }
 
     @FXML

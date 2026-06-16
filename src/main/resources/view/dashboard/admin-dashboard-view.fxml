@@ -13,6 +13,7 @@
             <Label text="Quản lý người dùng, nhật ký hoạt động và trạng thái vận hành FleetCare." styleClass="hero-subtitle"/>
             <HBox spacing="12">
                 <Button text="+ Tạo người dùng" onAction="#handleCreateUser" styleClass="btn-primary"/>
+                <Button text="Vai trò &amp; phân quyền" onAction="#handleOpenRoleManagement" styleClass="btn-soft"/>
                 <Button text="Cấu hình cảnh báo" onAction="#handleOpenAlertSettings" styleClass="btn-soft"/>
                 <Button text="Xem nhật ký hoạt động" onAction="#handleOpenAuditLog" styleClass="btn-ghost"/>
             </HBox>
@@ -57,6 +58,14 @@
                     </styleClass>
                     <Label text="Nhật ký hoạt động" styleClass="item-title"/>
                     <Label text="Theo dõi đăng nhập, đăng xuất và thao tác quản trị user." styleClass="item-subtitle"/>
+                </VBox>
+                <VBox HBox.hgrow="ALWAYS" onMouseClicked="#handleOpenRoleManagement">
+                    <styleClass>
+                        <String fx:value="module-card"/>
+                        <String fx:value="clickable-card"/>
+                    </styleClass>
+                    <Label text="Vai trò &amp; phân quyền" styleClass="item-title"/>
+                    <Label text="Ẩn/hiện menu theo quyền đăng nhập." styleClass="item-subtitle"/>
                 </VBox>
                 <VBox HBox.hgrow="ALWAYS" onMouseClicked="#handleOpenAlertSettings">
                     <styleClass>
