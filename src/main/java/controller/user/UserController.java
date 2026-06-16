@@ -79,6 +79,14 @@ public class UserController {
     private Button lockButton;
     @FXML
     private Button refreshButton;
+    @FXML
+    private Label lblSelectedUserTitle;
+    @FXML
+    private Label lblSelectedUserMeta;
+    @FXML
+    private Label lblSelectedUserRole;
+    @FXML
+    private Label lblSelectedUserStatus;
 
     @FXML
     public void initialize() {
@@ -241,8 +249,12 @@ public class UserController {
         editButton.disableProperty().bind(userTable.getSelectionModel().selectedItemProperty().isNull());
         resetPasswordButton.disableProperty().bind(userTable.getSelectionModel().selectedItemProperty().isNull());
         lockButton.disableProperty().bind(userTable.getSelectionModel().selectedItemProperty().isNull());
-        userTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateLockButton(newValue));
+        userTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateLockButton(newValue);
+            renderSelectedUserSummary(newValue);
+        });
         updateLockButton(null);
+        renderSelectedUserSummary(null);
     }
 
     private void reloadData() {
@@ -250,6 +262,7 @@ public class UserController {
             loadRoles();
             users.setAll(userService.listUsers());
             updateLockButton(getSelectedUser());
+            renderSelectedUserSummary(getSelectedUser());
         } catch (RuntimeException e) {
             showError("Không thể tải danh sách tài khoản. " + nullToEmpty(e.getMessage()));
         }
@@ -399,6 +412,56 @@ public class UserController {
         }
 
         lockButton.setText(user != null && isLocked(user) ? "Mở khóa" : "Khóa");
+    }
+
+    private void renderSelectedUserSummary(User user) {
+        if (user == null) {
+            lblSelectedUserTitle.setText("Chưa chọn tài khoản");
+            lblSelectedUserMeta.setText("Click một dòng trong bảng để xem nhanh vai trò, liên hệ và lần đăng nhập gần nhất.");
+            lblSelectedUserRole.setText("Chưa chọn");
+            lblSelectedUserStatus.setText("Chưa chọn");
+            setPillStyle(lblSelectedUserRole, "metric-trend-primary");
+            setPillStyle(lblSelectedUserStatus, "metric-trend-primary");
+            return;
+        }
+
+        String username = nullToEmpty(user.getUsername());
+        String fullName = nullToEmpty(user.getFullName());
+        String displayName = fullName.isEmpty() ? username : fullName + " (" + username + ")";
+        String roleName = resolveRoleName(user.getRoleId());
+        String contact = resolveContactSummary(nullToEmpty(user.getEmail()), nullToEmpty(user.getPhone()));
+        String lastLogin = user.getLastLoginAt() == null ? "Chưa đăng nhập" : formatDateTime(user.getLastLoginAt());
+
+        lblSelectedUserTitle.setText("Đang chọn: " + displayName);
+        lblSelectedUserMeta.setText(contact + " | Đăng nhập gần nhất: " + lastLogin);
+        lblSelectedUserRole.setText(roleName.isEmpty() ? "Chưa có vai trò" : roleName);
+        lblSelectedUserStatus.setText(resolveStatusLabel(user.getAccountStatus()));
+        setPillStyle(lblSelectedUserRole, "metric-trend-primary");
+        setPillStyle(lblSelectedUserStatus, isLocked(user) ? "metric-trend-warning" : "metric-trend-success");
+    }
+
+    private String resolveContactSummary(String email, String phone) {
+        if (!email.isEmpty() && !phone.isEmpty()) {
+            return email + " | " + phone;
+        }
+        if (!email.isEmpty()) {
+            return email;
+        }
+        if (!phone.isEmpty()) {
+            return phone;
+        }
+        return "Chưa có thông tin liên hệ";
+    }
+
+    private void setPillStyle(Label label, String styleClass) {
+        label.getStyleClass().removeAll(
+                "metric-trend-success",
+                "metric-trend-primary",
+                "metric-trend-warning",
+                "metric-trend-danger");
+        if (!label.getStyleClass().contains(styleClass)) {
+            label.getStyleClass().add(styleClass);
+        }
     }
 
     private boolean isCurrentUser(User user) {
