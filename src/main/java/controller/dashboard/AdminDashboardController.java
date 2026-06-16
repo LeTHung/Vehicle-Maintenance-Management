@@ -26,6 +26,7 @@ public class AdminDashboardController {
     private Runnable openUserManagementHandler = () -> {};
     private Runnable createUserHandler = () -> {};
     private Runnable openAuditLogHandler = () -> {};
+    private Runnable openAlertSettingsHandler = () -> {};
 
     @FXML private Label lblTotalUsers;
     @FXML private Label lblTotalUsersHint;
@@ -45,10 +46,12 @@ public class AdminDashboardController {
 
     public void setNavigationHandlers(Runnable openUserManagementHandler,
                                       Runnable createUserHandler,
-                                      Runnable openAuditLogHandler) {
+                                      Runnable openAuditLogHandler,
+                                      Runnable openAlertSettingsHandler) {
         this.openUserManagementHandler = safeHandler(openUserManagementHandler);
         this.createUserHandler = safeHandler(createUserHandler);
         this.openAuditLogHandler = safeHandler(openAuditLogHandler);
+        this.openAlertSettingsHandler = safeHandler(openAlertSettingsHandler);
     }
 
     @FXML
@@ -64,6 +67,11 @@ public class AdminDashboardController {
     @FXML
     private void handleOpenAuditLog() {
         openAuditLogHandler.run();
+    }
+
+    @FXML
+    private void handleOpenAlertSettings() {
+        openAlertSettingsHandler.run();
     }
 
     private void refreshMetrics() {

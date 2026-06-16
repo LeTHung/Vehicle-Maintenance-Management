@@ -29,6 +29,7 @@
                     <VBox fx:id="groupAdmin">
                         <Label text="QUẢN TRỊ HỆ THỐNG" styleClass="nav-title"/>
                         <Button fx:id="btnAdminUsers" text="Quản lý người dùng" onAction="#openAdminUsers" maxWidth="Infinity" styleClass="nav-button"/>
+                        <Button fx:id="btnAlertSettings" text="Cấu hình cảnh báo" onAction="#openAlertSettings" maxWidth="Infinity" styleClass="nav-button"/>
                         <Button fx:id="btnAuditLog" text="Audit logs" onAction="#openAuditLog" maxWidth="Infinity" styleClass="nav-button"/>
                     </VBox>
 
@@ -64,6 +65,7 @@
                         <Label fx:id="lblUserRole" text="Vai trò" styleClass="user-role"/>
                     </VBox>
                 </HBox>
+                <Button text="Đổi mật khẩu" onAction="#handleChangeOwnPassword" maxWidth="Infinity" styleClass="btn-soft"/>
                 <Button text="Đăng xuất" onAction="#handleLogout" maxWidth="Infinity" styleClass="logout-button"/>
             </VBox>
         </VBox>

@@ -1,6 +1,7 @@
 package service;
 
 import model.dao.AuditLogDAO;
+import model.entity.AlertSettings;
 import model.entity.AuditLog;
 import model.entity.User;
 import session.UserSession;
@@ -82,6 +83,39 @@ public class AuditLogService {
                 "USER",
                 resolveEntityId(targetUser),
                 "Mở khóa tài khoản '" + resolveDisplayName(targetUser) + "'.");
+    }
+
+    public void recordPasswordChanged(User targetUser) {
+        recordActorEvent(
+                "PASSWORD_CHANGED",
+                "USER",
+                resolveEntityId(targetUser),
+                "Đổi mật khẩu tài khoản '" + resolveDisplayName(targetUser) + "'.");
+    }
+
+    public void recordPasswordResetByAdmin(User targetUser) {
+        recordActorEvent(
+                "PASSWORD_RESET_BY_ADMIN",
+                "USER",
+                resolveEntityId(targetUser),
+                "Quản trị viên reset mật khẩu cho tài khoản '" + resolveDisplayName(targetUser) + "'.");
+    }
+
+    public void recordSettingsUpdated(AlertSettings settings) {
+        String description = "Cập nhật cấu hình cảnh báo";
+        if (settings != null) {
+            description += ": giấy tờ trước " + settings.getDocumentAlertDays()
+                    + " ngày, bảo dưỡng trước " + settings.getMaintenanceAlertDays()
+                    + " ngày hoặc " + settings.getMaintenanceAlertKm() + " km.";
+        } else {
+            description += ".";
+        }
+
+        recordActorEvent(
+                "SETTINGS_UPDATED",
+                "ALERT_SETTINGS",
+                settings == null ? "1" : String.valueOf(settings.getSettingId()),
+                description);
     }
 
     private void recordActorEvent(String action, String entityType, String entityId, String description) {

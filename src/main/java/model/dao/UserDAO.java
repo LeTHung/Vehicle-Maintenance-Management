@@ -208,6 +208,33 @@ public class UserDAO {
         return false;
     }
 
+    public boolean updatePassword(Long userId, String passwordHash, boolean mustChangePassword) {
+        if (userId == null || passwordHash == null || passwordHash.isBlank()) {
+            return false;
+        }
+
+        String sql = """
+                UPDATE users
+                SET password_hash = ?,
+                    must_change_password = ?
+                WHERE user_id = ?
+                """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, passwordHash);
+            statement.setBoolean(2, mustChangePassword);
+            statement.setLong(3, userId);
+
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     /**
      * Cập nhật thời điểm đăng nhập gần nhất.
      */

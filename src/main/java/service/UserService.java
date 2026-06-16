@@ -4,6 +4,7 @@ import model.dao.RoleDAO;
 import model.dao.UserDAO;
 import model.entity.Role;
 import model.entity.User;
+import session.UserSession;
 import util.PasswordUtil;
 
 import java.util.List;
@@ -19,6 +20,8 @@ public class UserService {
 
     private static final String STATUS_ACTIVE = "ACTIVE";
     private static final String STATUS_LOCKED = "LOCKED";
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final int MIN_PASSWORD_LENGTH = 8;
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
@@ -39,6 +42,7 @@ public class UserService {
 
         validateUsernameAvailable(normalizedUsername, null);
         validateRole(roleId);
+        validateNewPassword(normalizedPassword, normalizedPassword, null);
 
         User user = new User();
         user.setUsername(normalizedUsername);
@@ -120,6 +124,63 @@ public class UserService {
         return roleDAO.findAllActive();
     }
 
+    public User changeOwnPassword(String currentPassword,
+                                  String newPassword,
+                                  String confirmPassword) {
+        User sessionUser = UserSession.getInstance().getCurrentUser();
+        if (sessionUser == null || sessionUser.getUserId() == null) {
+            throw new IllegalStateException("Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.");
+        }
+
+        User currentUser = userDAO.findById(sessionUser.getUserId())
+                .orElseThrow(() -> new IllegalStateException("Không tìm thấy tài khoản hiện tại."));
+
+        if (!PasswordUtil.verify(currentPassword, currentUser.getPasswordHash())) {
+            throw new IllegalArgumentException("Mật khẩu hiện tại không đúng.");
+        }
+
+        validateNewPassword(newPassword, confirmPassword, currentUser.getPasswordHash());
+        String passwordHash = PasswordUtil.hash(newPassword);
+
+        if (!userDAO.updatePassword(currentUser.getUserId(), passwordHash, false)) {
+            throw new IllegalStateException("Không thể cập nhật mật khẩu. Vui lòng thử lại.");
+        }
+
+        User updatedUser = userDAO.findById(currentUser.getUserId()).orElse(currentUser);
+        sessionUser.setPasswordHash(updatedUser.getPasswordHash());
+        sessionUser.setMustChangePassword(false);
+        auditLogService.recordPasswordChanged(updatedUser);
+        return updatedUser;
+    }
+
+    public User adminResetPassword(Long targetUserId,
+                                   String newPassword,
+                                   String confirmPassword) {
+        requireCurrentAdmin();
+        if (targetUserId == null) {
+            throw new IllegalArgumentException("Vui lòng chọn tài khoản cần reset mật khẩu.");
+        }
+
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser != null && targetUserId.equals(currentUser.getUserId())) {
+            throw new IllegalArgumentException("Không reset mật khẩu của chính mình tại đây. Vui lòng dùng chức năng Đổi mật khẩu của tôi.");
+        }
+
+        User targetUser = userDAO.findById(targetUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Tài khoản cần reset mật khẩu không tồn tại."));
+
+        validateNewPassword(newPassword, confirmPassword, targetUser.getPasswordHash());
+        String passwordHash = PasswordUtil.hash(newPassword);
+
+        if (!userDAO.updatePassword(targetUserId, passwordHash, true)) {
+            throw new IllegalStateException("Không thể reset mật khẩu. Vui lòng thử lại.");
+        }
+
+        User updatedUser = userDAO.findById(targetUserId).orElse(targetUser);
+        auditLogService.recordPasswordResetByAdmin(updatedUser);
+        return updatedUser;
+    }
+
     private User updateAccountStatus(Long userId, String status) {
         if (userId == null) {
             throw new IllegalArgumentException("Vui lòng chọn tài khoản.");
@@ -135,6 +196,52 @@ public class UserService {
             user.setAccountStatus(status);
             return user;
         });
+    }
+
+    private void requireCurrentAdmin() {
+        Role currentRole = UserSession.getInstance().getCurrentRole();
+        String roleCode = currentRole == null ? null : currentRole.getRoleCode();
+        if (!ROLE_ADMIN.equalsIgnoreCase(roleCode == null ? "" : roleCode.trim())) {
+            throw new IllegalStateException("Chỉ quản trị viên mới được reset mật khẩu tài khoản khác.");
+        }
+    }
+
+    private void validateNewPassword(String newPassword,
+                                     String confirmPassword,
+                                     String currentPasswordHash) {
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new IllegalArgumentException("Mật khẩu mới không được để trống.");
+        }
+        if (confirmPassword == null || !newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Xác nhận mật khẩu mới không khớp.");
+        }
+        if (newPassword.length() < MIN_PASSWORD_LENGTH) {
+            throw new IllegalArgumentException("Mật khẩu mới phải có ít nhất " + MIN_PASSWORD_LENGTH + " ký tự.");
+        }
+        if (!containsLetter(newPassword) || !containsDigit(newPassword)) {
+            throw new IllegalArgumentException("Mật khẩu mới phải có ít nhất một chữ cái và một chữ số.");
+        }
+        if (PasswordUtil.verify(newPassword, currentPasswordHash)) {
+            throw new IllegalArgumentException("Mật khẩu mới không được trùng mật khẩu hiện tại.");
+        }
+    }
+
+    private boolean containsLetter(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            if (Character.isLetter(value.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsDigit(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            if (Character.isDigit(value.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void validateUsernameAvailable(String username, Long currentUserId) {

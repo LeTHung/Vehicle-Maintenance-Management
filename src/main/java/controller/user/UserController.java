@@ -1,5 +1,7 @@
 package controller.user;
 
+import controller.common.PasswordDialogHelper;
+import controller.common.PasswordDialogHelper.PasswordChangeData;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -71,6 +73,8 @@ public class UserController {
     private Button addButton;
     @FXML
     private Button editButton;
+    @FXML
+    private Button resetPasswordButton;
     @FXML
     private Button lockButton;
     @FXML
@@ -179,6 +183,36 @@ public class UserController {
     }
 
     @FXML
+    private void onResetPasswordClick() {
+        User selected = getSelectedUser();
+        if (selected == null) {
+            showWarning("Vui lòng chọn tài khoản cần reset mật khẩu.");
+            return;
+        }
+        if (isCurrentUser(selected)) {
+            showWarning("Không reset mật khẩu của chính mình tại đây. Vui lòng dùng chức năng Đổi mật khẩu của tôi.");
+            return;
+        }
+
+        Optional<PasswordChangeData> formData = PasswordDialogHelper.showAdminResetDialog(
+                "Reset mật khẩu",
+                "Đặt mật khẩu tạm cho tài khoản " + selected.getUsername());
+        if (formData.isEmpty()) {
+            return;
+        }
+
+        try {
+            PasswordChangeData data = formData.get();
+            userService.adminResetPassword(selected.getUserId(), data.newPassword(), data.confirmPassword());
+            reloadData();
+            selectUser(selected.getUserId());
+            showInfo("Đã reset mật khẩu. Người dùng sẽ phải đổi lại mật khẩu khi đăng nhập.");
+        } catch (RuntimeException e) {
+            showError(e.getMessage());
+        }
+    }
+
+    @FXML
     private void onRefreshClick() {
         reloadData();
     }
@@ -205,6 +239,7 @@ public class UserController {
 
     private void configureSelectionState() {
         editButton.disableProperty().bind(userTable.getSelectionModel().selectedItemProperty().isNull());
+        resetPasswordButton.disableProperty().bind(userTable.getSelectionModel().selectedItemProperty().isNull());
         lockButton.disableProperty().bind(userTable.getSelectionModel().selectedItemProperty().isNull());
         userTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateLockButton(newValue));
         updateLockButton(null);
@@ -247,7 +282,7 @@ public class UserController {
         ComboBox<Role> roleComboBox = new ComboBox<>();
 
         usernameField.setPromptText("VD: admin");
-        passwordField.setPromptText("Mật khẩu");
+        passwordField.setPromptText("Tối thiểu 8 ký tự, có chữ và số");
         fullNameField.setPromptText("Họ tên");
         emailField.setPromptText("email@fleetcare.local");
         phoneField.setPromptText("Số điện thoại");

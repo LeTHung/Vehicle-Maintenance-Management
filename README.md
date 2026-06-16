@@ -9,7 +9,8 @@ Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co s
 - Da co quan ly tai khoan co ban: xem danh sach, them, sua, khoa/mo khoa user.
 - Da co seed du lieu role/user demo trong `data/seed-auth.sql`.
 - Da co Audit logs doc du lieu tu database, tu tao bang `audit_logs` khi can va ghi log dang nhap/dang xuat, quan tri user.
-- Da bo sung seed demo thuc te trong `data/seed-demo-realistic.sql`: 6 xe, 18 giay to, canh bao theo ngay hien tai, ke hoach/lich su bao duong va chi phi bao cao.
+- Da bo sung seed demo dong bo cho team trong `data/seed-team-demo-reset.sql`: reset du lieu demo, 3 tai khoan, 6 xe, 18 giay to, canh bao theo ngay hien tai, ke hoach/lich su bao duong va chi phi bao cao.
+- Admin co man hinh cau hinh canh bao de cap nhat nguong giay to va bao duong theo ngay/km.
 - Da co man hinh ho so phuong tien, giay to xe, canh bao giay to, ke hoach/canh bao/cap nhat bao duong va bao cao chi phi.
 - Dashboard Admin, Manager va Technician uu tien lay so lieu tu DB thay vi dung so lieu ao/hard-code.
 - RBAC hien tai duoc guard o menu va handler: Admin quan ly tai khoan, Manager quan ly doi xe/bao cao, Technician xu ly bao duong.
@@ -57,7 +58,8 @@ data
 |-- Dump20260524.sql              # Schema goc va danh muc nen
 |-- seed-auth.sql                 # Tai khoan demo admin/manager/tech
 |-- audit-logs.sql                # Schema/seed demo thu cong cho audit logs
-|-- seed-demo-realistic.sql       # Seed demo tong hop, nen dung khi demo
+|-- seed-team-demo-reset.sql      # Seed demo reset dong bo cho ca nhom, nen dung khi demo
+|-- seed-demo-realistic.sql       # Seed demo tong hop cu
 |-- data-vehicles.sql             # Seed rieng cho xe + giay to xe
 |-- seed-maintenance-plans.sql    # Seed rieng cho ke hoach bao duong
 `-- seed-maintenance.sql          # Seed rieng cho phieu/lich su bao duong
@@ -148,24 +150,21 @@ Chay schema goc neu database chua co bang:
 Get-Content data\Dump20260524.sql | mysql -u root -p
 ```
 
-Chay seed auth/user/role:
+Chay seed demo reset dong bo cho ca nhom:
 
 ```powershell
-Get-Content data\seed-auth.sql | mysql -u root -p
+Get-Content data\seed-team-demo-reset.sql | mysql -u root -p
 ```
 
-Chay seed demo thuc te de thay du lieu ao/hard-code:
-
-```powershell
-Get-Content data\seed-demo-realistic.sql | mysql -u root -p
-```
-
-File `seed-demo-realistic.sql` se nap lai du lieu nghiep vu demo gom:
+File `seed-team-demo-reset.sql` se xoa va nap lai du lieu demo nghiep vu gom:
 
 - 6 phuong tien voi bien so, so khung, so may, ODO va trang thai gan voi nghiep vu doi xe.
 - 18 giay to phap ly, moi xe co Dang kiem, Bao hiem va Phi duong bo.
 - Ngay het han dung `CURDATE()` nen khi demo se luon co ca nhom qua han, sap het han trong 15 ngay va con hieu luc.
 - Ke hoach bao duong theo ngay/km, phieu bao duong, phu tung/cong viec va chi phi bao cao.
+- 3 tai khoan demo `admin`, `manager`, `tech` va permissions/RBAC can thiet.
+
+`seed-auth.sql` chi can dung khi muon nap rieng tai khoan demo ma khong reset du lieu nghiep vu.
 
 Neu muon nap rieng tung module, chay theo thu tu:
 
@@ -193,7 +192,7 @@ Pham vi demo theo role:
 
 | Username | Man hinh/chuc nang chinh |
 |---|---|
-| `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, Audit logs doc DB/ghi log auth-user admin, dashboard tong hop user/role/xe/canh bao lay tu DB |
+| `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, Cau hinh canh bao, Audit logs doc DB/ghi log auth-user admin, dashboard tong hop user/role/xe/canh bao lay tu DB |
 | `manager` | Dashboard doi xe, Ho so phuong tien, Giay to xe, Canh bao giay to, Ke hoach/canh bao/lich su bao duong, Bao cao chi phi |
 | `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong |
 
@@ -240,8 +239,7 @@ Neu may moi chua co database, chay schema va seed:
 
 ```powershell
 Get-Content data\Dump20260524.sql | mysql -u root -p
-Get-Content data\seed-auth.sql | mysql -u root -p
-Get-Content data\seed-demo-realistic.sql | mysql -u root -p
+Get-Content data\seed-team-demo-reset.sql | mysql -u root -p
 ```
 
 Dong `audit-logs.sql` trong checklist la tuy chon de nap demo data; neu bo qua, app van tu tao bang khi mo/ghi Audit logs.
@@ -252,9 +250,11 @@ Chay ung dung va test 3 role:
 .\mvnw javafx:run
 ```
 
-- `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can, mo Audit logs, loc theo hanh dong/ngay va thu tim kiem nhanh.
+- `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can, mo Cau hinh canh bao de doi nguong ngay/km, mo Audit logs, loc theo hanh dong/ngay va thu tim kiem nhanh.
 - `manager/123456`: mo dashboard, ho so phuong tien, giay to xe, canh bao giay to, lich su bao duong va bao cao chi phi.
 - `tech/123456`: mo dashboard ky thuat, Xe can bao duong va Cap nhat bao duong.
+- Moi role deu co nut Doi mat khau o sidebar. Mat khau moi phai co it nhat 8 ky tu, gom chu va so, va khong trung mat khau cu.
+- Admin co the reset mat khau cho tai khoan khac trong man hinh Quan ly nguoi dung. Tai khoan bi reset se buoc doi lai mat khau khi dang nhap.
 - Dang xuat sau moi role de xac nhan session duoc clear.
 - Neu thay loi ket noi DB, kiem tra lai `DB_MODE`, `DB_URL`, `DB_USER`, `DB_PASSWORD`.
 

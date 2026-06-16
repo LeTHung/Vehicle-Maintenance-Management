@@ -26,6 +26,7 @@
     <HBox spacing="10" styleClass="toolbar-panel">
         <Button fx:id="addButton" text="+ Thêm người dùng" onAction="#onAddClick" styleClass="btn-primary"/>
         <Button fx:id="editButton" text="Sửa" onAction="#onEditClick" styleClass="btn-soft"/>
+        <Button fx:id="resetPasswordButton" text="Reset mật khẩu" onAction="#onResetPasswordClick" styleClass="btn-soft"/>
         <Button fx:id="lockButton" text="Khóa/Mở" onAction="#onLockClick" styleClass="btn-ghost"/>
         <Button fx:id="refreshButton" text="Làm mới" onAction="#onRefreshClick" styleClass="btn-soft"/>
     </HBox>

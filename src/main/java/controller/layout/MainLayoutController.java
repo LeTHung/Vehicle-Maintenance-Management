@@ -1,5 +1,7 @@
 package controller.layout;
 
+import controller.common.PasswordDialogHelper;
+import controller.common.PasswordDialogHelper.PasswordChangeData;
 import controller.dashboard.AdminDashboardController;
 import controller.dashboard.ManagerDashboardController;
 import controller.dashboard.TechnicianDashboardController;
@@ -11,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -22,11 +25,13 @@ import javafx.stage.Stage;
 import model.entity.Role;
 import model.entity.User;
 import service.AuthService;
+import service.UserService;
 import session.UserSession;
 import util.StylesheetLoader;
 
 import java.net.URL;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class MainLayoutController {
@@ -46,6 +51,7 @@ public class MainLayoutController {
 
     @FXML private Button btnDashboard;
     @FXML private Button btnAdminUsers;
+    @FXML private Button btnAlertSettings;
     @FXML private Button btnAuditLog;
     @FXML private Button btnVehicle;
     @FXML private Button btnVehicleDocument;
@@ -64,6 +70,7 @@ public class MainLayoutController {
     private static final String ROLE_UNKNOWN = "UNKNOWN";
 
     private final AuthService authService = new AuthService();
+    private final UserService userService = new UserService();
 
     private String currentRole = ROLE_UNKNOWN;
     private ChangeListener<String> quickSearchListener;
@@ -204,6 +211,15 @@ public class MainLayoutController {
     }
 
     @FXML
+    private void openAlertSettings() {
+        if (!ROLE_ADMIN.equals(currentRole)) {
+            showAccessDenied("Cấu hình cảnh báo", btnAlertSettings);
+            return;
+        }
+        loadPage("admin/alert-settings-view.fxml", "Cấu hình cảnh báo", btnAlertSettings);
+    }
+
+    @FXML
     private void openVehicle() {
         if (!ROLE_MANAGER.equals(currentRole)) {
             showAccessDenied("Hồ sơ phương tiện", btnVehicle);
@@ -308,6 +324,25 @@ public class MainLayoutController {
         }
     }
 
+    @FXML
+    private void handleChangeOwnPassword() {
+        Optional<PasswordChangeData> formData = PasswordDialogHelper.showOwnPasswordDialog(
+                "Đổi mật khẩu",
+                "Cập nhật mật khẩu đăng nhập của bạn");
+        if (formData.isEmpty()) {
+            return;
+        }
+
+        try {
+            PasswordChangeData data = formData.get();
+            userService.changeOwnPassword(data.currentPassword(), data.newPassword(), data.confirmPassword());
+            bindCurrentUser();
+            showInfo("Đã đổi mật khẩu thành công.");
+        } catch (RuntimeException e) {
+            showError(e.getMessage());
+        }
+    }
+
     private void loadPage(String fxmlFile, String title, Button activeButton) {
         loadPage(fxmlFile, title, activeButton, controller -> {});
     }
@@ -344,7 +379,8 @@ public class MainLayoutController {
             adminDashboardController.setNavigationHandlers(
                     this::openAdminUsers,
                     this::openAdminUserCreateForm,
-                    this::openAuditLog);
+                    this::openAuditLog,
+                    this::openAlertSettings);
         } else if (controller instanceof ManagerDashboardController managerDashboardController) {
             managerDashboardController.setNavigationHandlers(
                     this::openVehicle,
@@ -408,7 +444,7 @@ public class MainLayoutController {
 
     private void setActiveButton(Button activeButton) {
         Button[] buttons = {
-                btnDashboard, btnAdminUsers, btnAuditLog,
+                btnDashboard, btnAdminUsers, btnAlertSettings, btnAuditLog,
                 btnVehicle, btnVehicleDocument, btnDocumentAlert,
                 btnMaintenancePlan, btnMaintenanceAlert, btnTechMaintenanceAlert,
                 btnMaintenanceRecord, btnMaintenanceHistory, btnReport
@@ -438,5 +474,21 @@ public class MainLayoutController {
             return user.getUsername().trim();
         }
         return "Người dùng";
+    }
+
+    private void showInfo(String message) {
+        showAlert(Alert.AlertType.INFORMATION, "Thông báo", message);
+    }
+
+    private void showError(String message) {
+        showAlert(Alert.AlertType.ERROR, "Lỗi", message == null || message.isBlank() ? "Đã có lỗi xảy ra." : message);
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
