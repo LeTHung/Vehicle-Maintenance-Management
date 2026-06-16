@@ -194,7 +194,7 @@ Pham vi demo theo role:
 |---|---|
 | `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, Cau hinh canh bao, Audit logs doc DB/ghi log auth-user admin, dashboard tong hop user/role/xe/canh bao lay tu DB |
 | `manager` | Dashboard doi xe, Ho so phuong tien, Giay to xe, Canh bao giay to, Ke hoach/canh bao/lich su bao duong, Bao cao chi phi |
-| `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong |
+| `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong (nhap phu tung/hang muc), Lich su bao duong (tra cuu theo xe) |
 
 Kiem tra nhanh sau khi seed:
 
@@ -203,6 +203,15 @@ SELECT role_id, role_code, role_name, is_active FROM roles;
 SELECT user_id, username, full_name, role_id, account_status FROM users;
 SELECT audit_log_id, username, action, created_at FROM audit_logs ORDER BY created_at DESC LIMIT 10;
 ```
+
+## Luu y nghiep vu module Bao duong / Bao cao
+
+- Lap ke hoach bao duong: nhap chu ky (ngay hoac km) + moc bao duong gan nhat; he thong **tu tinh ngay/ODO den han** neu de trong (ngay den han = ngay bao duong cuoi + chu ky ngay; ODO den han = ODO cuoi + chu ky km). Co `interval_days` thi bat buoc nhap `Ngay bao duong cuoi` (hoac nhap tay `Ngay den han`); tuong tu cho km.
+- Nguong "canh bao truoc" lay theo gia tri nguoi dung nhap; neu de trong thi lay mac dinh tu bang `alert_settings` (mac dinh 7 ngay / 500 km).
+- Man **Canh bao bao duong** chi hien xe **qua han (OVERDUE)** hoac **sap den han (COMING_DUE)**; ke hoach co ngay den han con xa se o trang thai NORMAL va khong hien.
+- Phieu bao duong co the nhap nhieu **hang muc/phu tung** (cong viec WORK + phu tung PART), thanh tien tu tinh client-side (cot `line_total` trong DB la GENERATED).
+- **Bao cao chi phi chi tinh phieu o trang thai COMPLETED** (theo view `vw_vehicle_cost_monthly`). Phieu OPEN/IN_PROGRESS chua tinh vao chi phi -> khi demo bao cao, dam bao co phieu COMPLETED.
+- **Lich su bao duong**: chon xe de tra cuu ho so sua chua theo xe, click 1 phieu de xem chi tiet hang muc/phu tung. Ca Manager va Technician deu xem duoc.
 
 ## Build project
 
@@ -225,7 +234,7 @@ Luong dang nhap hien tai:
 - Dang nhap bang tai khoan demo.
 - Admin co menu Quan ly nguoi dung va Audit logs.
 - Manager co menu phuong tien/giay to/canh bao/lich su bao duong/bao cao.
-- Technician co menu bao duong.
+- Technician co menu Xe can bao duong, Cap nhat bao duong va Lich su bao duong.
 
 ## Checklist truoc khi demo/nop bai
 
@@ -252,7 +261,7 @@ Chay ung dung va test 3 role:
 
 - `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can, mo Cau hinh canh bao de doi nguong ngay/km, mo Audit logs, loc theo hanh dong/ngay va thu tim kiem nhanh.
 - `manager/123456`: mo dashboard, ho so phuong tien, giay to xe, canh bao giay to, lich su bao duong va bao cao chi phi.
-- `tech/123456`: mo dashboard ky thuat, Xe can bao duong va Cap nhat bao duong.
+- `tech/123456`: mo dashboard ky thuat, Xe can bao duong, Cap nhat bao duong (them phu tung/hang muc), Lich su bao duong (tra cuu ho so sua chua theo xe).
 - Moi role deu co nut Doi mat khau o sidebar. Mat khau moi phai co it nhat 8 ky tu, gom chu va so, va khong trung mat khau cu.
 - Admin co the reset mat khau cho tai khoan khac trong man hinh Quan ly nguoi dung. Tai khoan bi reset se buoc doi lai mat khau khi dang nhap.
 - Dang xuat sau moi role de xac nhan session duoc clear.
