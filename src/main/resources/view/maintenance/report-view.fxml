@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.maintenance.ReportController" fitToWidth="true" styleClass="page-scroll">
+    <VBox spacing="24" styleClass="page">
+        <VBox styleClass="page-header">
+            <Label text="Báo cáo chi phí bảo dưỡng" styleClass="page-title"/>
+            <Label text="Thống kê chi phí bảo dưỡng và giấy tờ theo tháng và theo xe." styleClass="page-subtitle"/>
+        </VBox>
+
+        <HBox spacing="18">
+            <VBox styleClass="summary-primary" HBox.hgrow="ALWAYS">
+                <Label text="Tổng chi phí bảo dưỡng" styleClass="metric-label"/>
+                <Label fx:id="lblTotalMaintenanceCost" text="0 VNĐ" styleClass="metric-value"/>
+                <Label text="Cộng dồn kỳ lọc" styleClass="metric-trend-primary"/>
+            </VBox>
+            <VBox styleClass="summary-warning" HBox.hgrow="ALWAYS">
+                <Label text="Tổng chi phí giấy tờ" styleClass="metric-label"/>
+                <Label fx:id="lblTotalDocumentCost" text="0 VNĐ" styleClass="metric-value-warning"/>
+                <Label text="Cộng dồn kỳ lọc" styleClass="metric-trend-warning"/>
+            </VBox>
+            <VBox styleClass="summary-danger" HBox.hgrow="ALWAYS">
+                <Label text="Tổng cộng" styleClass="metric-label"/>
+                <Label fx:id="lblGrandTotal" text="0 VNĐ" styleClass="metric-value-danger"/>
+                <Label text="Cộng dồn kỳ lọc" styleClass="metric-trend-danger"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="12" styleClass="toolbar-panel">
+            <ComboBox fx:id="cbYear" promptText="Chọn năm..." prefWidth="150"/>
+            <ComboBox fx:id="cbVehicle" promptText="Tất cả xe..." prefWidth="220"/>
+            <Button text="Xem báo cáo" onAction="#handleSearch" styleClass="btn-primary"/>
+            <Button text="Làm mới" onAction="#handleRefresh" styleClass="btn-soft"/>
+        </HBox>
+
+        <VBox styleClass="table-panel">
+            <HBox styleClass="table-title-row">
+                <Label text="Chi tiết chi phí theo tháng / xe" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <TableView fx:id="tblReport" prefHeight="450" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="colReportLicensePlate" text="Biển số" prefWidth="130"/>
+                    <TableColumn fx:id="colReportPeriod" text="Tháng" prefWidth="110"/>
+                    <TableColumn fx:id="colReportMaintenanceCost" text="Chi phí bảo dưỡng (VNĐ)" prefWidth="200"/>
+                    <TableColumn fx:id="colReportDocumentCost" text="Chi phí giấy tờ (VNĐ)" prefWidth="180"/>
+                    <TableColumn fx:id="colReportTotalCost" text="Tổng cộng (VNĐ)" prefWidth="160"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>

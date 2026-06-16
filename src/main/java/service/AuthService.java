@@ -1,36 +1,50 @@
 package service;
 
+import model.dao.RoleDAO;
+import model.dao.UserDAO;
+import model.entity.Role;
 import model.entity.User;
+import session.UserSession;
+import util.PasswordUtil;
 
-/**
- * Service xử lý nghiệp vụ đăng nhập / đăng xuất hệ thống FleetCare.
- *
- * <p>Phối hợp giữa {@code UserDAO}, {@code RoleDAO}, {@code PasswordUtil}
- * và {@code UserSession}: xác thực mật khẩu bằng BCrypt, kiểm tra trạng thái
- * tài khoản, ghi nhận thời điểm đăng nhập, và nạp {@code currentUser} +
- * {@code currentRole} vào session.</p>
- *
- * <p>Day 1: skeleton. Day 4 sẽ implement đầy đủ.</p>
- */
+import java.time.LocalDateTime;
+
 public class AuthService {
 
-    /**
-     * Đăng nhập bằng cặp ({@code username}, {@code rawPassword}).
-     *
-     * @return entity {@link User} đã đăng nhập thành công
-     * @throws AuthenticationException khi sai thông tin hoặc tài khoản bị khóa
-     */
+    private static final String STATUS_LOCKED = "LOCKED";
+
+    private final UserDAO userDAO = new UserDAO();
+    private final RoleDAO roleDAO = new RoleDAO();
+
     public User login(String username, String rawPassword) throws AuthenticationException {
-        // TODO Day 4: gọi UserDAO.findByUsername -> PasswordUtil.verify
-        //             -> kiểm tra account_status -> set UserSession -> update last_login_at
-        throw new UnsupportedOperationException("TODO Day 4: AuthService.login");
+        if (username == null || username.isBlank() || rawPassword == null || rawPassword.isBlank()) {
+            throw new AuthenticationException("Vui lòng nhập tên đăng nhập và mật khẩu.");
+        }
+
+        User user = userDAO.findByUsername(username.trim())
+                .orElseThrow(() -> new AuthenticationException("Tên đăng nhập hoặc mật khẩu không đúng."));
+
+        if (STATUS_LOCKED.equalsIgnoreCase(user.getAccountStatus())) {
+            throw new AuthenticationException("Tài khoản đã bị khóa.");
+        }
+
+        if (!PasswordUtil.verify(rawPassword, user.getPasswordHash())) {
+            throw new AuthenticationException("Tên đăng nhập hoặc mật khẩu không đúng.");
+        }
+
+        Role role = roleDAO.findById(user.getRoleId())
+                .orElseThrow(() -> new AuthenticationException("Tài khoản chưa được gán vai trò hợp lệ."));
+
+        if (!role.isActive()) {
+            throw new AuthenticationException("Vai trò của tài khoản đã bị vô hiệu hóa.");
+        }
+
+        userDAO.updateLastLogin(user.getUserId(), LocalDateTime.now());
+        UserSession.getInstance().login(user, role);
+        return user;
     }
 
-    /**
-     * Đăng xuất phiên hiện tại: xoá thông tin trong {@code UserSession}.
-     */
     public void logout() {
-        // TODO Day 4: UserSession.getInstance().clear();
-        throw new UnsupportedOperationException("TODO Day 4: AuthService.logout");
+        UserSession.getInstance().clear();
     }
 }
