@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import java.lang.String?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -13,7 +12,6 @@
             <Label text="Quản lý người dùng, nhật ký hoạt động và trạng thái vận hành FleetCare." styleClass="hero-subtitle"/>
             <HBox spacing="12">
                 <Button text="+ Tạo người dùng" onAction="#handleCreateUser" styleClass="btn-primary"/>
-                <Button text="Vai trò &amp; phân quyền" onAction="#handleOpenRoleManagement" styleClass="btn-soft"/>
                 <Button text="Cấu hình cảnh báo" onAction="#handleOpenAlertSettings" styleClass="btn-soft"/>
                 <Button text="Xem nhật ký hoạt động" onAction="#handleOpenAuditLog" styleClass="btn-ghost"/>
             </HBox>
@@ -40,51 +38,56 @@
                 <Label fx:id="lblRecentAuditLogsHint" text="Hoạt động trong hôm nay" styleClass="metric-trend-primary"/>
             </VBox>
         </HBox>
-        <VBox spacing="14" styleClass="panel">
-            <Label text="Module quản trị" styleClass="section-title"/>
-            <HBox spacing="14">
-                <VBox HBox.hgrow="ALWAYS" onMouseClicked="#handleOpenUsers">
-                    <styleClass>
-                        <String fx:value="module-card"/>
-                        <String fx:value="clickable-card"/>
-                    </styleClass>
-                    <Label text="Quản lý người dùng" styleClass="item-title"/>
-                    <Label text="Tạo, sửa, khóa/mở khóa tài khoản." styleClass="item-subtitle"/>
+        <HBox spacing="18">
+            <VBox spacing="14" styleClass="panel" HBox.hgrow="ALWAYS">
+                <HBox spacing="12">
+                    <VBox spacing="4">
+                        <Label text="Việc cần chú ý" styleClass="section-title"/>
+                        <Label text="Các điểm Admin nên rà soát trước khi bàn giao ca vận hành." styleClass="item-subtitle" wrapText="true"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Cấu hình" onAction="#handleOpenAlertSettings" styleClass="btn-soft"/>
+                </HBox>
+                <VBox spacing="10">
+                    <VBox spacing="6" styleClass="priority-card-warning">
+                        <Label fx:id="lblAttentionPrimaryTitle" text="Cảnh báo nghiệp vụ" styleClass="priority-title"/>
+                        <Label fx:id="lblAttentionPrimaryText" text="Đang tải dữ liệu cảnh báo." styleClass="priority-text" wrapText="true"/>
+                    </VBox>
+                    <VBox spacing="6" styleClass="priority-card-primary">
+                        <Label fx:id="lblAttentionAccountTitle" text="Tài khoản" styleClass="priority-title"/>
+                        <Label fx:id="lblAttentionAccountText" text="Đang tải trạng thái tài khoản." styleClass="priority-text" wrapText="true"/>
+                    </VBox>
+                    <VBox spacing="6" styleClass="priority-card-primary">
+                        <Label fx:id="lblAttentionDataTitle" text="Dữ liệu vận hành" styleClass="priority-title"/>
+                        <Label fx:id="lblAttentionDataText" text="Đang tải dữ liệu phương tiện." styleClass="priority-text" wrapText="true"/>
+                    </VBox>
                 </VBox>
-                <VBox HBox.hgrow="ALWAYS" onMouseClicked="#handleOpenAuditLog">
-                    <styleClass>
-                        <String fx:value="module-card"/>
-                        <String fx:value="clickable-card"/>
-                    </styleClass>
-                    <Label text="Nhật ký hoạt động" styleClass="item-title"/>
-                    <Label text="Theo dõi đăng nhập, đăng xuất và thao tác quản trị user." styleClass="item-subtitle"/>
+            </VBox>
+
+            <VBox spacing="14" styleClass="panel" HBox.hgrow="ALWAYS">
+                <HBox spacing="12">
+                    <VBox spacing="4">
+                        <Label text="Hoạt động gần đây" styleClass="section-title"/>
+                        <Label text="3 thao tác mới nhất từ nhật ký hệ thống." styleClass="item-subtitle" wrapText="true"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Nhật ký" onAction="#handleOpenAuditLog" styleClass="btn-ghost"/>
+                </HBox>
+                <VBox spacing="10">
+                    <VBox fx:id="activityRowOne" spacing="4" styleClass="timeline-row">
+                        <Label fx:id="lblActivityOneTitle" text="Chưa có nhật ký" styleClass="item-title"/>
+                        <Label fx:id="lblActivityOneMeta" text="Mở Audit logs để theo dõi hoạt động hệ thống." styleClass="item-subtitle" wrapText="true"/>
+                    </VBox>
+                    <VBox fx:id="activityRowTwo" spacing="4" styleClass="timeline-row">
+                        <Label fx:id="lblActivityTwoTitle" text="" styleClass="item-title"/>
+                        <Label fx:id="lblActivityTwoMeta" text="" styleClass="item-subtitle" wrapText="true"/>
+                    </VBox>
+                    <VBox fx:id="activityRowThree" spacing="4" styleClass="timeline-row">
+                        <Label fx:id="lblActivityThreeTitle" text="" styleClass="item-title"/>
+                        <Label fx:id="lblActivityThreeMeta" text="" styleClass="item-subtitle" wrapText="true"/>
+                    </VBox>
                 </VBox>
-                <VBox HBox.hgrow="ALWAYS" onMouseClicked="#handleOpenRoleManagement">
-                    <styleClass>
-                        <String fx:value="module-card"/>
-                        <String fx:value="clickable-card"/>
-                    </styleClass>
-                    <Label text="Vai trò &amp; phân quyền" styleClass="item-title"/>
-                    <Label text="Ẩn/hiện menu theo quyền đăng nhập." styleClass="item-subtitle"/>
-                </VBox>
-                <VBox HBox.hgrow="ALWAYS" onMouseClicked="#handleOpenAlertSettings">
-                    <styleClass>
-                        <String fx:value="module-card"/>
-                        <String fx:value="clickable-card"/>
-                    </styleClass>
-                    <Label text="Cấu hình cảnh báo" styleClass="item-title"/>
-                    <Label text="Thiết lập ngưỡng giấy tờ, bảo dưỡng theo ngày/km." styleClass="item-subtitle"/>
-                </VBox>
-                <VBox styleClass="module-card" HBox.hgrow="ALWAYS">
-                    <Label text="Dữ liệu nghiệp vụ" styleClass="item-title"/>
-                    <Label fx:id="lblVehicleCount" text="0 phương tiện" styleClass="item-subtitle"/>
-                    <Label fx:id="lblDocumentAlertCount" text="0 cảnh báo giấy tờ" styleClass="item-subtitle"/>
-                </VBox>
-                <VBox styleClass="module-card" HBox.hgrow="ALWAYS">
-                    <Label text="Trạng thái hệ thống" styleClass="item-title"/>
-                    <Label text="Rà soát tài khoản khóa, cảnh báo và dữ liệu vận hành." styleClass="item-subtitle"/>
-                </VBox>
-            </HBox>
-        </VBox>
+            </VBox>
+        </HBox>
     </VBox>
 </ScrollPane>

@@ -2,11 +2,13 @@ package service;
 
 import model.dao.AlertSettingsDAO;
 import model.entity.AlertSettings;
+import model.entity.Role;
 import model.entity.User;
 import session.UserSession;
 
 public class AlertSettingsService {
 
+    private static final String ROLE_ADMIN = "ADMIN";
     private static final int MIN_DAYS = 1;
     private static final int MAX_DAYS = 365;
     private static final int MIN_KM = 1;
@@ -23,6 +25,7 @@ public class AlertSettingsService {
                                         int maintenanceAlertDays,
                                         int maintenanceAlertKm,
                                         boolean active) {
+        requireCurrentAdmin();
         validateRange(documentAlertDays, MIN_DAYS, MAX_DAYS, "Số ngày cảnh báo giấy tờ");
         validateRange(maintenanceAlertDays, MIN_DAYS, MAX_DAYS, "Số ngày cảnh báo bảo dưỡng");
         validateRange(maintenanceAlertKm, MIN_KM, MAX_KM, "Số km cảnh báo bảo dưỡng");
@@ -43,6 +46,14 @@ public class AlertSettingsService {
     private void validateRange(int value, int min, int max, String fieldName) {
         if (value < min || value > max) {
             throw new IllegalArgumentException(fieldName + " phải nằm trong khoảng " + min + " - " + max + ".");
+        }
+    }
+
+    private void requireCurrentAdmin() {
+        Role currentRole = UserSession.getInstance().getCurrentRole();
+        String roleCode = currentRole == null ? null : currentRole.getRoleCode();
+        if (!ROLE_ADMIN.equalsIgnoreCase(roleCode == null ? "" : roleCode.trim())) {
+            throw new IllegalStateException("Chỉ quản trị viên mới được cập nhật cấu hình cảnh báo.");
         }
     }
 

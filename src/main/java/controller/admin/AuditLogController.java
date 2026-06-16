@@ -70,6 +70,11 @@ public class AuditLogController implements QuickSearchAware {
     }
 
     @Override
+    public String getQuickSearchPrompt() {
+        return "Tìm user, hành động, mô tả...";
+    }
+
+    @Override
     public void applyQuickSearch(String keyword) {
         currentKeyword = keyword == null ? "" : keyword.trim();
         applyFilter();

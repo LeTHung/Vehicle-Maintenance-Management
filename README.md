@@ -14,6 +14,7 @@ Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co s
 - Da co man hinh ho so phuong tien, giay to xe, canh bao giay to, ke hoach/canh bao/cap nhat bao duong va bao cao chi phi.
 - Dashboard Admin, Manager va Technician uu tien lay so lieu tu DB thay vi dung so lieu ao/hard-code.
 - RBAC hien tai duoc guard o menu va handler: Admin quan ly tai khoan, Manager quan ly doi xe/bao cao, Technician xu ly bao duong.
+- UC-002 hien duoc thuc hien theo huong gan role co dinh trong man Quan ly nguoi dung va an/hien menu theo 3 role; khong co man permission matrix rieng.
 
 ## Muc tieu
 
@@ -144,17 +145,26 @@ MYSQLPASSWORD=password
 
 ## Tao database va seed du lieu demo
 
+Neu PowerShell bao `mysql` khong duoc nhan dien, them MySQL client vao `PATH` cho terminal hien tai:
+
+```powershell
+$env:Path = "C:\Program Files\MySQL\MySQL Server 8.0\bin;$env:Path"
+mysql --version
+```
+
 Chay schema goc neu database chua co bang:
 
 ```powershell
-Get-Content data\Dump20260524.sql | mysql -u root -p
+mysql --default-character-set=utf8mb4 -u root -p -e "source data/Dump20260524.sql"
 ```
 
 Chay seed demo reset dong bo cho ca nhom:
 
 ```powershell
-Get-Content data\seed-team-demo-reset.sql | mysql -u root -p
+mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-team-demo-reset.sql"
 ```
+
+Neu MySQL root khong co mat khau, bo `-p`.
 
 File `seed-team-demo-reset.sql` se xoa va nap lai du lieu demo nghiep vu gom:
 
@@ -169,15 +179,15 @@ File `seed-team-demo-reset.sql` se xoa va nap lai du lieu demo nghiep vu gom:
 Neu muon nap rieng tung module, chay theo thu tu:
 
 ```powershell
-Get-Content data\data-vehicles.sql | mysql -u root -p
-Get-Content data\seed-maintenance-plans.sql | mysql -u root -p
-Get-Content data\seed-maintenance.sql | mysql -u root -p
+mysql --default-character-set=utf8mb4 -u root -p -e "source data/data-vehicles.sql"
+mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-maintenance-plans.sql"
+mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-maintenance.sql"
 ```
 
 Audit logs tu tao bang `audit_logs` khi app ghi/doc log. Neu muon nap du lieu demo hoac kiem tra thu cong bang mysql CLI, chay them:
 
 ```powershell
-Get-Content data\audit-logs.sql | mysql -u root -p
+mysql --default-character-set=utf8mb4 -u root -p -e "source data/audit-logs.sql"
 ```
 
 Tai khoan demo:
@@ -232,7 +242,7 @@ Neu build loi do Java version, kiem tra lai `JAVA_HOME` dang tro dung JDK 25.
 Luong dang nhap hien tai:
 
 - Dang nhap bang tai khoan demo.
-- Admin co menu Quan ly nguoi dung va Audit logs.
+- Admin co menu Quan ly nguoi dung, Cau hinh canh bao va Audit logs.
 - Manager co menu phuong tien/giay to/canh bao/lich su bao duong/bao cao.
 - Technician co menu Xe can bao duong, Cap nhat bao duong va Lich su bao duong.
 
@@ -247,8 +257,8 @@ Chay build:
 Neu may moi chua co database, chay schema va seed:
 
 ```powershell
-Get-Content data\Dump20260524.sql | mysql -u root -p
-Get-Content data\seed-team-demo-reset.sql | mysql -u root -p
+mysql --default-character-set=utf8mb4 -u root -p -e "source data/Dump20260524.sql"
+mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-team-demo-reset.sql"
 ```
 
 Dong `audit-logs.sql` trong checklist la tuy chon de nap demo data; neu bo qua, app van tu tao bang khi mo/ghi Audit logs.
@@ -259,7 +269,8 @@ Chay ung dung va test 3 role:
 .\mvnw javafx:run
 ```
 
-- `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can, mo Cau hinh canh bao de doi nguong ngay/km, mo Audit logs, loc theo hanh dong/ngay va thu tim kiem nhanh.
+- `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can, doi role trong form user de test phan quyen co ban, mo Cau hinh canh bao de doi nguong ngay/km, mo Audit logs, loc theo hanh dong/ngay va thu tim kiem nhanh.
+- Admin lock/unlock smoke: tao user `qa_manager` voi password `QaManager123`, khoa user nay va xac nhan trang thai `Da khoa`, audit co `USER_LOCKED`, login bi chan; thu khoa chinh `admin` phai bi chan; mo khoa `qa_manager` va xac nhan trang thai `Hoat dong`, audit co `USER_UNLOCKED`, login lai thanh cong.
 - `manager/123456`: mo dashboard, ho so phuong tien, giay to xe, canh bao giay to, lich su bao duong va bao cao chi phi.
 - `tech/123456`: mo dashboard ky thuat, Xe can bao duong, Cap nhat bao duong (them phu tung/hang muc), Lich su bao duong (tra cuu ho so sua chua theo xe).
 - Moi role deu co nut Doi mat khau o sidebar. Mat khau moi phai co it nhat 8 ky tu, gom chu va so, va khong trung mat khau cu.

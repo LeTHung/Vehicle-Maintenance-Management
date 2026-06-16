@@ -13,25 +13,29 @@
 
 /* Thanh cuộn dọc — luôn hiển thị, style hiện đại */
 .page-scroll > .scroll-bar:vertical {
-    -fx-pref-width: 10;
+    -fx-pref-width: 8;
     -fx-background-color: transparent;
     -fx-opacity: 1;
 }
 
 .page-scroll > .scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(0, 74, 198, 0.28);
-    -fx-background-radius: 5;
+    -fx-background-color: rgba(0, 74, 198, 0.24);
+    -fx-background-radius: 999;
     -fx-background-insets: 2;
 }
 
 .page-scroll > .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(0, 74, 198, 0.55);
+    -fx-background-color: rgba(0, 74, 198, 0.54);
+}
+
+.page-scroll > .scroll-bar:vertical .thumb:pressed {
+    -fx-background-color: rgba(0, 74, 198, 0.72);
 }
 
 .page-scroll > .scroll-bar:vertical .track,
 .page-scroll > .scroll-bar:vertical .track-background {
-    -fx-background-color: rgba(0, 0, 0, 0.04);
-    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
 }
 
 .page-scroll > .scroll-bar:vertical .increment-button,
@@ -88,7 +92,8 @@
 }
 
 .item-title,
-.priority-title {
+.priority-title,
+.selection-title {
     -fx-font-size: 14px;
     -fx-font-weight: 800;
     -fx-text-fill: -app-text-main;
@@ -96,6 +101,7 @@
 
 .item-subtitle,
 .priority-text,
+.selection-meta,
 .micro-copy,
 .placeholder-message {
     -fx-font-size: 12px;

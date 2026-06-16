@@ -36,6 +36,7 @@ public class UserService {
                            String email,
                            String phone,
                            Long roleId) {
+        requireCurrentAdmin("Chỉ quản trị viên mới được tạo tài khoản.");
         String normalizedUsername = requireText(username, "Tên đăng nhập không được để trống.");
         String normalizedPassword = requireText(rawPassword, "Mật khẩu không được để trống.");
         String normalizedFullName = requireText(fullName, "Họ tên không được để trống.");
@@ -68,6 +69,7 @@ public class UserService {
      * Cập nhật thông tin tài khoản, không đổi mật khẩu ở method này.
      */
     public User updateUser(User user) {
+        requireCurrentAdmin("Chỉ quản trị viên mới được cập nhật tài khoản.");
         if (user == null || user.getUserId() == null) {
             throw new IllegalArgumentException("Vui lòng chọn tài khoản cần cập nhật.");
         }
@@ -98,6 +100,9 @@ public class UserService {
      * Khóa tài khoản: chuyển account_status sang LOCKED.
      */
     public void lockUser(Long userId) {
+        requireCurrentAdmin("Chỉ quản trị viên mới được khóa/mở khóa tài khoản.");
+        requireNotCurrentUser(userId, "Không thể khóa chính tài khoản đang đăng nhập.");
+
         User updatedUser = updateAccountStatus(userId, STATUS_LOCKED);
         auditLogService.recordUserLocked(updatedUser);
     }
@@ -106,6 +111,8 @@ public class UserService {
      * Mở khóa tài khoản: chuyển account_status sang ACTIVE.
      */
     public void unlockUser(Long userId) {
+        requireCurrentAdmin("Chỉ quản trị viên mới được khóa/mở khóa tài khoản.");
+
         User updatedUser = updateAccountStatus(userId, STATUS_ACTIVE);
         auditLogService.recordUserUnlocked(updatedUser);
     }
@@ -114,6 +121,7 @@ public class UserService {
      * Liệt kê toàn bộ user phục vụ trang quản trị.
      */
     public List<User> listUsers() {
+        requireCurrentAdmin("Chỉ quản trị viên mới được xem danh sách tài khoản.");
         return userDAO.findAll();
     }
 
@@ -121,6 +129,7 @@ public class UserService {
      * Liệt kê role đang active để hiển thị trong form thêm/sửa user.
      */
     public List<Role> listActiveRoles() {
+        requireCurrentAdmin("Chỉ quản trị viên mới được xem danh sách vai trò.");
         return roleDAO.findAllActive();
     }
 
@@ -203,6 +212,23 @@ public class UserService {
         String roleCode = currentRole == null ? null : currentRole.getRoleCode();
         if (!ROLE_ADMIN.equalsIgnoreCase(roleCode == null ? "" : roleCode.trim())) {
             throw new IllegalStateException("Chỉ quản trị viên mới được reset mật khẩu tài khoản khác.");
+        }
+    }
+
+    private void requireCurrentAdmin(String message) {
+        Role currentRole = UserSession.getInstance().getCurrentRole();
+        String roleCode = currentRole == null ? null : currentRole.getRoleCode();
+        if (!ROLE_ADMIN.equalsIgnoreCase(roleCode == null ? "" : roleCode.trim())) {
+            throw new IllegalStateException(message);
+        }
+    }
+
+    private void requireNotCurrentUser(Long targetUserId, String message) {
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser != null
+                && targetUserId != null
+                && targetUserId.equals(currentUser.getUserId())) {
+            throw new IllegalArgumentException(message);
         }
     }
 

@@ -31,6 +31,15 @@
         <Button fx:id="refreshButton" text="Làm mới" onAction="#onRefreshClick" styleClass="btn-soft"/>
     </HBox>
 
+    <HBox spacing="14" styleClass="selection-strip">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblSelectedUserTitle" text="Chưa chọn tài khoản" styleClass="selection-title"/>
+            <Label fx:id="lblSelectedUserMeta" text="Click một dòng trong bảng để xem nhanh vai trò, liên hệ và lần đăng nhập gần nhất." styleClass="selection-meta" wrapText="true"/>
+        </VBox>
+        <Label fx:id="lblSelectedUserRole" text="Chưa chọn" styleClass="metric-trend-primary"/>
+        <Label fx:id="lblSelectedUserStatus" text="Chưa chọn" styleClass="metric-trend-primary"/>
+    </HBox>
+
     <VBox styleClass="table-panel" VBox.vgrow="ALWAYS">
         <TableView fx:id="userTable" VBox.vgrow="ALWAYS" styleClass="data-table">
             <columns>

@@ -3,6 +3,7 @@
 .metric-card,
 .panel,
 .toolbar-panel,
+.selection-strip,
 .form-panel,
 .table-panel,
 .module-card,
@@ -41,6 +42,12 @@
 .toolbar-panel {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 16;
+}
+
+.selection-strip {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 14 18;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ffffff, #eef6ff);
 }
 
 .form-panel {

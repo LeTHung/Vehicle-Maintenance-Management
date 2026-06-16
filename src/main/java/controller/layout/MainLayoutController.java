@@ -7,6 +7,7 @@ import controller.dashboard.ManagerDashboardController;
 import controller.dashboard.TechnicianDashboardController;
 import controller.user.UserController;
 import javafx.beans.value.ChangeListener;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -27,6 +28,7 @@ import model.entity.User;
 import service.AuthService;
 import service.UserService;
 import session.UserSession;
+import util.SmoothScrollUtil;
 import util.StylesheetLoader;
 
 import java.net.URL;
@@ -53,8 +55,6 @@ public class MainLayoutController {
     private Button btnDashboard;
     @FXML
     private Button btnAdminUsers;
-    @FXML
-    private Button btnAdminRoles;
     @FXML
     private Button btnAlertSettings;
     @FXML
@@ -99,6 +99,7 @@ public class MainLayoutController {
         bindCurrentUser();
         hideRolePreview();
         applyRolePermission(currentRole);
+        installSmoothScrollingWhenReady();
         openDashboard();
     }
 
@@ -217,18 +218,6 @@ public class MainLayoutController {
                 userController.openCreateUserDialog();
             }
         });
-    }
-
-    @FXML
-    private void openAdminRoles() {
-        if (!ROLE_ADMIN.equals(currentRole)) {
-            showAccessDenied("Vai trò & phân quyền", btnAdminRoles);
-            return;
-        }
-        showPlaceholder("Vai trò & phân quyền",
-                "Hệ thống đang áp dụng phân quyền cơ bản theo 3 vai trò: quản trị, quản lý và kỹ thuật. "
-                        + "Menu chức năng được ẩn/hiện theo vai trò đăng nhập.",
-                btnAdminRoles);
     }
 
     @FXML
@@ -403,6 +392,8 @@ public class MainLayoutController {
                 sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             }
             contentArea.getChildren().setAll(page);
+            SmoothScrollUtil.install(page);
+            Platform.runLater(() -> SmoothScrollUtil.install(page));
             lblPageTitle.setText(title);
             setActiveButton(activeButton);
             controllerCallback.accept(loader.getController());
@@ -412,12 +403,24 @@ public class MainLayoutController {
         }
     }
 
+    private void installSmoothScrollingWhenReady() {
+        if (contentArea.getScene() != null) {
+            SmoothScrollUtil.install(contentArea.getScene().getRoot());
+            return;
+        }
+
+        contentArea.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                SmoothScrollUtil.install(newScene.getRoot());
+            }
+        });
+    }
+
     private void configureLoadedController(Object controller) {
         if (controller instanceof AdminDashboardController adminDashboardController) {
             adminDashboardController.setNavigationHandlers(
                     this::openAdminUsers,
                     this::openAdminUserCreateForm,
-                    this::openAdminRoles,
                     this::openAuditLog,
                     this::openAlertSettings);
         } else if (controller instanceof ManagerDashboardController managerDashboardController) {
@@ -436,6 +439,8 @@ public class MainLayoutController {
     private void bindQuickSearchController(Object controller) {
         clearQuickSearchBinding();
         if (controller instanceof QuickSearchAware quickSearchAware && txtQuickSearch != null) {
+            txtQuickSearch.setPromptText(quickSearchAware.getQuickSearchPrompt());
+            setNodeVisible(txtQuickSearch, true);
             quickSearchListener = (observable, oldValue, newValue) -> quickSearchAware.applyQuickSearch(newValue);
             txtQuickSearch.textProperty().addListener(quickSearchListener);
             quickSearchAware.applyQuickSearch(txtQuickSearch.getText());
@@ -453,6 +458,8 @@ public class MainLayoutController {
         if (!txtQuickSearch.getText().isEmpty()) {
             txtQuickSearch.clear();
         }
+        txtQuickSearch.setPromptText("Tìm kiếm nhanh...");
+        setNodeVisible(txtQuickSearch, false);
     }
 
     private void showPlaceholder(String title, String message, Button activeButton) {
@@ -483,7 +490,7 @@ public class MainLayoutController {
 
     private void setActiveButton(Button activeButton) {
         Button[] buttons = {
-                btnDashboard, btnAdminUsers, btnAdminRoles, btnAlertSettings, btnAuditLog,
+                btnDashboard, btnAdminUsers, btnAlertSettings, btnAuditLog,
                 btnVehicle, btnVehicleDocument, btnDocumentAlert,
                 btnMaintenancePlan, btnMaintenanceAlert, btnTechMaintenanceAlert,
                 btnMaintenanceRecord, btnMaintenanceHistory, btnTechMaintenanceHistory, btnReport
