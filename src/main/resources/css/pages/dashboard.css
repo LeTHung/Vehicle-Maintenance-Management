@@ -1,31 +1,18 @@
-/* Dashboard-only layout and accents. */
-
-.hero-manager,
-.hero-admin,
-.hero-tech {
-    -fx-padding: 28;
-    -fx-background-radius: 24;
-    -fx-spacing: 16;
-    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.08), 28, 0, 0, 10);
+.dashboard-hero {
+  -fx-background-color: #eff6ff;
+  -fx-padding: 24;
+  -fx-background-radius: 16;
+  -fx-border-color: #bfdbfe;
+  -fx-border-radius: 16;
 }
 
-.hero-manager {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ffffff, #eaf2ff);
+.dashboard-title {
+  -fx-font-size: 26px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1e3a8a;
 }
 
-.hero-admin {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ffffff, #eef2ff);
-}
-
-.hero-tech {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ffffff, #ecfdf5);
-}
-
-.section-chip {
-    -fx-padding: 7 12;
-    -fx-background-color: -app-primary-soft;
-    -fx-background-radius: 999;
-    -fx-font-size: 12px;
-    -fx-font-weight: 800;
-    -fx-text-fill: -app-primary;
+.dashboard-subtitle {
+  -fx-font-size: 14px;
+  -fx-text-fill: #6b7280;
 }

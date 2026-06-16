@@ -1,35 +1,34 @@
-/* Shared theme tokens. Keep colors and app-wide font here only. */
+/* =========================================================
+   theme.css
+   Chứa màu chủ đạo, font, nền tổng cho toàn bộ JavaFX app.
+   JavaFX dùng looked-up colors, không dùng biến :root kiểu web.
+   ========================================================= */
 
 .root,
-.app-shell,
 .root-layout {
-    -fx-font-family: "Inter", "Segoe UI", Arial, sans-serif;
-    -fx-background-color: #f7f9fd;
-    -fx-text-fill: #181c1f;
+    -app-primary: #2563EB;
+    -app-primary-hover: #1D4ED8;
+    -app-primary-soft: #EFF6FF;
 
-    -app-primary: #004ac6;
-    -app-primary-hover: #1d4ed8;
-    -app-primary-container: #2563eb;
-    -app-primary-soft: #eff6ff;
+    -app-bg: #F5F7FB;
+    -app-card-bg: #FFFFFF;
+    -app-border: #E5E7EB;
 
-    -app-surface: #f7f9fd;
-    -app-surface-low: #f2f4f8;
-    -app-surface-card: #ffffff;
-    -app-surface-high: #e6e8ec;
-    -app-border: rgba(115,118,134,0.22);
+    -app-text-main: #111827;
+    -app-text-normal: #374151;
+    -app-text-sub: #6B7280;
+    -app-text-muted: #9CA3AF;
 
-    -app-text-main: #181c1f;
-    -app-text-normal: #434655;
-    -app-text-sub: #737686;
+    -app-success: #10B981;
+    -app-warning: #F59E0B;
+    -app-danger: #EF4444;
+    -app-danger-soft: #FEE2E2;
+    -app-danger-dark: #B91C1C;
 
-    -app-success: #10b981;
-    -app-warning: #f59e0b;
-    -app-danger: #ef4444;
-    -app-danger-dark: #b91c1c;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-color: -app-bg;
 }
 
-.app-shell,
-.login-page,
-.content-area {
-    -fx-background-color: -app-surface;
+.root-layout {
+    -fx-background-color: -app-bg;
 }

@@ -2,15 +2,42 @@ package model.entity;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity ánh xạ bảng {@code roles}.
+ *
+ * <p>Mô tả vai trò người dùng trong hệ thống. Các vai trò chuẩn trong dự án:
+ * {@code ADMIN}, {@code MANAGER}, {@code TECH}. Trường {@code roleCode} là
+ * mã định danh dùng cho phân quyền (RBAC), còn {@code roleName} là tên
+ * hiển thị bằng tiếng Việt.</p>
+ */
 public class Role {
 
     private Long roleId;
     private String roleCode;
     private String roleName;
     private String description;
-    private boolean active;
+    private boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public Role() {
+    }
+
+    public Role(Long roleId,
+                String roleCode,
+                String roleName,
+                String description,
+                boolean isActive,
+                LocalDateTime createdAt,
+                LocalDateTime updatedAt) {
+        this.roleId = roleId;
+        this.roleCode = roleCode;
+        this.roleName = roleName;
+        this.description = description;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     public Long getRoleId() {
         return roleId;
@@ -45,11 +72,11 @@ public class Role {
     }
 
     public boolean isActive() {
-        return active;
+        return isActive;
     }
 
     public void setActive(boolean active) {
-        this.active = active;
+        this.isActive = active;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -66,13 +93,5 @@ public class Role {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public String toString() {
-        if (roleName == null || roleName.isBlank()) {
-            return roleCode == null ? "" : roleCode;
-        }
-        return roleName;
     }
 }

@@ -1,14 +1,6 @@
 # Vehicle Maintenance Management
 
-Ung dung desktop JavaFX cho do an **Quan ly ho so va bao duong phuong tien**.
-Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co so du lieu.
-
-## Trang thai hien tai
-
-- Da co man hinh dang nhap, dang xuat, session va phan quyen menu theo role.
-- Da co quan ly tai khoan co ban: xem danh sach, them, sua, khoa/mo khoa user.
-- Da co seed du lieu role/user demo trong `data/seed-auth.sql`.
-- Cac man hinh vehicle/document/maintenance/report van do cac thanh vien/pham vi khac tiep tuc hoan thien.
+Ung dung desktop JavaFX cho do an **Quan ly ho so va bao duong phuong tien**. Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co so du lieu.
 
 ## Muc tieu
 
@@ -17,15 +9,16 @@ Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co s
 - Theo doi canh bao lien quan den giay to, bao duong va trang thai phuong tien.
 - Ket noi MySQL qua JDBC.
 
+> Trang thai hien tai: project dang o giai doan dung khung. Mot so lop nhu `MainApp`, `AuthService` dang la skeleton va can duoc hoan thien truoc khi chay day du chuc nang.
+
 ## Cong nghe su dung
 
 - Java JDK 25
 - JavaFX 25.0.3
 - FXML + CSS
 - MySQL
-- MySQL Connector/J
+- MySQL Connector/J 9.7.0
 - Maven Wrapper
-- jBCrypt 0.4
 - VS Code
 
 ## Cau truc thu muc
@@ -33,7 +26,6 @@ Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co s
 ```text
 src/main/java
 |-- app          # Diem khoi chay ung dung
-|-- controller   # Controller cua cac man hinh FXML
 |-- database     # Ket noi MySQL
 |-- model
 |   |-- dao      # Lop truy cap du lieu
@@ -48,9 +40,8 @@ src/main/resources
 |-- images       # Hinh anh, icon
 `-- view         # File FXML
 
-data
-|-- Dump20260524.sql
-`-- seed-auth.sql
+lib
+`-- mysql-connector-j-9.7.0.jar
 ```
 
 ## Yeu cau moi truong
@@ -63,7 +54,7 @@ data
 Neu may co nhieu JDK, dat `JAVA_HOME` ve JDK 25 truoc khi build:
 
 ```powershell
-$env:JAVA_HOME = "D:\Java\jdk-25.0.3"
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.3"
 $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 ```
 
@@ -74,7 +65,7 @@ java -version
 .\mvnw -v
 ```
 
-Ket qua Maven nen hien thi Java `25.x`.
+Ket qua Maven nen hien thi Java `25.0.3`.
 
 ## Cau hinh MySQL
 
@@ -83,86 +74,26 @@ Mac dinh project ket noi toi database:
 ```text
 jdbc:mysql://localhost:3306/vehicle_maintenance_management
 user: root
-password: 123456
+password: rong
 ```
 
-Thong tin ket noi nam trong file local:
+Thong tin nay nam trong:
 
 ```text
-config/database.properties
+src/main/java/database/DatabaseConnection.java
 ```
 
-File nay khong commit len git. Co the copy tu:
-
-```text
-config/database.example.properties
-```
-
-### Chay local
-
-Dat `DB_MODE=local`, sau do cau hinh trong `config/database.properties`:
-
-```properties
-DB_URL=jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh
-DB_USER=root
-DB_PASSWORD=mat_khau_mysql
-```
-
-Neu muon cau hinh bang bien moi truong trong terminal:
+Neu MySQL cua ban co mat khau, cau hinh trong terminal truoc khi chay:
 
 ```powershell
-$env:DB_URL = "jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh"
 $env:DB_USER = "root"
 $env:DB_PASSWORD = "mat_khau_mysql"
 ```
 
-### Chay Railway
-
-Dat `DB_MODE=railway`. App se doc thong tin Railway theo 1 trong 2 cach:
-
-```properties
-MYSQL_PUBLIC_URL=mysql://user:password@host:port/database
-```
-
-Co the dung `MYSQL_URL` thay cho `MYSQL_PUBLIC_URL`, nhung khi chay app tu may ca nhan thi public URL thuong de ket noi hon.
-
-Hoac:
-
-```properties
-MYSQLHOST=host
-MYSQLPORT=port
-MYSQLDATABASE=database
-MYSQLUSER=user
-MYSQLPASSWORD=password
-```
-
-## Tao database va seed tai khoan demo
-
-Chay schema goc neu database chua co bang:
+Neu muon doi URL database:
 
 ```powershell
-Get-Content data\Dump20260524.sql | mysql -u root -p
-```
-
-Chay seed auth/user/role:
-
-```powershell
-Get-Content data\seed-auth.sql | mysql -u root -p
-```
-
-Tai khoan demo:
-
-| Username | Password | Role |
-|---|---|---|
-| `admin` | `123456` | `ADMIN` |
-| `manager` | `123456` | `FLEET_MANAGER` |
-| `tech` | `123456` | `TECHNICIAN` |
-
-Kiem tra nhanh sau khi seed:
-
-```sql
-SELECT role_id, role_code, role_name, is_active FROM roles;
-SELECT user_id, username, full_name, role_id, account_status FROM users;
+$env:DB_URL = "jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh"
 ```
 
 ## Build project
@@ -177,16 +108,33 @@ Neu build loi do Java version, kiem tra lai `JAVA_HOME` dang tro dung JDK 25.
 
 ## Chay ung dung
 
+Khi cac file khoi chay va giao dien da duoc hoan thien, chay:
+
 ```powershell
 .\mvnw javafx:run
 ```
 
-Luong dang nhap hien tai:
+Hien tai can hoan thien `MainApp` va cac man hinh FXML truoc khi app chay day du.
 
-- Dang nhap bang tai khoan demo.
-- Admin co menu Quan ly nguoi dung.
-- Manager co menu phuong tien/giay to/canh bao/bao cao.
-- Technician co menu bao duong.
+## Thu vien MySQL trong `lib`
+
+Project dang dung file driver:
+
+```text
+lib/mysql-connector-j-9.7.0.jar
+```
+
+Trong `pom.xml`, thu vien nay duoc khai bao bang `systemPath`:
+
+```xml
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>9.7.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/lib/mysql-connector-j-9.7.0.jar</systemPath>
+</dependency>
+```
 
 ## Quy uoc phat trien
 
@@ -197,10 +145,12 @@ Luong dang nhap hien tai:
 - Ket noi MySQL dat trong `database`.
 - FXML dat trong `src/main/resources/view`.
 - CSS dat trong `src/main/resources/css`.
+
+## Ghi chu cho nhom
+
 - Khong commit thong tin mat khau MySQL ca nhan.
 - Moi thanh vien cau hinh `DB_USER`, `DB_PASSWORD` rieng bang bien moi truong.
-
-Truoc khi push code, nen chay:
+- Truoc khi push code, nen chay:
 
 ```powershell
 .\mvnw clean package
