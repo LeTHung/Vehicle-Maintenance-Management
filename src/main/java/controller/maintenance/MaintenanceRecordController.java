@@ -19,10 +19,12 @@ import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import model.dao.UserDAO;
 import model.entity.MaintenanceItemDetail;
+import model.entity.MaintenancePlan;
 import model.entity.MaintenanceRecord;
 import model.entity.User;
 import model.entity.Vehicle;
 import session.UserSession;
+import service.MaintenancePlanService;
 import service.MaintenanceRecordService;
 
 import java.math.BigDecimal;
@@ -36,10 +38,12 @@ import java.util.Map;
 public class MaintenanceRecordController {
 
     private final MaintenanceRecordService service = new MaintenanceRecordService();
+    private final MaintenancePlanService planService = new MaintenancePlanService();
     private final UserDAO userDAO = new UserDAO();
 
     @FXML private ComboBox<Vehicle> cbFilterVehicle;
     @FXML private ComboBox<Vehicle> cbVehicle;
+    @FXML private ComboBox<MaintenancePlan> cbPlan;
     @FXML private ComboBox<String> cbRecordType;
     @FXML private ComboBox<String> cbRecordStatus;
     @FXML private TextField txtTitle;
@@ -84,6 +88,7 @@ public class MaintenanceRecordController {
     private Long selectedCreatedBy;
     private final Map<Long, String> vehicleNameMap = new HashMap<>();
     private final Map<Long, String> technicianNameMap = new HashMap<>();
+    private final Map<Integer, String> typeNameMap = new HashMap<>();
     private final ObservableList<MaintenanceItemDetail> currentItems = FXCollections.observableArrayList();
 
     @FXML
@@ -97,13 +102,68 @@ public class MaintenanceRecordController {
         cbItemType.getItems().addAll("WORK", "PART");
         cbItemType.setValue("WORK");
         loadTechnicianNames();
+        loadTypeNames();
         setupVehicleComboBoxes();
+        setupPlanComboBox();
         configureTable();
         configureItemTable();
         setupFilterListener();
         setupRowSelectionListener();
         setupLineTotalListener();
+        setupTotalCostAutoCalc();
         loadTable(service.listAll());
+    }
+
+    private void loadTypeNames() {
+        typeNameMap.clear();
+        planService.listActiveTypes()
+                .forEach(t -> typeNameMap.put(t.getMaintenanceTypeId(), t.getMaintenanceName()));
+    }
+
+    private void setupPlanComboBox() {
+        cbPlan.setConverter(new StringConverter<>() {
+            public String toString(MaintenancePlan p) {
+                if (p == null) return "";
+                String typeName = typeNameMap.getOrDefault(p.getMaintenanceTypeId(),
+                        "Loại #" + p.getMaintenanceTypeId());
+                return p.getNextDueDate() != null
+                        ? typeName + " (đến hạn " + p.getNextDueDate() + ")"
+                        : typeName;
+            }
+            public MaintenancePlan fromString(String s) { return null; }
+        });
+        // Nạp lại danh sách kế hoạch active mỗi khi đổi xe trong form
+        cbVehicle.valueProperty().addListener((obs, oldV, newV) -> reloadPlansForSelectedVehicle());
+    }
+
+    private void reloadPlansForSelectedVehicle() {
+        Vehicle vehicle = cbVehicle.getValue();
+        cbPlan.getItems().clear();
+        cbPlan.setValue(null);
+        if (vehicle == null) {
+            return;
+        }
+        List<MaintenancePlan> activePlans = planService.listByVehicle(vehicle.getVehicleId()).stream()
+                .filter(MaintenancePlan::isActive)
+                .toList();
+        cbPlan.setItems(FXCollections.observableArrayList(activePlans));
+    }
+
+    /** Khi có hạng mục/phụ tùng, Tổng chi phí = tổng thành tiền và khóa nhập tay để tránh lệch số liệu báo cáo. */
+    private void setupTotalCostAutoCalc() {
+        currentItems.addListener((javafx.collections.ListChangeListener<MaintenanceItemDetail>) c -> recalcTotalCostFromItems());
+    }
+
+    private void recalcTotalCostFromItems() {
+        if (currentItems.isEmpty()) {
+            txtTotalCost.setEditable(true);
+            return;
+        }
+        BigDecimal sum = currentItems.stream()
+                .map(i -> i.getLineTotal() != null ? i.getLineTotal() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        txtTotalCost.setText(sum.toPlainString());
+        txtTotalCost.setEditable(false);
     }
 
     private void setupVehicleComboBoxes() {
@@ -230,9 +290,16 @@ public class MaintenanceRecordController {
         selectedTechnicianId = record.getTechnicianId();
         selectedCreatedBy = record.getCreatedBy();
 
+        // setValue kích hoạt listener nạp lại danh sách kế hoạch active của xe
         cbVehicle.getItems().stream()
             .filter(v -> v.getVehicleId() == record.getVehicleId())
             .findFirst().ifPresent(cbVehicle::setValue);
+
+        if (record.getPlanId() != null) {
+            cbPlan.getItems().stream()
+                .filter(p -> p.getPlanId() == record.getPlanId())
+                .findFirst().ifPresent(cbPlan::setValue);
+        }
 
         cbRecordType.setValue(recordTypeLabel(record.getRecordType()));
         cbRecordStatus.setValue(recordStatusLabel(record.getRecordStatus()));
@@ -256,6 +323,7 @@ public class MaintenanceRecordController {
     private void handleSave() {
         try {
             MaintenanceRecord record = readFromForm();
+            applyItemsTotal(record);
             Long currentUserId = requireCurrentUserId();
             record.setTechnicianId(currentUserId);
             record.setCreatedBy(currentUserId);
@@ -266,9 +334,10 @@ public class MaintenanceRecordController {
                 item.setRecordId(recordId);
                 service.saveItem(item);
             }
+            String extra = applyCompletionEffects(record, currentUserId);
             loadTable(service.listAll());
             handleClear();
-            showInfo("Đã lưu phiếu bảo dưỡng (" + itemCount + " hạng mục).");
+            showInfo("Đã lưu phiếu bảo dưỡng (" + itemCount + " hạng mục)." + extra);
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
         } catch (Exception e) {
@@ -285,6 +354,7 @@ public class MaintenanceRecordController {
         try {
             MaintenanceRecord record = readFromForm();
             record.setRecordId(selectedRecordId);
+            applyItemsTotal(record);
             Long currentUserId = requireCurrentUserId();
             record.setTechnicianId(selectedTechnicianId != null ? selectedTechnicianId : currentUserId);
             record.setCreatedBy(selectedCreatedBy);
@@ -295,9 +365,10 @@ public class MaintenanceRecordController {
                 item.setRecordId(selectedRecordId);
                 service.saveItem(item);
             }
+            String extra = applyCompletionEffects(record, currentUserId);
             loadTable(service.listAll());
             handleClear();
-            showInfo("Đã cập nhật phiếu bảo dưỡng.");
+            showInfo("Đã cập nhật phiếu bảo dưỡng." + extra);
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
         } catch (Exception e) {
@@ -308,6 +379,7 @@ public class MaintenanceRecordController {
     @FXML
     private void handleClear() {
         cbVehicle.setValue(null);
+        cbPlan.setValue(null);
         cbRecordType.setValue(null);
         cbRecordStatus.setValue(null);
         txtTitle.clear();
@@ -397,7 +469,42 @@ public class MaintenanceRecordController {
         record.setServiceProviderName(txtServiceProvider.getText().isBlank() ? null : txtServiceProvider.getText().trim());
         record.setWorkSummary(txtWorkSummary.getText().isBlank() ? null : txtWorkSummary.getText().trim());
         record.setNotes(txtNotes.getText().isBlank() ? null : txtNotes.getText().trim());
+
+        MaintenancePlan plan = cbPlan.getValue();
+        record.setPlanId(plan != null ? plan.getPlanId() : null);
         return record;
+    }
+
+    /** Nếu phiếu có hạng mục/phụ tùng thì tổng chi phí = tổng thành tiền (ưu tiên hơn ô nhập tay). */
+    private void applyItemsTotal(MaintenanceRecord record) {
+        if (currentItems.isEmpty()) {
+            return;
+        }
+        BigDecimal sum = currentItems.stream()
+                .map(i -> i.getLineTotal() != null ? i.getLineTotal() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        record.setTotalCost(sum);
+    }
+
+    /**
+     * Khi phiếu ở trạng thái "Hoàn thành": đóng chu kỳ kế hoạch liên quan (dời mốc đến hạn kế tiếp)
+     * và cập nhật ODO hiện tại của xe. Trả về phần mô tả thêm cho thông báo thành công.
+     */
+    private String applyCompletionEffects(MaintenanceRecord record, Long currentUserId) {
+        if (!"COMPLETED".equals(record.getRecordStatus())) {
+            return "";
+        }
+        StringBuilder note = new StringBuilder();
+        if (record.getPlanId() != null
+                && planService.markServiced(record.getPlanId(), record.getServiceDate(),
+                                            record.getOdometer(), currentUserId)) {
+            note.append(" Đã dời mốc kế hoạch sang kỳ kế tiếp.");
+        }
+        if (record.getOdometer() != null
+                && service.updateVehicleOdometer(record.getVehicleId(), record.getOdometer())) {
+            note.append(" Đã cập nhật ODO xe.");
+        }
+        return note.toString();
     }
 
     private Long requireCurrentUserId() {
