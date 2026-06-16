@@ -29,8 +29,10 @@
             <Label text="Trạng thái" GridPane.rowIndex="0" GridPane.columnIndex="4" styleClass="form-label"/>
             <ComboBox fx:id="cbRecordStatus" promptText="Chọn trạng thái..." maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="5"/>
 
-            <Label text="Tiêu đề" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
-            <TextField fx:id="txtTitle" promptText="Bảo dưỡng định kỳ 50.000 km" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.columnSpan="5"/>
+            <Label text="Kế hoạch liên quan" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+            <ComboBox fx:id="cbPlan" promptText="Không bắt buộc..." maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Tiêu đề" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="form-label"/>
+            <TextField fx:id="txtTitle" promptText="Bảo dưỡng định kỳ 50.000 km" GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.columnSpan="3"/>
 
             <Label text="Ngày thực hiện" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
             <DatePicker fx:id="dpServiceDate" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1"/>

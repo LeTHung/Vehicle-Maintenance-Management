@@ -103,6 +103,42 @@ public class MaintenancePlanService {
         return planDAO.deactivate(planId);
     }
 
+    /**
+     * Đóng chu kỳ bảo dưỡng cho một kế hoạch sau khi phiếu được hoàn thành:
+     * dời mốc "gần nhất" về ngày/ODO thực hiện và tính lại mốc đến hạn kế tiếp.
+     * Nhờ đó view vw_due_maintenance_plans không còn xếp xe này là OVERDUE/COMING_DUE.
+     *
+     * @param serviceDate     ngày thực hiện bảo dưỡng (bắt buộc để dời mốc ngày)
+     * @param serviceOdometer ODO khi bảo dưỡng (có thể null nếu không nhập)
+     */
+    public boolean markServiced(long planId, java.time.LocalDate serviceDate,
+                                Integer serviceOdometer, Long updatedBy) {
+        MaintenancePlan plan = planDAO.findById(planId).orElse(null);
+        if (plan == null) {
+            return false;
+        }
+
+        if (serviceDate != null) {
+            plan.setLastServiceDate(serviceDate);
+            if (plan.getIntervalDays() != null) {
+                plan.setNextDueDate(serviceDate.plusDays(plan.getIntervalDays()));
+            }
+        }
+
+        if (serviceOdometer != null) {
+            plan.setLastServiceOdometer(serviceOdometer);
+            if (plan.getIntervalKm() != null) {
+                plan.setNextDueOdometer(serviceOdometer + plan.getIntervalKm());
+            }
+        }
+
+        if (updatedBy != null) {
+            plan.setUpdatedBy(updatedBy);
+        }
+
+        return planDAO.update(plan);
+    }
+
     private void validate(MaintenancePlan plan) {
         if (plan == null) {
             throw new IllegalArgumentException("Dữ liệu kế hoạch không hợp lệ.");

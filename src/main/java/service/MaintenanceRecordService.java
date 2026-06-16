@@ -62,6 +62,11 @@ public class MaintenanceRecordService {
         return recordDAO.deleteItemsByRecordId(recordId);
     }
 
+    /** Cập nhật ODO hiện tại của xe theo ODO ghi nhận trên phiếu (chỉ tăng). */
+    public boolean updateVehicleOdometer(long vehicleId, int odometer) {
+        return vehicleDAO.updateOdometer(vehicleId, odometer);
+    }
+
     private void validate(MaintenanceRecord record) {
         if (record == null) {
             throw new IllegalArgumentException("Dữ liệu phiếu bảo dưỡng không hợp lệ.");
