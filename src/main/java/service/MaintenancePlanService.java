@@ -33,6 +33,7 @@ public class MaintenancePlanService {
 
     public Long save(MaintenancePlan plan) {
         validate(plan);
+        applyAutoCalculation(plan);
         checkNoDuplicateActive(plan.getVehicleId(), plan.getMaintenanceTypeId(), -1L);
         Long id = planDAO.insert(plan);
         if (id == null) {
@@ -46,6 +47,7 @@ public class MaintenancePlanService {
             throw new IllegalArgumentException("Vui lòng chọn kế hoạch cần cập nhật.");
         }
         validate(plan);
+        applyAutoCalculation(plan);
         if (plan.isActive()) {
             checkNoDuplicateActive(plan.getVehicleId(), plan.getMaintenanceTypeId(), plan.getPlanId());
         }
@@ -53,6 +55,36 @@ public class MaintenancePlanService {
             throw new IllegalStateException("Không thể cập nhật kế hoạch. Vui lòng thử lại.");
         }
         return true;
+    }
+
+    /**
+     * Tự tính ngày/ODO đến hạn và điền ngưỡng cảnh báo trước.
+     * - next_due_date  = ngày bảo dưỡng gần nhất + chu kỳ ngày (chỉ tính khi người dùng để trống)
+     * - next_due_odometer = ODO gần nhất + chu kỳ km (chỉ tính khi người dùng để trống)
+     * - alert_before_days/km: dùng giá trị người dùng nhập; nếu trống thì lấy mặc định từ bảng alert_settings
+     */
+    private void applyAutoCalculation(MaintenancePlan plan) {
+        if (plan.getNextDueDate() == null
+                && plan.getIntervalDays() != null
+                && plan.getLastServiceDate() != null) {
+            plan.setNextDueDate(plan.getLastServiceDate().plusDays(plan.getIntervalDays()));
+        }
+
+        if (plan.getNextDueOdometer() == null
+                && plan.getIntervalKm() != null
+                && plan.getLastServiceOdometer() != null) {
+            plan.setNextDueOdometer(plan.getLastServiceOdometer() + plan.getIntervalKm());
+        }
+
+        if (plan.getAlertBeforeDays() == null || plan.getAlertBeforeKm() == null) {
+            int[] defaults = planDAO.findMaintenanceAlertDefaults();
+            if (plan.getAlertBeforeDays() == null) {
+                plan.setAlertBeforeDays(defaults[0]);
+            }
+            if (plan.getAlertBeforeKm() == null) {
+                plan.setAlertBeforeKm(defaults[1]);
+            }
+        }
     }
 
     private void checkNoDuplicateActive(long vehicleId, int typeId, long excludePlanId) {
@@ -89,6 +121,21 @@ public class MaintenancePlanService {
         }
         if (plan.getIntervalKm() != null && plan.getIntervalKm() <= 0) {
             throw new IllegalArgumentException("Chu kỳ km phải lớn hơn 0.");
+        }
+        // Bắt buộc nhập mốc nền để tự tính được ngày/ODO đến hạn
+        if (plan.getIntervalDays() != null
+                && plan.getLastServiceDate() == null
+                && plan.getNextDueDate() == null) {
+            throw new IllegalArgumentException(
+                "Đã nhập 'Chu kỳ ngày' → bắt buộc nhập 'Ngày bảo dưỡng gần nhất' (để tự tính ngày đến hạn) "
+                + "hoặc nhập trực tiếp 'Ngày đến hạn kế tiếp'.");
+        }
+        if (plan.getIntervalKm() != null
+                && plan.getLastServiceOdometer() == null
+                && plan.getNextDueOdometer() == null) {
+            throw new IllegalArgumentException(
+                "Đã nhập 'Chu kỳ km' → bắt buộc nhập 'ODO bảo dưỡng gần nhất' (để tự tính ODO đến hạn) "
+                + "hoặc nhập trực tiếp 'ODO đến hạn kế tiếp'.");
         }
     }
 }

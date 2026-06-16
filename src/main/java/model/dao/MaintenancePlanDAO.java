@@ -209,6 +209,32 @@ public class MaintenancePlanDAO {
         return list;
     }
 
+    /**
+     * Đọc ngưỡng cảnh báo bảo dưỡng mặc định từ bảng alert_settings (setting_id = 1).
+     * Trả về [maintenance_alert_days, maintenance_alert_km]; fallback [7, 500] nếu không có cấu hình.
+     */
+    public int[] findMaintenanceAlertDefaults() {
+        int days = 7;
+        int km = 500;
+
+        String sql = "SELECT maintenance_alert_days, maintenance_alert_km FROM alert_settings WHERE setting_id = 1";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                days = rs.getInt("maintenance_alert_days");
+                km = rs.getInt("maintenance_alert_km");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return new int[]{days, km};
+    }
+
     public boolean deactivate(long planId) {
         String sql = "UPDATE maintenance_plans SET is_active = 0 WHERE plan_id = ?";
 

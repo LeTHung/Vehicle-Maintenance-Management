@@ -6,7 +6,7 @@
     <VBox spacing="24" styleClass="page">
         <VBox styleClass="page-header">
             <Label text="Kế hoạch bảo dưỡng" styleClass="page-title"/>
-            <Label text="Lập và quản lý kế hoạch bảo dưỡng định kỳ theo ngày hoặc số km cho từng xe." styleClass="page-subtitle"/>
+            <Label text="Lập kế hoạch theo ngày hoặc km. Nhập chu kỳ + mốc bảo dưỡng cuối, hệ thống tự tính ngày/ODO đến hạn nếu để trống." styleClass="page-subtitle"/>
         </VBox>
 
         <HBox spacing="12" styleClass="toolbar-panel">
@@ -36,14 +36,14 @@
             <TextField fx:id="txtLastServiceOdometer" promptText="Ví dụ: 45000" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
 
             <Label text="Ngày đến hạn tiếp theo" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
-            <DatePicker fx:id="dpNextDueDate" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <DatePicker fx:id="dpNextDueDate" promptText="Tự tính nếu để trống" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
             <Label text="ODO đến hạn tiếp theo (km)" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="form-label"/>
-            <TextField fx:id="txtNextDueOdometer" promptText="Ví dụ: 55000" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
+            <TextField fx:id="txtNextDueOdometer" promptText="Tự tính nếu để trống" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
 
             <Label text="Cảnh báo trước (ngày)" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="form-label"/>
-            <TextField fx:id="txtAlertBeforeDays" promptText="Ví dụ: 14" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <TextField fx:id="txtAlertBeforeDays" promptText="Mặc định theo cấu hình nếu để trống" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
             <Label text="Cảnh báo trước (km)" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="form-label"/>
-            <TextField fx:id="txtAlertBeforeKm" promptText="Ví dụ: 500" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
+            <TextField fx:id="txtAlertBeforeKm" promptText="Mặc định theo cấu hình nếu để trống" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
 
             <Label text="Ghi chú" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="form-label"/>
             <TextField fx:id="txtNotes" promptText="Ghi chú kế hoạch..." GridPane.rowIndex="5" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
@@ -61,7 +61,7 @@
                 <Label text="Danh sách kế hoạch bảo dưỡng" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblPlan" prefHeight="360" styleClass="data-table">
+            <TableView fx:id="tblPlan" prefHeight="360" fixedCellSize="44" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colPlanId" text="ID" prefWidth="60"/>
                     <TableColumn fx:id="colPlanLicensePlate" text="Biển số" prefWidth="120"/>
