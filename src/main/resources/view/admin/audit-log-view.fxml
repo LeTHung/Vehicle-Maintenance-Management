@@ -35,7 +35,7 @@
                 <Label text="Danh sách nhật ký hoạt động" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="auditLogTable" prefHeight="520" VBox.vgrow="ALWAYS" styleClass="data-table">
+            <TableView fx:id="auditLogTable" prefHeight="600" minHeight="460" VBox.vgrow="ALWAYS" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colAuditLogId" text="ID" prefWidth="70"/>
                     <TableColumn fx:id="colUsername" text="Người dùng" prefWidth="170"/>

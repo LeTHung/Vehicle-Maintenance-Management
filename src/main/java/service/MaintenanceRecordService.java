@@ -1,8 +1,10 @@
 package service;
 
 import model.dao.MaintenanceRecordDAO;
+import model.dao.MaintenancePlanDAO;
 import model.dao.VehicleDAO;
 import model.entity.MaintenanceItemDetail;
+import model.entity.MaintenancePlan;
 import model.entity.MaintenanceRecord;
 import model.entity.Vehicle;
 
@@ -14,6 +16,7 @@ import java.util.Optional;
 public class MaintenanceRecordService {
 
     private final MaintenanceRecordDAO recordDAO = new MaintenanceRecordDAO();
+    private final MaintenancePlanDAO planDAO = new MaintenancePlanDAO();
     private final VehicleDAO vehicleDAO = new VehicleDAO();
 
     public List<MaintenanceRecord> listAll() {
@@ -111,6 +114,7 @@ public class MaintenanceRecordService {
         if (record.getVehicleId() <= 0) {
             throw new IllegalArgumentException("Vui lòng chọn xe.");
         }
+        validateRelatedPlan(record);
         if (record.getRecordType() == null || record.getRecordType().isBlank()) {
             throw new IllegalArgumentException("Vui lòng chọn loại phiếu.");
         }
@@ -168,6 +172,20 @@ public class MaintenanceRecordService {
         }
         return "COMPLETED".equals(previousStatus.trim().toUpperCase(Locale.ROOT))
                 && "COMPLETED".equals(currentStatus == null ? "" : currentStatus.trim().toUpperCase(Locale.ROOT));
+    }
+
+    private void validateRelatedPlan(MaintenanceRecord record) {
+        Long planId = record.getPlanId();
+        if (planId == null) {
+            return;
+        }
+
+        MaintenancePlan plan = planDAO.findById(planId)
+                .orElseThrow(() -> new IllegalArgumentException("Kế hoạch bảo dưỡng liên quan không tồn tại."));
+
+        if (plan.getVehicleId() != record.getVehicleId()) {
+            throw new IllegalArgumentException("Kế hoạch bảo dưỡng liên quan không thuộc xe đang chọn.");
+        }
     }
 
     private String normalizeRecordType(String recordType) {

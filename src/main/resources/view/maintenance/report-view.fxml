@@ -39,7 +39,7 @@
                 <Label text="Chi tiết chi phí theo tháng / xe" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblReport" prefHeight="450" fixedCellSize="44" styleClass="data-table">
+            <TableView fx:id="tblReport" prefHeight="560" minHeight="440" fixedCellSize="44" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colReportLicensePlate" text="Biển số" prefWidth="130"/>
                     <TableColumn fx:id="colReportPeriod" text="Tháng" prefWidth="110"/>

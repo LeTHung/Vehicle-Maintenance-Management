@@ -15,11 +15,23 @@ public class MaintenanceAlertService {
     public List<MaintenanceDueAlertDTO> listDueAlerts() {
         return planDAO.findDueAlerts().stream()
                 .sorted(Comparator
-                        .comparingLong(this::daysUntilDue)
-                        .reversed()
+                        .comparingInt(this::statusPriority)
+                        .thenComparingLong(this::daysUntilDue)
                         .thenComparing(alert -> nullToEmpty(alert.getLicensePlate()), String.CASE_INSENSITIVE_ORDER)
                         .thenComparingLong(MaintenanceDueAlertDTO::getPlanId))
                 .toList();
+    }
+
+    private int statusPriority(MaintenanceDueAlertDTO alert) {
+        if (alert == null || alert.getDueStatus() == null) {
+            return 2;
+        }
+
+        return switch (alert.getDueStatus()) {
+            case "OVERDUE" -> 0;
+            case "COMING_DUE" -> 1;
+            default -> 2;
+        };
     }
 
     private long daysUntilDue(MaintenanceDueAlertDTO alert) {

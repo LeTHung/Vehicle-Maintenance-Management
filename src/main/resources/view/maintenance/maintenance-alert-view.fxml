@@ -36,7 +36,7 @@
                 <Label text="Xe cần bảo dưỡng" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblAlert" prefHeight="500" minHeight="320" fixedCellSize="44" styleClass="data-table">
+            <TableView fx:id="tblAlert" prefHeight="560" minHeight="440" fixedCellSize="44" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colAlertPlanId"         text="ID"              prefWidth="60"/>
                     <TableColumn fx:id="colAlertLicensePlate"   text="Biển số"         prefWidth="120"/>

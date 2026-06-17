@@ -27,7 +27,7 @@
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblDocument" prefHeight="380" styleClass="data-table">
+            <TableView fx:id="tblDocument" prefHeight="520" minHeight="420" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colDocumentId" text="ID" prefWidth="60"/>
                     <TableColumn fx:id="colLicensePlate" text="Biển số" prefWidth="125"/>
