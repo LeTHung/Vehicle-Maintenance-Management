@@ -34,6 +34,7 @@ public class MaintenancePlanService {
     public Long save(MaintenancePlan plan) {
         validate(plan);
         applyAutoCalculation(plan);
+        validateDueMilestones(plan);
         checkNoDuplicateActive(plan.getVehicleId(), plan.getMaintenanceTypeId(), -1L);
         Long id = planDAO.insert(plan);
         if (id == null) {
@@ -48,6 +49,7 @@ public class MaintenancePlanService {
         }
         validate(plan);
         applyAutoCalculation(plan);
+        validateDueMilestones(plan);
         if (plan.isActive()) {
             checkNoDuplicateActive(plan.getVehicleId(), plan.getMaintenanceTypeId(), plan.getPlanId());
         }
@@ -184,6 +186,22 @@ public class MaintenancePlanService {
             throw new IllegalArgumentException(
                 "Đã nhập 'Chu kỳ km' → bắt buộc nhập 'ODO bảo dưỡng gần nhất' (để tự tính ODO đến hạn) "
                 + "hoặc nhập trực tiếp 'ODO đến hạn kế tiếp'.");
+        }
+    }
+
+    private void validateDueMilestones(MaintenancePlan plan) {
+        if (plan.getLastServiceOdometer() != null
+                && plan.getNextDueOdometer() != null
+                && plan.getLastServiceOdometer() > plan.getNextDueOdometer()) {
+            throw new IllegalArgumentException(
+                    "ODO bảo dưỡng cuối không được lớn hơn ODO đến hạn tiếp theo.");
+        }
+
+        if (plan.getLastServiceDate() != null
+                && plan.getNextDueDate() != null
+                && plan.getLastServiceDate().isAfter(plan.getNextDueDate())) {
+            throw new IllegalArgumentException(
+                    "Ngày bảo dưỡng cuối không được sau ngày đến hạn tiếp theo.");
         }
     }
 }
