@@ -161,7 +161,7 @@ public class MaintenanceHistoryController {
 
     private void configureItemTable() {
         colItemType.setCellValueFactory(c ->
-            new SimpleStringProperty(c.getValue().getItemType() != null ? c.getValue().getItemType() : ""));
+            new SimpleStringProperty(itemTypeLabel(c.getValue().getItemType())));
         colItemDesc.setCellValueFactory(c ->
             new SimpleStringProperty(c.getValue().getDescription() != null ? c.getValue().getDescription() : ""));
         colItemQty.setCellValueFactory(c ->
@@ -172,6 +172,7 @@ public class MaintenanceHistoryController {
             new SimpleStringProperty(formatMoney(c.getValue().getUnitCost())));
         colItemLineTotal.setCellValueFactory(c ->
             new SimpleStringProperty(formatMoney(c.getValue().getLineTotal())));
+        tblItems.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
     }
 
     private void loadItems(MaintenanceRecord record) {
@@ -189,8 +190,8 @@ public class MaintenanceHistoryController {
                 historyDetailPanel,
                 tblHistory,
                 "Chi tiết hạng mục bảo dưỡng",
-                760,
-                360);
+                1080,
+                560);
     }
 
     private String formatMoney(BigDecimal value) {
@@ -303,6 +304,17 @@ public class MaintenanceHistoryController {
             case "Hoàn thành" -> "COMPLETED";
             case "Đã hủy" -> "CANCELLED";
             default -> label;
+        };
+    }
+
+    private String itemTypeLabel(String type) {
+        if (type == null || type.isBlank()) {
+            return "";
+        }
+        return switch (type) {
+            case "WORK" -> "Công việc";
+            case "PART" -> "Phụ tùng";
+            default -> type;
         };
     }
 }

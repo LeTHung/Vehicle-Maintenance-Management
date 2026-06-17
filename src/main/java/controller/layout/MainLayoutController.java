@@ -5,6 +5,8 @@ import controller.common.PasswordDialogHelper.PasswordChangeData;
 import controller.dashboard.AdminDashboardController;
 import controller.dashboard.ManagerDashboardController;
 import controller.dashboard.TechnicianDashboardController;
+import controller.maintenance.MaintenanceAlertController;
+import controller.maintenance.MaintenanceRecordController;
 import controller.user.UserController;
 import javafx.beans.value.ChangeListener;
 import javafx.application.Platform;
@@ -23,6 +25,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.dto.MaintenanceDueAlertDTO;
 import model.entity.Role;
 import model.entity.User;
 import service.AuthService;
@@ -293,6 +296,18 @@ public class MainLayoutController {
         loadPage("maintenance/maintenance-record-view.fxml", "Cập nhật bảo dưỡng", btnMaintenanceRecord);
     }
 
+    private void openMaintenanceRecordForVehicle(MaintenanceDueAlertDTO alert) {
+        if (!ROLE_TECH.equals(currentRole)) {
+            showAccessDenied("Cập nhật bảo dưỡng", btnMaintenanceRecord);
+            return;
+        }
+        loadPage("maintenance/maintenance-record-view.fxml", "Cập nhật bảo dưỡng", btnMaintenanceRecord, controller -> {
+            if (controller instanceof MaintenanceRecordController maintenanceRecordController && alert != null) {
+                maintenanceRecordController.filterByVehicleId(alert.getVehicleId());
+            }
+        });
+    }
+
     @FXML
     private void openMaintenanceHistory() {
         if (!canOpenMaintenanceHistory()) {
@@ -430,6 +445,8 @@ public class MainLayoutController {
             technicianDashboardController.setNavigationHandlers(
                     this::openMaintenanceAlert,
                     this::openMaintenanceRecord);
+        } else if (controller instanceof MaintenanceAlertController maintenanceAlertController) {
+            maintenanceAlertController.setOpenMaintenanceRecordHandler(this::openMaintenanceRecordForVehicle);
         }
     }
 

@@ -8,15 +8,18 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import model.dto.MaintenanceDueAlertDTO;
 import service.MaintenanceAlertService;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MaintenanceAlertController {
 
     private final MaintenanceAlertService service = new MaintenanceAlertService();
+    private Consumer<MaintenanceDueAlertDTO> openMaintenanceRecordHandler;
 
     @FXML private ComboBox<String> cbFilterStatus;
     @FXML private Label lblOverdueCount;
@@ -39,6 +42,7 @@ public class MaintenanceAlertController {
         cbFilterStatus.setOnAction(e -> applyFilter());
 
         configureTable();
+        setupRowDoubleClick();
         loadTable();
     }
 
@@ -108,6 +112,22 @@ public class MaintenanceAlertController {
         loadTable();
     }
 
+    public void setOpenMaintenanceRecordHandler(Consumer<MaintenanceDueAlertDTO> handler) {
+        this.openMaintenanceRecordHandler = handler;
+    }
+
+    private void setupRowDoubleClick() {
+        tblAlert.setRowFactory(table -> {
+            TableRow<MaintenanceDueAlertDTO> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty() && openMaintenanceRecordHandler != null) {
+                    openMaintenanceRecordHandler.accept(row.getItem());
+                }
+            });
+            return row;
+        });
+    }
+
     @FXML
     private void handleRefresh() {
         cbFilterStatus.setValue("Tất cả");
@@ -146,8 +166,8 @@ public class MaintenanceAlertController {
             return "";
         }
         return switch (label) {
-            case "Quá hạn", "QuÃ¡ háº¡n" -> "OVERDUE";
-            case "Sắp đến hạn", "Sáº¯p Ä‘áº¿n háº¡n" -> "COMING_DUE";
+            case "Quá hạn" -> "OVERDUE";
+            case "Sắp đến hạn" -> "COMING_DUE";
             default -> label;
         };
     }

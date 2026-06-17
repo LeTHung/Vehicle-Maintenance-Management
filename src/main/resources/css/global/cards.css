@@ -175,3 +175,27 @@
 .compact-title-row {
     -fx-padding: 0 0 8 0;
 }
+
+.record-summary-panel {
+    -fx-padding: 14 18 16 18;
+}
+
+.record-summary-panel .text-field,
+.record-summary-panel .combo-box-base,
+.record-summary-panel .date-picker {
+    -fx-padding: 6 10;
+}
+
+.detail-field {
+    -fx-min-height: 40;
+}
+
+.detail-field-label {
+    -fx-pref-width: 108;
+    -fx-min-width: 108;
+    -fx-max-width: 108;
+}
+
+.record-items-panel {
+    -fx-padding: 18;
+}

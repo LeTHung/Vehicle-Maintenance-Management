@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -29,6 +30,7 @@ import model.entity.Vehicle;
 import session.UserSession;
 import service.MaintenancePlanService;
 import service.MaintenanceRecordService;
+import util.AlertUtil;
 import util.DetailWindow;
 
 import java.math.BigDecimal;
@@ -76,7 +78,7 @@ public class MaintenanceRecordController {
     @FXML private ComboBox<String> cbItemType;
     @FXML private TextField txtItemDesc;
     @FXML private TextField txtItemQty;
-    @FXML private TextField txtItemUnit;
+    @FXML private ComboBox<String> cbItemUnit;
     @FXML private TextField txtItemUnitCost;
     @FXML private Label lblItemLineTotal;
 
@@ -107,8 +109,10 @@ public class MaintenanceRecordController {
                 recordStatusLabel("IN_PROGRESS"),
                 recordStatusLabel("COMPLETED"),
                 recordStatusLabel("CANCELLED"));
-        cbItemType.getItems().addAll("WORK", "PART");
-        cbItemType.setValue("WORK");
+        cbItemType.getItems().addAll(itemTypeLabel("WORK"), itemTypeLabel("PART"));
+        cbItemType.setValue(itemTypeLabel("WORK"));
+        cbItemUnit.getItems().addAll("Lần", "Cái", "Bộ", "Can", "Lít");
+        cbItemUnit.setValue("Lần");
         loadTechnicianNames();
         loadTypeNames();
         setupVehicleComboBoxes();
@@ -217,7 +221,7 @@ public class MaintenanceRecordController {
 
     private void configureItemTable() {
         colItemType.setCellValueFactory(c ->
-            new SimpleStringProperty(c.getValue().getItemType() != null ? c.getValue().getItemType() : ""));
+            new SimpleStringProperty(itemTypeLabel(c.getValue().getItemType())));
         colItemDesc.setCellValueFactory(c ->
             new SimpleStringProperty(c.getValue().getDescription() != null ? c.getValue().getDescription() : ""));
         colItemQty.setCellValueFactory(c ->
@@ -232,6 +236,12 @@ public class MaintenanceRecordController {
         colItemRemove.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("Xóa");
             {
+                setAlignment(Pos.CENTER);
+                setStyle("-fx-padding: 0;");
+                btn.setMinSize(72, 32);
+                btn.setPrefSize(72, 32);
+                btn.setMaxHeight(32);
+                btn.setStyle("-fx-padding: 5 14;");
                 btn.setOnAction(e -> {
                     MaintenanceItemDetail item = getTableRow() == null ? null : getTableRow().getItem();
                     if (item != null) currentItems.remove(item);
@@ -274,6 +284,21 @@ public class MaintenanceRecordController {
         });
     }
 
+    public void filterByVehicleId(long vehicleId) {
+        Vehicle selectedVehicle = cbFilterVehicle.getItems().stream()
+                .filter(v -> v.getVehicleId() == vehicleId)
+                .findFirst()
+                .orElse(null);
+        if (selectedVehicle == null) {
+            cbFilterVehicle.setValue(null);
+            loadTable(service.listAll());
+            return;
+        }
+
+        cbFilterVehicle.setValue(selectedVehicle);
+        loadTable(service.listByVehicle(selectedVehicle.getVehicleId()));
+    }
+
     private void loadTechnicianNames() {
         technicianNameMap.clear();
         userDAO.findAll().forEach(user -> {
@@ -305,7 +330,7 @@ public class MaintenanceRecordController {
         selectedRecordId = record.getRecordId();
         selectedTechnicianId = record.getTechnicianId();
         selectedCreatedBy = record.getCreatedBy();
-        lblRecordDetailTitle.setText("Chi tiáº¿t phiáº¿u: "
+        lblRecordDetailTitle.setText("Chi tiết phiếu: "
                 + (record.getTitle() == null || record.getTitle().isBlank()
                 ? "#" + record.getRecordId()
                 : record.getTitle()));
@@ -337,7 +362,7 @@ public class MaintenanceRecordController {
     @FXML
     private void handleNewRecord() {
         handleClear();
-        lblRecordDetailTitle.setText("Táº¡o phiáº¿u báº£o dÆ°á»¡ng má»›i");
+        lblRecordDetailTitle.setText("Tạo phiếu bảo dưỡng mới");
         showRecordDetailWindow();
     }
 
@@ -436,8 +461,8 @@ public class MaintenanceRecordController {
                 recordDetailStage,
                 recordDetailPanel,
                 tblRecord,
-                "ThÃ´ng tin phiáº¿u báº£o dÆ°á»¡ng",
-                1080,
+                "Thông tin phiếu bảo dưỡng",
+                1020,
                 760);
     }
 
@@ -464,10 +489,15 @@ public class MaintenanceRecordController {
         }
 
         MaintenanceItemDetail item = new MaintenanceItemDetail();
-        item.setItemType(cbItemType.getValue() != null ? cbItemType.getValue() : "WORK");
+        item.setItemType(itemTypeValue(cbItemType.getValue()));
         item.setDescription(desc);
         item.setQuantity(qty);
-        item.setUnit(txtItemUnit.getText().isBlank() ? null : txtItemUnit.getText().trim());
+        String unit = cbItemUnit.getValue();
+        if (unit == null || unit.isBlank()) {
+            showError("Vui lòng chọn đơn vị.");
+            return;
+        }
+        item.setUnit(unit);
         item.setUnitCost(unitCost);
         item.setLineTotal(qty.multiply(unitCost));
 
@@ -478,15 +508,18 @@ public class MaintenanceRecordController {
     @FXML
     private void handleClearItems() {
         currentItems.clear();
+        clearItemForm();
+        txtTotalCost.setText("0.00");
+        txtTotalCost.setEditable(true);
     }
 
     private void clearItemForm() {
         txtItemDesc.clear();
         txtItemQty.clear();
-        txtItemUnit.clear();
+        cbItemUnit.setValue("Lần");
         txtItemUnitCost.clear();
         lblItemLineTotal.setText("= 0 VNĐ");
-        cbItemType.setValue("WORK");
+        cbItemType.setValue(itemTypeLabel("WORK"));
     }
 
     private String formatMoney(BigDecimal value) {
@@ -610,12 +643,14 @@ public class MaintenanceRecordController {
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.setHeaderText(null);
+        AlertUtil.applyFleetCareIcon(alert);
         alert.showAndWait();
     }
 
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
         alert.setHeaderText(null);
+        AlertUtil.applyFleetCareIcon(alert);
         alert.showAndWait();
     }
 
@@ -663,6 +698,28 @@ public class MaintenanceRecordController {
             case "Đang xử lý" -> "IN_PROGRESS";
             case "Hoàn thành" -> "COMPLETED";
             case "Đã hủy" -> "CANCELLED";
+            default -> label;
+        };
+    }
+
+    private String itemTypeLabel(String type) {
+        if (type == null || type.isBlank()) {
+            return "";
+        }
+        return switch (type) {
+            case "WORK" -> "Công việc";
+            case "PART" -> "Phụ tùng";
+            default -> type;
+        };
+    }
+
+    private String itemTypeValue(String label) {
+        if (label == null || label.isBlank()) {
+            return "WORK";
+        }
+        return switch (label) {
+            case "Công việc" -> "WORK";
+            case "Phụ tùng" -> "PART";
             default -> label;
         };
     }
