@@ -45,7 +45,7 @@
                 <Label text="Danh sách cảnh báo" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblAlert" prefHeight="410" styleClass="data-table">
+            <TableView fx:id="tblAlert" prefHeight="540" minHeight="430" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colDocumentId" text="Mã giấy tờ" prefWidth="100"/>
                     <TableColumn fx:id="colVehicleId" text="Mã xe" prefWidth="90"/>

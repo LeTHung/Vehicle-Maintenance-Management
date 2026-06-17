@@ -23,7 +23,7 @@
                 <Label text="Danh sách lịch sử bảo dưỡng" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblHistory" prefHeight="380" minHeight="320" fixedCellSize="44" styleClass="data-table">
+            <TableView fx:id="tblHistory" prefHeight="520" minHeight="420" fixedCellSize="44" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colHistoryId" text="ID" prefWidth="60"/>
                     <TableColumn fx:id="colHistoryLicensePlate" text="Biển số" prefWidth="120"/>
@@ -45,7 +45,7 @@
                 <Label text="Chi tiết hạng mục / phụ tùng của phiếu đã chọn" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblItems" prefHeight="360" minHeight="320" fixedCellSize="44" styleClass="data-table">
+            <TableView fx:id="tblItems" prefHeight="420" minHeight="340" fixedCellSize="44" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colItemType"      text="Loại"       prefWidth="125"/>
                     <TableColumn fx:id="colItemDesc"      text="Mô tả"      prefWidth="390"/>

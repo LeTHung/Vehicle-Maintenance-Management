@@ -24,7 +24,7 @@
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblVehicle" prefHeight="360" styleClass="data-table">
+            <TableView fx:id="tblVehicle" prefHeight="520" minHeight="420" styleClass="data-table">
                 <columns>
                     <TableColumn fx:id="colVehicleId" text="ID" prefWidth="60"/>
                     <TableColumn fx:id="colVehicleCode" text="Mã xe" prefWidth="100"/>

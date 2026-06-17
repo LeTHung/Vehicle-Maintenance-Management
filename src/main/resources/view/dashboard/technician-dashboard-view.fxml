@@ -6,7 +6,7 @@
             fx:controller="controller.dashboard.TechnicianDashboardController"
             fitToWidth="true"
             styleClass="page-scroll">
-    <VBox spacing="28" styleClass="page">
+    <VBox spacing="16" styleClass="page">
         <VBox styleClass="hero-tech">
             <Label text="Bảng công việc kỹ thuật bảo dưỡng" styleClass="display-title"/>
             <Label text="Theo dõi lịch bảo dưỡng, phiếu sửa chữa, vật tư và lịch sử kỹ thuật của từng phương tiện." styleClass="hero-subtitle"/>
@@ -15,7 +15,7 @@
                 <Button text="Xem lịch hôm nay" onAction="#handleOpenMaintenanceAlert" styleClass="btn-ghost"/>
             </HBox>
         </VBox>
-        <HBox spacing="18">
+        <HBox spacing="12">
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
                 <Label text="Lệnh chờ xử lý" styleClass="metric-label"/>
                 <Label fx:id="lblPendingWorkOrders" text="0" styleClass="metric-value"/>
@@ -34,7 +34,7 @@
                 <Label fx:id="lblCompletedHint" text="Lấy từ phiếu bảo dưỡng" styleClass="metric-trend-success"/>
             </VBox>
         </HBox>
-        <VBox spacing="16" styleClass="panel">
+        <VBox spacing="10" styleClass="panel">
             <HBox spacing="12" styleClass="table-title-row">
                 <Label text="Xe đến hạn bảo dưỡng" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
