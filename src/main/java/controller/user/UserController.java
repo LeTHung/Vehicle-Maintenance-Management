@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 /**
  * Controller cho màn hình quản lý người dùng.
@@ -105,25 +107,24 @@ public class UserController implements QuickSearchAware {
     }
 
     public void openCreateUserDialog() {
-        Optional<UserFormData> formData = showUserDialog(null);
+        AtomicReference<User> createdUser = new AtomicReference<>();
+        Optional<UserFormData> formData = showUserDialog(null, data -> createdUser.set(userService.createUser(
+                data.username(),
+                data.password(),
+                data.fullName(),
+                data.email(),
+                data.phone(),
+                data.roleId())));
         if (formData.isEmpty()) {
             return;
         }
 
-        try {
-            UserFormData data = formData.get();
-            userService.createUser(
-                    data.username(),
-                    data.password(),
-                    data.fullName(),
-                    data.email(),
-                    data.phone(),
-                    data.roleId());
-            reloadData();
-            showInfo("Đã tạo tài khoản mới.");
-        } catch (RuntimeException e) {
-            showError(e.getMessage());
+        reloadData();
+        User user = createdUser.get();
+        if (user != null) {
+            selectUser(user.getUserId());
         }
+        showInfo("Đã tạo tài khoản mới.");
     }
 
     @FXML
@@ -134,13 +135,8 @@ public class UserController implements QuickSearchAware {
             return;
         }
 
-        Optional<UserFormData> formData = showUserDialog(selected);
-        if (formData.isEmpty()) {
-            return;
-        }
-
-        try {
-            UserFormData data = formData.get();
+        AtomicReference<User> updatedUser = new AtomicReference<>();
+        Optional<UserFormData> formData = showUserDialog(selected, data -> {
             User updated = new User();
             updated.setUserId(selected.getUserId());
             updated.setUsername(data.username());
@@ -151,13 +147,16 @@ public class UserController implements QuickSearchAware {
             updated.setAccountStatus(selected.getAccountStatus());
             updated.setMustChangePassword(selected.isMustChangePassword());
 
-            userService.updateUser(updated);
-            reloadData();
-            selectUser(updated.getUserId());
-            showInfo("Đã cập nhật tài khoản.");
-        } catch (RuntimeException e) {
-            showError(e.getMessage());
+            updatedUser.set(userService.updateUser(updated));
+        });
+        if (formData.isEmpty()) {
+            return;
         }
+
+        reloadData();
+        User user = updatedUser.get();
+        selectUser(user == null ? selected.getUserId() : user.getUserId());
+        showInfo("Đã cập nhật tài khoản.");
     }
 
     @FXML
@@ -208,20 +207,15 @@ public class UserController implements QuickSearchAware {
 
         Optional<PasswordChangeData> formData = PasswordDialogHelper.showAdminResetDialog(
                 "Reset mật khẩu",
-                "Đặt mật khẩu tạm cho tài khoản " + selected.getUsername());
+                "Đặt mật khẩu tạm cho tài khoản " + selected.getUsername(),
+                data -> userService.adminResetPassword(selected.getUserId(), data.newPassword(), data.confirmPassword()));
         if (formData.isEmpty()) {
             return;
         }
 
-        try {
-            PasswordChangeData data = formData.get();
-            userService.adminResetPassword(selected.getUserId(), data.newPassword(), data.confirmPassword());
-            reloadData();
-            selectUser(selected.getUserId());
-            showInfo("Đã reset mật khẩu. Người dùng sẽ phải đổi lại mật khẩu khi đăng nhập.");
-        } catch (RuntimeException e) {
-            showError(e.getMessage());
-        }
+        reloadData();
+        selectUser(selected.getUserId());
+        showInfo("Đã reset mật khẩu. Người dùng sẽ phải đổi lại mật khẩu khi đăng nhập.");
     }
 
     @FXML
@@ -311,8 +305,9 @@ public class UserController implements QuickSearchAware {
         }
     }
 
-    private Optional<UserFormData> showUserDialog(User existingUser) {
+    private Optional<UserFormData> showUserDialog(User existingUser, Consumer<UserFormData> submitHandler) {
         boolean editMode = existingUser != null;
+        AtomicReference<UserFormData> acceptedFormData = new AtomicReference<>();
 
         Dialog<UserFormData> dialog = new Dialog<>();
         dialog.setTitle(editMode ? "Sửa tài khoản" : "Thêm tài khoản");
@@ -391,6 +386,23 @@ public class UserController implements QuickSearchAware {
             if (!message.isEmpty()) {
                 showWarning(message);
                 event.consume();
+                return;
+            }
+
+            UserFormData data = readUserFormData(
+                    editMode,
+                    usernameField,
+                    passwordField,
+                    fullNameField,
+                    emailField,
+                    phoneField,
+                    roleComboBox);
+            try {
+                submitHandler.accept(data);
+                acceptedFormData.set(data);
+            } catch (RuntimeException e) {
+                showError(e.getMessage());
+                event.consume();
             }
         });
 
@@ -399,17 +411,27 @@ public class UserController implements QuickSearchAware {
                 return null;
             }
 
-            Role selectedRole = roleComboBox.getValue();
-            return new UserFormData(
-                    usernameField.getText(),
-                    editMode ? null : passwordField.getText(),
-                    fullNameField.getText(),
-                    emailField.getText(),
-                    phoneField.getText(),
-                    selectedRole == null ? null : selectedRole.getRoleId());
+            return acceptedFormData.get();
         });
 
         return dialog.showAndWait();
+    }
+
+    private UserFormData readUserFormData(boolean editMode,
+                                          TextField usernameField,
+                                          PasswordField passwordField,
+                                          TextField fullNameField,
+                                          TextField emailField,
+                                          TextField phoneField,
+                                          ComboBox<Role> roleComboBox) {
+        Role selectedRole = roleComboBox.getValue();
+        return new UserFormData(
+                usernameField.getText(),
+                editMode ? null : passwordField.getText(),
+                fullNameField.getText(),
+                emailField.getText(),
+                phoneField.getText(),
+                selectedRole == null ? null : selectedRole.getRoleId());
     }
 
     private Label formLabel(String text) {

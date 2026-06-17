@@ -356,19 +356,14 @@ public class MainLayoutController {
     private void handleChangeOwnPassword() {
         Optional<PasswordChangeData> formData = PasswordDialogHelper.showOwnPasswordDialog(
                 "Đổi mật khẩu",
-                "Cập nhật mật khẩu đăng nhập của bạn");
+                "Cập nhật mật khẩu đăng nhập của bạn",
+                data -> userService.changeOwnPassword(data.currentPassword(), data.newPassword(), data.confirmPassword()));
         if (formData.isEmpty()) {
             return;
         }
 
-        try {
-            PasswordChangeData data = formData.get();
-            userService.changeOwnPassword(data.currentPassword(), data.newPassword(), data.confirmPassword());
-            bindCurrentUser();
-            showInfo("Đã đổi mật khẩu thành công.");
-        } catch (RuntimeException e) {
-            showError(e.getMessage());
-        }
+        bindCurrentUser();
+        showInfo("Đã đổi mật khẩu thành công.");
     }
 
     private void loadPage(String fxmlFile, String title, Button activeButton) {

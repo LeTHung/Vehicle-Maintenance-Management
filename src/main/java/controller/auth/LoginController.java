@@ -8,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -19,7 +18,6 @@ import javafx.stage.Stage;
 import service.AuthService;
 import service.AuthenticationException;
 import service.UserService;
-import util.AlertUtil;
 import util.StylesheetLoader;
 
 import java.io.IOException;
@@ -69,22 +67,11 @@ public class LoginController {
     }
 
     private boolean forcePasswordChange() {
-        while (true) {
-            Optional<PasswordChangeData> formData = PasswordDialogHelper.showOwnPasswordDialog(
-                    "Đổi mật khẩu bắt buộc",
-                    "Tài khoản của bạn đang dùng mật khẩu tạm. Vui lòng đổi mật khẩu mới.");
-            if (formData.isEmpty()) {
-                return false;
-            }
-
-            try {
-                PasswordChangeData data = formData.get();
-                userService.changeOwnPassword(data.currentPassword(), data.newPassword(), data.confirmPassword());
-                return true;
-            } catch (RuntimeException e) {
-                showDialogError(e.getMessage());
-            }
-        }
+        Optional<PasswordChangeData> formData = PasswordDialogHelper.showOwnPasswordDialog(
+                "Đổi mật khẩu bắt buộc",
+                "Tài khoản của bạn đang dùng mật khẩu tạm. Vui lòng đổi mật khẩu mới.",
+                data -> userService.changeOwnPassword(data.currentPassword(), data.newPassword(), data.confirmPassword()));
+        return formData.isPresent();
     }
 
     private void loadMainLayout() throws IOException {
@@ -129,12 +116,4 @@ public class LoginController {
         errorLabel.setText("");
     }
 
-    private void showDialogError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Lỗi");
-        alert.setHeaderText(null);
-        alert.setContentText(message == null || message.isBlank() ? "Đã có lỗi xảy ra." : message);
-        AlertUtil.applyFleetCareIcon(alert);
-        alert.showAndWait();
-    }
 }

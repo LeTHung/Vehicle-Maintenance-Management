@@ -1,6 +1,8 @@
 package controller.common;
 
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -20,14 +22,29 @@ public final class PasswordDialogHelper {
     }
 
     public static Optional<PasswordChangeData> showOwnPasswordDialog(String title, String header) {
-        return showDialog(title, header, true);
+        return showDialog(title, header, true, null);
+    }
+
+    public static Optional<PasswordChangeData> showOwnPasswordDialog(String title,
+                                                                     String header,
+                                                                     PasswordSubmitHandler submitHandler) {
+        return showDialog(title, header, true, submitHandler);
     }
 
     public static Optional<PasswordChangeData> showAdminResetDialog(String title, String header) {
-        return showDialog(title, header, false);
+        return showDialog(title, header, false, null);
     }
 
-    private static Optional<PasswordChangeData> showDialog(String title, String header, boolean requireCurrentPassword) {
+    public static Optional<PasswordChangeData> showAdminResetDialog(String title,
+                                                                    String header,
+                                                                    PasswordSubmitHandler submitHandler) {
+        return showDialog(title, header, false, submitHandler);
+    }
+
+    private static Optional<PasswordChangeData> showDialog(String title,
+                                                           String header,
+                                                           boolean requireCurrentPassword,
+                                                           PasswordSubmitHandler submitHandler) {
         Dialog<PasswordChangeData> dialog = new Dialog<>();
         dialog.setTitle(title);
         dialog.setHeaderText(header);
@@ -72,17 +89,48 @@ public final class PasswordDialogHelper {
         dialog.getDialogPane().setContent(form);
         styleDialogButtons(dialog.getDialogPane(), saveButtonType, cancelButtonType);
 
+        Button saveButton = (Button) dialog.getDialogPane().lookupButton(saveButtonType);
+        if (saveButton != null) {
+            saveButton.addEventFilter(ActionEvent.ACTION, event -> {
+                if (submitHandler == null) {
+                    return;
+                }
+
+                try {
+                    submitHandler.submit(readPasswordData(
+                            requireCurrentPassword,
+                            currentPasswordField,
+                            newPasswordField,
+                            confirmPasswordField));
+                } catch (RuntimeException e) {
+                    showDialogError(e.getMessage());
+                    event.consume();
+                }
+            });
+        }
+
         dialog.setResultConverter(buttonType -> {
             if (buttonType != saveButtonType) {
                 return null;
             }
-            return new PasswordChangeData(
-                    requireCurrentPassword ? currentPasswordField.getText() : null,
-                    newPasswordField.getText(),
-                    confirmPasswordField.getText());
+            return readPasswordData(
+                    requireCurrentPassword,
+                    currentPasswordField,
+                    newPasswordField,
+                    confirmPasswordField);
         });
 
         return dialog.showAndWait();
+    }
+
+    private static PasswordChangeData readPasswordData(boolean requireCurrentPassword,
+                                                       PasswordField currentPasswordField,
+                                                       PasswordField newPasswordField,
+                                                       PasswordField confirmPasswordField) {
+        return new PasswordChangeData(
+                requireCurrentPassword ? currentPasswordField.getText() : null,
+                newPasswordField.getText(),
+                confirmPasswordField.getText());
     }
 
     private static Label formLabel(String text) {
@@ -105,6 +153,20 @@ public final class PasswordDialogHelper {
         if (cancelButton != null) {
             cancelButton.getStyleClass().add("btn-soft");
         }
+    }
+
+    private static void showDialogError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Lỗi");
+        alert.setHeaderText(null);
+        alert.setContentText(message == null || message.isBlank() ? "Đã có lỗi xảy ra." : message);
+        AlertUtil.applyFleetCareIcon(alert);
+        alert.showAndWait();
+    }
+
+    @FunctionalInterface
+    public interface PasswordSubmitHandler {
+        void submit(PasswordChangeData data);
     }
 
     public record PasswordChangeData(String currentPassword,
