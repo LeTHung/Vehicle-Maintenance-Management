@@ -9,16 +9,4 @@ target/
 *.log
 .tmp-ttcs-review/
 config/database.properties
-
-# AI / vibe-coding tools
-CLAUDE.md
-.claude/
-.cursor/
-.cursorignore
-.cursorindexingignore
-.aider*
-.windsurf/
-.copilot/
-Ke_hoach_phan_cong_15_ngay_TTCS.pdf
-KICH_BAN_DEMO.md
-2.1 (2).pdf
+.run-logs/

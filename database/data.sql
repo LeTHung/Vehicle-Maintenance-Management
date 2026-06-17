@@ -1,28 +1,8 @@
--- =====================================================================
--- FleetCare - Dữ liệu mẫu (reference data + demo data)
--- Chạy SAU data/schema.sql — DÙNG redirection để giữ đúng UTF-8 tiếng Việt:
---   cmd:        mysql -u root -p --default-character-set=utf8mb4 < data\data.sql
---   PowerShell: cmd /c "mysql -u root -p123456 --default-character-set=utf8mb4 < data\data.sql"
---   KHÔNG dùng "Get-Content file.sql | mysql" (làm hỏng tiếng Việt thành '?').
---
--- Tài khoản demo (mật khẩu = tên tài khoản + 1234, hash jBCrypt cost 12):
---   admin   / admin1234     - Quản trị hệ thống
---   manager / manager1234   - Quản lý đội xe
---   tech    / tech1234      - Nhân viên kỹ thuật (Nguyễn Văn An)
---   tech2   / tech21234     - Nhân viên kỹ thuật (Nguyễn Văn Minh)
---   tech3   / tech31234     - Nhân viên kỹ thuật (Trần Quốc Hùng)
---   tech4   / tech41234     - Nhân viên kỹ thuật (Lê Hoàng Phúc)
---
--- Ngày tháng dùng CURDATE() tương đối để cảnh báo giấy tờ / bảo dưỡng
--- luôn có dữ liệu OVERDUE & COMING_DUE bất kể chạy vào thời điểm nào.
--- File có thể chạy lại nhiều lần (xóa sạch rồi nạp lại).
--- =====================================================================
-
 SET NAMES utf8mb4;
 USE `vehicle_maintenance_management`;
 
--- --- Reset dữ liệu (xóa con trước, cha sau) ---------------------------
--- Tắt safe-update mode để DELETE chạy được trong MySQL Workbench (lỗi 1175).
+-- --- Reset dữ liệu 
+-- Tắt safe-update mode để DELETE chạy được trong MySQL Workbench.
 SET SQL_SAFE_UPDATES = 0;
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE `alerts`;

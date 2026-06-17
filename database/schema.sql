@@ -1,19 +1,3 @@
--- =====================================================================
--- FleetCare - Quản lý hồ sơ & Bảo dưỡng phương tiện
--- FILE SCHEMA: chỉ chứa cấu trúc CSDL (bảng + view), KHÔNG có dữ liệu.
--- Dữ liệu mẫu nằm ở file data/data.sql (chạy sau file này).
---
--- Cách chạy — DÙNG redirection để giữ đúng UTF-8 tiếng Việt:
---   cmd (Command Prompt):
---     mysql -u root -p --default-character-set=utf8mb4 < data\schema.sql
---     mysql -u root -p --default-character-set=utf8mb4 < data\data.sql
---   PowerShell:
---     cmd /c "mysql -u root -p123456 --default-character-set=utf8mb4 < data\schema.sql"
---     cmd /c "mysql -u root -p123456 --default-character-set=utf8mb4 < data\data.sql"
---   LƯU Ý: KHÔNG dùng "Get-Content file.sql | mysql" — PowerShell sẽ làm hỏng
---   ký tự tiếng Việt (lưu thành dấu ?). Hoặc mở bằng MySQL Workbench rồi Run.
--- =====================================================================
-
 DROP DATABASE IF EXISTS `vehicle_maintenance_management`;
 CREATE DATABASE `vehicle_maintenance_management`
     DEFAULT CHARACTER SET utf8mb4
