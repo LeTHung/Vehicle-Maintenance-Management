@@ -1,11 +1,13 @@
 package service;
 
+import model.dao.MaintenanceRecordDAO;
 import model.dao.VehicleDAO;
 import model.entity.Vehicle;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 public class VehicleService {
 
@@ -15,6 +17,7 @@ public class VehicleService {
     private static final String STATUS_DISPOSED = "DISPOSED";
 
     private final VehicleDAO vehicleDAO = new VehicleDAO();
+    private final MaintenanceRecordDAO maintenanceRecordDAO = new MaintenanceRecordDAO();
 
     public List<Vehicle> listVehicles() {
         return vehicleDAO.findAll();
@@ -69,6 +72,17 @@ public class VehicleService {
 
         if (vehicle.getCurrentOdometer() < 0) {
             throw new IllegalArgumentException("ODO hiện tại không được âm.");
+        }
+
+        if (currentVehicleId != null) {
+            Optional<Integer> maxCompletedOdometer =
+                    maintenanceRecordDAO.findMaxCompletedOdometer(currentVehicleId, null);
+            if (maxCompletedOdometer.isPresent()
+                    && vehicle.getCurrentOdometer() < maxCompletedOdometer.get()) {
+                throw new IllegalArgumentException(
+                        "ODO hiện tại không được nhỏ hơn ODO trên phiếu bảo dưỡng đã hoàn thành ("
+                                + maxCompletedOdometer.get() + " km).");
+            }
         }
 
         if (vehicle.getVehicleCode() != null

@@ -58,6 +58,7 @@ public class MaintenanceRecordController {
     @FXML private TextField txtTitle;
     @FXML private DatePicker dpServiceDate;
     @FXML private TextField txtOdometer;
+    @FXML private Label lblVehicleCurrentOdometer;
     @FXML private TextField txtTotalCost;
     @FXML private TextField txtServiceProvider;
     @FXML private TextField txtWorkSummary;
@@ -93,6 +94,7 @@ public class MaintenanceRecordController {
     @FXML private TableColumn<MaintenanceItemDetail, Void>   colItemRemove;
 
     private Long selectedRecordId;
+    private String selectedRecordStatus;
     private Long selectedTechnicianId;
     private Long selectedCreatedBy;
     private Stage recordDetailStage;
@@ -144,8 +146,46 @@ public class MaintenanceRecordController {
             }
             public MaintenancePlan fromString(String s) { return null; }
         });
-        // Nạp lại danh sách kế hoạch active mỗi khi đổi xe trong form
-        cbVehicle.valueProperty().addListener((obs, oldV, newV) -> reloadPlansForSelectedVehicle());
+        cbVehicle.valueProperty().addListener((obs, oldV, newV) -> {
+            reloadPlansForSelectedVehicle();
+            updateVehicleOdometerHint();
+        });
+    }
+
+    private void updateVehicleOdometerHint() {
+        if (lblVehicleCurrentOdometer == null) {
+            return;
+        }
+        Vehicle vehicle = cbVehicle.getValue();
+        if (vehicle == null) {
+            lblVehicleCurrentOdometer.setText("");
+            lblVehicleCurrentOdometer.setManaged(false);
+            lblVehicleCurrentOdometer.setVisible(false);
+            if (txtOdometer != null) {
+                txtOdometer.setPromptText("Chọn xe để xem ODO tối thiểu");
+            }
+            return;
+        }
+
+        int currentOdometer = resolveCurrentOdometer(vehicle);
+        lblVehicleCurrentOdometer.setText("ODO hiện tại: " + formatOdometer(currentOdometer) + " km");
+        lblVehicleCurrentOdometer.setManaged(true);
+        lblVehicleCurrentOdometer.setVisible(true);
+        if (txtOdometer != null) {
+            txtOdometer.setPromptText("Nhập ≥ " + formatOdometer(currentOdometer) + " km");
+        }
+    }
+
+    private int resolveCurrentOdometer(Vehicle vehicle) {
+        return service.listVehicles().stream()
+                .filter(v -> v.getVehicleId() == vehicle.getVehicleId())
+                .findFirst()
+                .map(Vehicle::getCurrentOdometer)
+                .orElse(vehicle.getCurrentOdometer());
+    }
+
+    private String formatOdometer(int odometer) {
+        return NumberFormat.getNumberInstance(Locale.of("vi", "VN")).format(odometer);
     }
 
     private void reloadPlansForSelectedVehicle() {
@@ -179,7 +219,12 @@ public class MaintenanceRecordController {
     }
 
     private void setupVehicleComboBoxes() {
+        reloadVehicleOptions();
+    }
+
+    private void reloadVehicleOptions() {
         List<Vehicle> vehicles = service.listVehicles();
+        vehicleNameMap.clear();
         vehicles.forEach(v -> vehicleNameMap.put(v.getVehicleId(), v.getLicensePlate()));
 
         StringConverter<Vehicle> converter = new StringConverter<>() {
@@ -187,8 +232,16 @@ public class MaintenanceRecordController {
             public Vehicle fromString(String s) { return null; }
         };
 
+        Vehicle selectedVehicle = cbVehicle.getValue();
+        Long selectedVehicleId = selectedVehicle == null ? null : selectedVehicle.getVehicleId();
         cbVehicle.setItems(FXCollections.observableArrayList(vehicles));
         cbVehicle.setConverter(converter);
+        if (selectedVehicleId != null) {
+            vehicles.stream()
+                    .filter(v -> v.getVehicleId() == selectedVehicleId)
+                    .findFirst()
+                    .ifPresent(cbVehicle::setValue);
+        }
 
         cbFilterVehicle.setItems(FXCollections.observableArrayList(vehicles));
         cbFilterVehicle.setConverter(converter);
@@ -328,6 +381,7 @@ public class MaintenanceRecordController {
     private void populateForm(MaintenanceRecord record) {
         if (record == null) return;
         selectedRecordId = record.getRecordId();
+        selectedRecordStatus = record.getRecordStatus();
         selectedTechnicianId = record.getTechnicianId();
         selectedCreatedBy = record.getCreatedBy();
         lblRecordDetailTitle.setText("Chi tiết phiếu: "
@@ -357,11 +411,14 @@ public class MaintenanceRecordController {
         txtNotes.setText(record.getNotes() == null ? "" : record.getNotes());
 
         currentItems.setAll(service.listItems(record.getRecordId()));
+        reloadVehicleOptions();
+        updateVehicleOdometerHint();
     }
 
     @FXML
     private void handleNewRecord() {
         handleClear();
+        reloadVehicleOptions();
         lblRecordDetailTitle.setText("Tạo phiếu bảo dưỡng mới");
         showRecordDetailWindow();
     }
@@ -371,7 +428,10 @@ public class MaintenanceRecordController {
         try {
             MaintenanceRecord record = readFromForm();
             applyItemsTotal(record);
-            validateCompletionEffects(record);
+            boolean newlyCompleting = MaintenanceRecordService.isNewlyCompleting(null, record.getRecordStatus());
+            if (newlyCompleting) {
+                validateCompletionEffects(record);
+            }
             Long currentUserId = requireCurrentUserId();
             record.setTechnicianId(currentUserId);
             record.setCreatedBy(currentUserId);
@@ -382,7 +442,8 @@ public class MaintenanceRecordController {
                 item.setRecordId(recordId);
                 service.saveItem(item);
             }
-            String extra = applyCompletionEffects(record, currentUserId);
+            String extra = newlyCompleting ? applyCompletionEffects(record, currentUserId) : "";
+            reloadVehicleOptions();
             loadTable(service.listAll());
             handleClear();
             DetailWindow.hide(recordDetailStage);
@@ -404,18 +465,23 @@ public class MaintenanceRecordController {
             MaintenanceRecord record = readFromForm();
             record.setRecordId(selectedRecordId);
             applyItemsTotal(record);
-            validateCompletionEffects(record);
+            boolean newlyCompleting = MaintenanceRecordService.isNewlyCompleting(
+                    selectedRecordStatus, record.getRecordStatus());
+            if (newlyCompleting) {
+                validateCompletionEffects(record);
+            }
             Long currentUserId = requireCurrentUserId();
             record.setTechnicianId(selectedTechnicianId != null ? selectedTechnicianId : currentUserId);
             record.setCreatedBy(selectedCreatedBy);
             record.setUpdatedBy(currentUserId);
-            service.update(record);
+            service.update(record, selectedRecordStatus);
             service.deleteItems(selectedRecordId);
             for (MaintenanceItemDetail item : currentItems) {
                 item.setRecordId(selectedRecordId);
                 service.saveItem(item);
             }
-            String extra = applyCompletionEffects(record, currentUserId);
+            String extra = newlyCompleting ? applyCompletionEffects(record, currentUserId) : "";
+            reloadVehicleOptions();
             loadTable(service.listAll());
             handleClear();
             DetailWindow.hide(recordDetailStage);
@@ -443,9 +509,11 @@ public class MaintenanceRecordController {
         currentItems.clear();
         clearItemForm();
         selectedRecordId = null;
+        selectedRecordStatus = null;
         selectedTechnicianId = null;
         selectedCreatedBy = null;
         tblRecord.getSelectionModel().clearSelection();
+        updateVehicleOdometerHint();
     }
 
     @FXML
@@ -453,6 +521,7 @@ public class MaintenanceRecordController {
         cbFilterVehicle.setValue(null);
         handleClear();
         DetailWindow.hide(recordDetailStage);
+        reloadVehicleOptions();
         loadTable(service.listAll());
     }
 

@@ -52,8 +52,11 @@
                     </columnConstraints>
 
                     <HBox spacing="10" alignment="CENTER_LEFT" styleClass="detail-field" GridPane.rowIndex="0" GridPane.columnIndex="0">
-                        <Label text="Xe" styleClass="form-label, detail-field-label"/>
-                        <ComboBox fx:id="cbVehicle" promptText="Chọn xe..." maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Xe" styleClass="form-label, detail-field-label"/>
+                            <ComboBox fx:id="cbVehicle" promptText="Chọn xe..." maxWidth="Infinity"/>
+                            <Label fx:id="lblVehicleCurrentOdometer" styleClass="form-hint" managed="false" visible="false"/>
+                        </VBox>
                     </HBox>
                     <HBox spacing="10" alignment="CENTER_LEFT" styleClass="detail-field" GridPane.rowIndex="0" GridPane.columnIndex="1">
                         <Label text="Loại phiếu" styleClass="form-label, detail-field-label"/>
@@ -79,7 +82,7 @@
                     </HBox>
                     <HBox spacing="10" alignment="CENTER_LEFT" styleClass="detail-field" GridPane.rowIndex="2" GridPane.columnIndex="1">
                         <Label text="ODO (km)" styleClass="form-label, detail-field-label"/>
-                        <TextField fx:id="txtOdometer" promptText="Ví dụ: 50000" HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="txtOdometer" promptText="Chọn xe để xem ODO tối thiểu" HBox.hgrow="ALWAYS"/>
                     </HBox>
                     <HBox spacing="10" alignment="CENTER_LEFT" styleClass="detail-field" GridPane.rowIndex="2" GridPane.columnIndex="2">
                         <Label text="Chi phí (VNĐ)" styleClass="form-label, detail-field-label"/>
