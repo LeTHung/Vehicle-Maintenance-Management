@@ -3,25 +3,6 @@
 Ứng dụng desktop JavaFX cho đồ án **Quản lý hồ sơ và bảo dưỡng phương tiện**.
 Dự án được tổ chức theo mô hình MVC, giao diện FXML/CSS, nghiệp vụ tách ở tầng service và lưu trữ bằng MySQL.
 
-## Trạng thái bản cuối
-
-Bản hiện tại đã được merge lên `origin/dev` và dùng làm bản hoàn thiện để demo/báo cáo.
-
-Tính năng đã hoàn thành:
-
-- Đăng nhập, đăng xuất, lưu session và phân quyền menu theo 3 role.
-- Giao diện đã gắn nhận diện FleetCare: logo, app icon, sidebar, dialog và màu nền đồng bộ.
-- Admin dashboard lấy số liệu từ DB: user, role, cảnh báo, audit log gần đây.
-- Admin quản lý tài khoản: xem, tìm kiếm nhanh, thêm, sửa, khóa/mở khóa, reset mật khẩu cho user khác.
-- Admin cấu hình ngưỡng cảnh báo giấy tờ và bảo dưỡng theo ngày/km.
-- Admin xem audit logs, lọc theo hành động, ngày và tìm kiếm nhanh.
-- Manager quản lý hồ sơ phương tiện, giấy tờ xe, cảnh báo giấy tờ, kế hoạch bảo dưỡng, cảnh báo bảo dưỡng, lịch sử bảo dưỡng và báo cáo chi phí.
-- Technician xem xe cần bảo dưỡng, cập nhật phiếu bảo dưỡng, nhập hạng mục/phụ tùng và xem lịch sử bảo dưỡng.
-- Các bảng chi tiết hồ sơ xe, giấy tờ, kế hoạch, phiếu và lịch sử bảo dưỡng mở bằng cửa sổ riêng khi nhấn đúp chuột.
-- Bảo dưỡng có nghiệp vụ đóng chu kỳ kế hoạch khi phiếu hoàn thành, cập nhật ODO xe và tính tổng chi phí theo hạng mục.
-- Báo cáo chi phí lấy theo năm hiện tại, không còn hard-code năm 2026.
-- Seed demo đồng bộ cho cả nhóm trong `data/seed-team-demo-reset.sql`.
-
 ## Nhận xét đề tài
 
 Đề tài phù hợp mục tiêu đồ án cơ sở: có phân quyền người dùng, dữ liệu demo thực tế, các module nghiệp vụ liên kết với nhau và có báo cáo tổng hợp. Luồng Manager và Technician đã bám sát bài toán quản lý đội xe: xe có hồ sơ, giấy tờ có hạn, kế hoạch bảo dưỡng có chu kỳ, phiếu hoàn thành cập nhật lại ODO/kế hoạch và chi phí được đưa vào báo cáo.
@@ -167,11 +148,11 @@ Seed demo gồm:
 
 Tài khoản demo:
 
-| Username | Password | Role |
-|---|---|---|
-| `admin` | `123456` | `ADMIN` |
+| Username  | Password | Role            |
+| --------- | -------- | --------------- |
+| `admin`   | `123456` | `ADMIN`         |
 | `manager` | `123456` | `FLEET_MANAGER` |
-| `tech` | `123456` | `TECHNICIAN` |
+| `tech`    | `123456` | `TECHNICIAN`    |
 
 Kiểm tra nhanh sau seed:
 
@@ -267,89 +248,3 @@ Nghiệp vụ đã chặn:
 - Tổng chi phí âm.
 - Số lượng hạng mục bằng 0/âm.
 - Đơn giá hạng mục âm.
-
-## Luồng demo đề xuất
-
-1. Chạy seed reset.
-2. Đăng nhập `admin`:
-   - Mở Dashboard.
-   - Mở Quản lý người dùng, tìm kiếm, sửa user demo.
-   - Thử khóa chính admin: hệ thống phải chặn.
-   - Mở Cấu hình cảnh báo, nhập ngoài khoảng: hệ thống phải chặn.
-   - Mở Audit logs.
-3. Đăng xuất, đăng nhập `manager`:
-   - Mở Hồ sơ phương tiện, Giấy tờ xe.
-   - Mở Cảnh báo giấy tờ, lọc `Tất cả` phải hiện đầy đủ cảnh báo.
-   - Mở Kế hoạch/Cảnh báo/Lịch sử bảo dưỡng.
-   - Mở Báo cáo chi phí năm hiện tại.
-4. Đăng xuất, đăng nhập `tech`:
-   - Mở Xe cần bảo dưỡng.
-   - Mở Cập nhật bảo dưỡng.
-   - Nhấn đúp vào phiếu để mở cửa sổ chi tiết.
-   - Thêm hạng mục/phụ tùng để xem tổng chi phí tự tính.
-   - Mở Lịch sử bảo dưỡng.
-
-## Kết quả kiểm thử bản cuối
-
-Đã kiểm thử trên DB local sau khi merge vào `origin/dev`.
-
-Build:
-
-- `.\mvnw clean test`: PASS.
-
-FXML smoke:
-
-- Load thành công 16 màn hình FXML:
-  - Login.
-  - Main layout.
-  - Admin/Manager/Technician dashboard.
-  - Quản lý người dùng.
-  - Audit logs.
-  - Cấu hình cảnh báo.
-  - Hồ sơ phương tiện.
-  - Giấy tờ xe.
-  - Cảnh báo giấy tờ.
-  - Kế hoạch bảo dưỡng.
-  - Cảnh báo bảo dưỡng.
-  - Cập nhật bảo dưỡng.
-  - Lịch sử bảo dưỡng.
-  - Báo cáo chi phí.
-
-Service smoke với seed demo:
-
-| Hạng mục | Kết quả |
-|---|---:|
-| Users | 3 |
-| Roles | 3 |
-| Vehicles | 6 |
-| Vehicle documents | 18 |
-| Document alerts | 9 |
-| Document alerts overdue | 5 |
-| Document alerts coming due | 4 |
-| Maintenance plans | 6 |
-| Maintenance due alerts | 4 |
-| Maintenance records | 5 |
-| Report rows năm hiện tại | 10 |
-
-Case lỗi đã test và được chặn:
-
-- Admin tạo user trùng username.
-- Admin tạo mật khẩu yếu.
-- Admin khóa chính tài khoản đang đăng nhập.
-- Manager/Technician gọi chức năng admin.
-- Xe thiếu biển số, ODO âm.
-- Giấy tờ có ngày hết hạn trước ngày cấp.
-- Kế hoạch không có chu kỳ, ngưỡng cảnh báo âm.
-- Phiếu bảo dưỡng có tổng tiền âm, trạng thái sai.
-- Hạng mục có số lượng bằng 0, đơn giá âm.
-
-## Ghi chú phát triển
-
-- Không commit `config/database.properties` nếu chưa chắc chắn đã xóa thông tin riêng.
-- Không commit mật khẩu MySQL cá nhân.
-- Trước khi push:
-
-```powershell
-git status
-.\mvnw clean test
-```
