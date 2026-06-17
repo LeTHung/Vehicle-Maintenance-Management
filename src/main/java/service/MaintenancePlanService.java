@@ -119,6 +119,7 @@ public class MaintenancePlanService {
         if (plan == null) {
             return false;
         }
+        validateServiceCompletion(plan, plan.getVehicleId(), serviceDate, serviceOdometer);
 
         if (serviceDate != null) {
             plan.setLastServiceDate(serviceDate);
@@ -139,6 +140,19 @@ public class MaintenancePlanService {
         }
 
         return planDAO.update(plan);
+    }
+
+    public void validateServiceCompletion(Long planId,
+                                          long vehicleId,
+                                          java.time.LocalDate serviceDate,
+                                          Integer serviceOdometer) {
+        if (planId == null) {
+            return;
+        }
+
+        MaintenancePlan plan = planDAO.findById(planId)
+                .orElseThrow(() -> new IllegalArgumentException("Kế hoạch bảo dưỡng liên quan không tồn tại."));
+        validateServiceCompletion(plan, vehicleId, serviceDate, serviceOdometer);
     }
 
     private void validate(MaintenancePlan plan) {
@@ -202,6 +216,38 @@ public class MaintenancePlanService {
                 && plan.getLastServiceDate().isAfter(plan.getNextDueDate())) {
             throw new IllegalArgumentException(
                     "Ngày bảo dưỡng cuối không được sau ngày đến hạn tiếp theo.");
+        }
+    }
+
+    private void validateServiceCompletion(MaintenancePlan plan,
+                                           long vehicleId,
+                                           java.time.LocalDate serviceDate,
+                                           Integer serviceOdometer) {
+        if (plan.getVehicleId() != vehicleId) {
+            throw new IllegalArgumentException("Kế hoạch bảo dưỡng liên quan không thuộc xe đang chọn.");
+        }
+
+        if (!plan.isActive()) {
+            throw new IllegalArgumentException("Kế hoạch bảo dưỡng liên quan đã bị hủy kích hoạt.");
+        }
+
+        if (plan.getIntervalKm() != null && serviceOdometer == null) {
+            throw new IllegalArgumentException(
+                    "Vui lòng nhập ODO bảo dưỡng để hoàn thành kế hoạch theo chu kỳ km.");
+        }
+
+        if (serviceDate != null
+                && plan.getLastServiceDate() != null
+                && serviceDate.isBefore(plan.getLastServiceDate())) {
+            throw new IllegalArgumentException(
+                    "Ngày thực hiện không được trước ngày bảo dưỡng cuối của kế hoạch.");
+        }
+
+        if (serviceOdometer != null
+                && plan.getLastServiceOdometer() != null
+                && serviceOdometer < plan.getLastServiceOdometer()) {
+            throw new IllegalArgumentException(
+                    "ODO bảo dưỡng không được nhỏ hơn ODO bảo dưỡng cuối của kế hoạch.");
         }
     }
 }

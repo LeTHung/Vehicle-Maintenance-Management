@@ -346,6 +346,7 @@ public class MaintenanceRecordController {
         try {
             MaintenanceRecord record = readFromForm();
             applyItemsTotal(record);
+            validateCompletionEffects(record);
             Long currentUserId = requireCurrentUserId();
             record.setTechnicianId(currentUserId);
             record.setCreatedBy(currentUserId);
@@ -378,6 +379,7 @@ public class MaintenanceRecordController {
             MaintenanceRecord record = readFromForm();
             record.setRecordId(selectedRecordId);
             applyItemsTotal(record);
+            validateCompletionEffects(record);
             Long currentUserId = requireCurrentUserId();
             record.setTechnicianId(selectedTechnicianId != null ? selectedTechnicianId : currentUserId);
             record.setCreatedBy(selectedCreatedBy);
@@ -449,9 +451,17 @@ public class MaintenanceRecordController {
         try {
             qty = new BigDecimal(txtItemQty.getText().trim());
         } catch (NumberFormatException e) { showError("Số lượng phải là số."); return; }
+        if (qty.compareTo(BigDecimal.ZERO) <= 0) {
+            showError("Số lượng hạng mục phải lớn hơn 0.");
+            return;
+        }
         try {
             unitCost = new BigDecimal(txtItemUnitCost.getText().trim());
         } catch (NumberFormatException e) { showError("Đơn giá phải là số."); return; }
+        if (unitCost.compareTo(BigDecimal.ZERO) < 0) {
+            showError("Đơn giá hạng mục không được âm.");
+            return;
+        }
 
         MaintenanceItemDetail item = new MaintenanceItemDetail();
         item.setItemType(cbItemType.getValue() != null ? cbItemType.getValue() : "WORK");
@@ -520,6 +530,17 @@ public class MaintenanceRecordController {
                 .map(i -> i.getLineTotal() != null ? i.getLineTotal() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         record.setTotalCost(sum);
+    }
+
+    private void validateCompletionEffects(MaintenanceRecord record) {
+        if (!"COMPLETED".equals(record.getRecordStatus())) {
+            return;
+        }
+        planService.validateServiceCompletion(
+                record.getPlanId(),
+                record.getVehicleId(),
+                record.getServiceDate(),
+                record.getOdometer());
     }
 
     /**
