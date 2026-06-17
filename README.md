@@ -1,39 +1,50 @@
-# Vehicle Maintenance Management
+# FleetCare - Quan ly ho so va bao duong phuong tien
 
 Ung dung desktop JavaFX cho do an **Quan ly ho so va bao duong phuong tien**.
-Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co so du lieu.
+Du an duoc to chuc theo mo hinh MVC, giao dien FXML/CSS, nghiep vu tach o tang service va luu tru bang MySQL.
 
-## Trang thai hien tai
+## Trang thai ban cuoi
 
-- Da co man hinh dang nhap, dang xuat, session va phan quyen menu theo role.
-- Da co quan ly tai khoan co ban: xem danh sach, them, sua, khoa/mo khoa user.
-- Da co seed du lieu role/user demo trong `data/seed-auth.sql`.
-- Da co Audit logs doc du lieu tu database, tu tao bang `audit_logs` khi can va ghi log dang nhap/dang xuat, quan tri user.
-- Da bo sung seed demo dong bo cho team trong `data/seed-team-demo-reset.sql`: reset du lieu demo, 3 tai khoan, 6 xe, 18 giay to, canh bao theo ngay hien tai, ke hoach/lich su bao duong va chi phi bao cao.
-- Admin co man hinh cau hinh canh bao de cap nhat nguong giay to va bao duong theo ngay/km.
-- Da co man hinh ho so phuong tien, giay to xe, canh bao giay to, ke hoach/canh bao/cap nhat bao duong va bao cao chi phi.
-- Dashboard Admin, Manager va Technician uu tien lay so lieu tu DB thay vi dung so lieu ao/hard-code.
-- RBAC hien tai duoc guard o menu va handler: Admin quan ly tai khoan, Manager quan ly doi xe/bao cao, Technician xu ly bao duong.
-- UC-002 hien duoc thuc hien theo huong gan role co dinh trong man Quan ly nguoi dung va an/hien menu theo 3 role; khong co man permission matrix rieng.
+Ban hien tai da merge vao `origin/dev` tai commit:
 
-## Muc tieu
+```text
+4c8f6e6 Polish FleetCare UI and merge latest dev
+```
 
-- Quan ly ho so phuong tien.
-- Quan ly tai khoan va vai tro nguoi dung.
-- Theo doi nhat ky hoat dong quan tri va dang nhap.
-- Theo doi canh bao lien quan den giay to, bao duong va trang thai phuong tien.
-- Ket noi MySQL qua JDBC.
+Tinh nang da hoan thanh:
+
+- Dang nhap, dang xuat, luu session va phan quyen menu theo 3 role.
+- Giao dien da gan nhan dien FleetCare: logo, app icon, sidebar, dialog va mau nen dong bo.
+- Admin dashboard lay so lieu tu DB: user, role, canh bao, audit log gan day.
+- Admin quan ly tai khoan: xem, tim kiem nhanh, them, sua, khoa/mo khoa, reset mat khau cho user khac.
+- Admin cau hinh nguong canh bao giay to va bao duong theo ngay/km.
+- Admin xem audit logs, loc theo hanh dong, ngay va tim kiem nhanh.
+- Manager quan ly ho so phuong tien, giay to xe, canh bao giay to, ke hoach bao duong, canh bao bao duong, lich su bao duong va bao cao chi phi.
+- Technician xem xe can bao duong, cap nhat phieu bao duong, nhap hang muc/phu tung va xem lich su bao duong.
+- Cac bang chi tiet ho so xe, giay to, ke hoach, phieu va lich su bao duong mo bang cua so rieng khi nhan dup chuot.
+- Bao duong co nghiep vu dong chu ky ke hoach khi phieu hoan thanh, cap nhat ODO xe va tinh tong chi phi theo hang muc.
+- Bao cao chi phi lay theo nam hien tai, khong con hard-code nam 2026.
+- Seed demo dong bo cho ca nhom trong `data/seed-team-demo-reset.sql`.
+
+## Nhan xet de tai
+
+De tai phu hop muc tieu do an co so: co phan quyen nguoi dung, du lieu demo thuc te, cac module nghiep vu lien ket voi nhau va co bao cao tong hop. Luong Manager va Technician da bam sat bai toan quan ly doi xe: xe co ho so, giay to co han, ke hoach bao duong co chu ky, phieu hoan thanh cap nhat lai ODO/ke hoach va chi phi duoc dua vao bao cao.
+
+Gioi han con lai:
+
+- Vai tro va phan quyen dang dung 3 role co dinh `ADMIN`, `FLEET_MANAGER`, `TECHNICIAN`; chua co man permission matrix de cau hinh quyen dong.
+- Ho so giay to moi luu thong tin nghiep vu, chua co upload file scan/PDF dinh kem.
+- Chua co test UI tu dong bang cong cu nhu TestFX/Playwright cho JavaFX; hien dang dung build test + smoke test FXML/service.
 
 ## Cong nghe su dung
 
 - Java JDK 25
 - JavaFX 25.0.3
 - FXML + CSS
-- MySQL
+- MySQL + JDBC
 - MySQL Connector/J
 - Maven Wrapper
 - jBCrypt 0.4
-- VS Code
 
 ## Cau truc thu muc
 
@@ -45,60 +56,63 @@ src/main/java
 |-- model
 |   |-- dao      # Lop truy cap du lieu
 |   |-- dto      # Lop truyen du lieu giua cac tang
-|   `-- entity   # Lop anh xa du lieu nghiep vu
-|-- service      # Xu ly nghiep vu
-|-- session      # Luu thong tin phien dang nhap
-`-- util         # Tien ich dung chung
+|   `-- entity   # Lop anh xa bang/nghiep vu
+|-- service      # Xu ly nghiep vu va validate
+|-- session      # Luu phien dang nhap
+`-- util         # Tien ich chung: icon, dialog, smooth scroll, detail window
 
 src/main/resources
-|-- css          # File giao dien CSS
-|-- images       # Hinh anh, icon
-`-- view         # File FXML
+|-- css          # Theme, layout, button, form, table va CSS tung page
+|-- images       # Logo/icon FleetCare
+`-- view         # FXML
 
 data
 |-- Dump20260524.sql              # Schema goc va danh muc nen
-|-- seed-auth.sql                 # Tai khoan demo admin/manager/tech
-|-- audit-logs.sql                # Schema/seed demo thu cong cho audit logs
-|-- seed-team-demo-reset.sql      # Seed demo reset dong bo cho ca nhom, nen dung khi demo
-|-- seed-demo-realistic.sql       # Seed demo tong hop cu
-|-- data-vehicles.sql             # Seed rieng cho xe + giay to xe
-|-- seed-maintenance-plans.sql    # Seed rieng cho ke hoach bao duong
-`-- seed-maintenance.sql          # Seed rieng cho phieu/lich su bao duong
+|-- seed-team-demo-reset.sql      # Seed demo reset dong bo nen dung khi demo
+|-- seed-auth.sql                 # Seed rieng tai khoan demo
+|-- audit-logs.sql                # Schema/seed audit log thu cong
+|-- data-vehicles.sql             # Seed rieng xe + giay to
+|-- seed-maintenance-plans.sql    # Seed rieng ke hoach bao duong
+`-- seed-maintenance.sql          # Seed rieng phieu/lich su bao duong
 ```
 
-## Yeu cau moi truong
+## Cau hinh moi truong
 
-- Cai Java JDK 25.
-- Cai MySQL Server.
-- Cai VS Code.
-- Cai extension **Extension Pack for Java** trong VS Code.
+Yeu cau:
 
-Neu may co nhieu JDK, dat `JAVA_HOME` ve JDK 25 truoc khi build:
+- Java JDK 25
+- MySQL Server
+- Maven Wrapper co san trong project
 
-```powershell
-$env:JAVA_HOME = "D:\Java\jdk-25.0.3"
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
-```
-
-Kiem tra:
+Kiem tra Java/Maven:
 
 ```powershell
 java -version
 .\mvnw -v
 ```
 
-Ket qua Maven nen hien thi Java `25.x`.
+Neu may co nhieu JDK, dat `JAVA_HOME` ve JDK 25:
+
+```powershell
+$env:JAVA_HOME = "D:\Java\jdk-25.0.3"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+```
 
 ## Cau hinh MySQL
 
-App doc cau hinh database theo thu tu: system properties, bien moi truong, roi `config/database.properties`.
-File `config/database.properties` la file local va khong commit len git. Co the copy tu:
+App doc cau hinh database theo thu tu:
+
+1. System properties.
+2. Bien moi truong.
+3. File local `config/database.properties`.
+
+Tao file local bang cach copy:
 
 ```text
-config/database.example.properties
+config/database.example.properties -> config/database.properties
 ```
 
-Vi du cau hinh local:
+Vi du:
 
 ```properties
 DB_MODE=local
@@ -107,9 +121,13 @@ DB_USER=root
 DB_PASSWORD=mat_khau_mysql
 ```
 
-Neu MySQL local khong co mat khau, de trong `DB_PASSWORD=`.
+Neu MySQL local khong co mat khau:
 
-Thong tin ket noi bang bien moi truong cung duoc ho tro:
+```properties
+DB_PASSWORD=
+```
+
+Co the dung bien moi truong thay cho file local:
 
 ```powershell
 $env:DB_MODE = "local"
@@ -118,47 +136,22 @@ $env:DB_USER = "root"
 $env:DB_PASSWORD = "mat_khau_mysql"
 ```
 
-### Chay local
+## Tao database va seed demo
 
-Khi dung file local, tao/cap nhat `config/database.properties` theo vi du tren.
-Khi dung bien moi truong, dat cac bien trong cung terminal truoc khi chay build hoac chay app.
-
-### Chay Railway
-
-Dat `DB_MODE=railway`. App se doc thong tin Railway theo 1 trong 2 cach:
-
-```properties
-MYSQL_PUBLIC_URL=mysql://user:password@host:port/database
-```
-
-Co the dung `MYSQL_URL` thay cho `MYSQL_PUBLIC_URL`, nhung khi chay app tu may ca nhan thi public URL thuong de ket noi hon.
-
-Hoac:
-
-```properties
-MYSQLHOST=host
-MYSQLPORT=port
-MYSQLDATABASE=database
-MYSQLUSER=user
-MYSQLPASSWORD=password
-```
-
-## Tao database va seed du lieu demo
-
-Neu PowerShell bao `mysql` khong duoc nhan dien, them MySQL client vao `PATH` cho terminal hien tai:
+Neu PowerShell khong nhan `mysql`, them MySQL client vao PATH:
 
 ```powershell
 $env:Path = "C:\Program Files\MySQL\MySQL Server 8.0\bin;$env:Path"
 mysql --version
 ```
 
-Chay schema goc neu database chua co bang:
+Chay schema goc:
 
 ```powershell
 mysql --default-character-set=utf8mb4 -u root -p -e "source data/Dump20260524.sql"
 ```
 
-Chay seed demo reset dong bo cho ca nhom:
+Chay seed demo dong bo cho ca nhom:
 
 ```powershell
 mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-team-demo-reset.sql"
@@ -166,29 +159,15 @@ mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-team-demo-
 
 Neu MySQL root khong co mat khau, bo `-p`.
 
-File `seed-team-demo-reset.sql` se xoa va nap lai du lieu demo nghiep vu gom:
+Seed demo gom:
 
-- 6 phuong tien voi bien so, so khung, so may, ODO va trang thai gan voi nghiep vu doi xe.
-- 18 giay to phap ly, moi xe co Dang kiem, Bao hiem va Phi duong bo.
-- Ngay het han dung `CURDATE()` nen khi demo se luon co ca nhom qua han, sap het han trong 15 ngay va con hieu luc.
-- Ke hoach bao duong theo ngay/km, phieu bao duong, phu tung/cong viec va chi phi bao cao.
-- 3 tai khoan demo `admin`, `manager`, `tech` va permissions/RBAC can thiet.
-
-`seed-auth.sql` chi can dung khi muon nap rieng tai khoan demo ma khong reset du lieu nghiep vu.
-
-Neu muon nap rieng tung module, chay theo thu tu:
-
-```powershell
-mysql --default-character-set=utf8mb4 -u root -p -e "source data/data-vehicles.sql"
-mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-maintenance-plans.sql"
-mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-maintenance.sql"
-```
-
-Audit logs tu tao bang `audit_logs` khi app ghi/doc log. Neu muon nap du lieu demo hoac kiem tra thu cong bang mysql CLI, chay them:
-
-```powershell
-mysql --default-character-set=utf8mb4 -u root -p -e "source data/audit-logs.sql"
-```
+- 3 role va 3 tai khoan demo.
+- 6 phuong tien.
+- 18 giay to xe.
+- Canh bao giay to qua han/sap het han tinh theo `CURDATE()`.
+- 6 ke hoach bao duong.
+- 5 phieu bao duong va hang muc/phu tung.
+- Du lieu bao cao chi phi theo nam hien tai.
 
 Tai khoan demo:
 
@@ -198,100 +177,183 @@ Tai khoan demo:
 | `manager` | `123456` | `FLEET_MANAGER` |
 | `tech` | `123456` | `TECHNICIAN` |
 
-Pham vi demo theo role:
-
-| Username | Man hinh/chuc nang chinh |
-|---|---|
-| `admin` | Dang nhap/dang xuat, Quan ly nguoi dung, Cau hinh canh bao, Audit logs doc DB/ghi log auth-user admin, dashboard tong hop user/role/xe/canh bao lay tu DB |
-| `manager` | Dashboard doi xe, Ho so phuong tien, Giay to xe, Canh bao giay to, Ke hoach/canh bao/lich su bao duong, Bao cao chi phi |
-| `tech` | Dashboard ky thuat, Xe can bao duong, Cap nhat bao duong (nhap phu tung/hang muc), Lich su bao duong (tra cuu theo xe) |
-
-Kiem tra nhanh sau khi seed:
+Kiem tra nhanh sau seed:
 
 ```sql
 SELECT role_id, role_code, role_name, is_active FROM roles;
 SELECT user_id, username, full_name, role_id, account_status FROM users;
+SELECT vehicle_id, license_plate, vehicle_status FROM vehicles;
 SELECT audit_log_id, username, action, created_at FROM audit_logs ORDER BY created_at DESC LIMIT 10;
 ```
 
-## Luu y nghiep vu module Bao duong / Bao cao
+## Chay va build
 
-- Lap ke hoach bao duong: nhap chu ky (ngay hoac km) + moc bao duong gan nhat; he thong **tu tinh ngay/ODO den han** neu de trong (ngay den han = ngay bao duong cuoi + chu ky ngay; ODO den han = ODO cuoi + chu ky km). Co `interval_days` thi bat buoc nhap `Ngay bao duong cuoi` (hoac nhap tay `Ngay den han`); tuong tu cho km.
-- Nguong "canh bao truoc" lay theo gia tri nguoi dung nhap; neu de trong thi lay mac dinh tu bang `alert_settings` (mac dinh 7 ngay / 500 km).
-- Man **Canh bao bao duong** chi hien xe **qua han (OVERDUE)** hoac **sap den han (COMING_DUE)**; ke hoach co ngay den han con xa se o trang thai NORMAL va khong hien.
-- Phieu bao duong co the nhap nhieu **hang muc/phu tung** (cong viec WORK + phu tung PART), thanh tien tu tinh client-side (cot `line_total` trong DB la GENERATED).
-- **Bao cao chi phi chi tinh phieu o trang thai COMPLETED** (theo view `vw_vehicle_cost_monthly`). Phieu OPEN/IN_PROGRESS chua tinh vao chi phi -> khi demo bao cao, dam bao co phieu COMPLETED.
-- **Lich su bao duong**: chon xe de tra cuu ho so sua chua theo xe, click 1 phieu de xem chi tiet hang muc/phu tung. Ca Manager va Technician deu xem duoc.
-
-## Build project
-
-Chay trong thu muc goc project:
+Chay test/build:
 
 ```powershell
+.\mvnw clean test
 .\mvnw clean package
 ```
 
-Neu build loi do Java version, kiem tra lai `JAVA_HOME` dang tro dung JDK 25.
-
-## Chay ung dung
+Chay ung dung:
 
 ```powershell
 .\mvnw javafx:run
 ```
 
-Luong dang nhap hien tai:
+## Pham vi chuc nang theo role
 
-- Dang nhap bang tai khoan demo.
-- Admin co menu Quan ly nguoi dung, Cau hinh canh bao va Audit logs.
-- Manager co menu phuong tien/giay to/canh bao/lich su bao duong/bao cao.
-- Technician co menu Xe can bao duong, Cap nhat bao duong va Lich su bao duong.
+### Admin
 
-## Checklist truoc khi demo/nop bai
+- Dashboard quan tri tong hop user, role, canh bao va audit log gan day.
+- Quan ly nguoi dung:
+  - Them user.
+  - Sua username, ho ten, email, so dien thoai, role.
+  - Khoa/mo khoa tai khoan.
+  - Reset mat khau cho tai khoan khac.
+  - Tim kiem nhanh theo username, ho ten, email, dien thoai, role, trang thai.
+- Cau hinh canh bao:
+  - So ngay canh bao giay to.
+  - So ngay/km canh bao bao duong.
+  - Dong bo nguong giay to sang danh muc loai giay to.
+- Audit logs:
+  - Xem log dang nhap/dang xuat va thao tac admin.
+  - Loc theo hanh dong/ngay.
 
-Chay build:
+Nghiep vu da chan:
+
+- User thuong khong duoc goi chuc nang admin.
+- Admin khong duoc khoa tai khoan dang dang nhap.
+- Admin khong reset mat khau cua chinh minh o man Quan ly nguoi dung.
+- Mat khau moi phai co it nhat 8 ky tu, gom chu va so, khong trung mat khau cu.
+
+### Manager
+
+- Dashboard doi xe va canh bao.
+- Ho so phuong tien:
+  - Them/sua xe.
+  - Chong trung ma xe, bien so, so khung, so may.
+  - Khong chap nhan ODO am, nam san xuat khong hop le.
+- Giay to xe:
+  - Them/sua giay to.
+  - Loc theo xe, loai giay to, trang thai va tu khoa.
+  - Chong trung giay to hien hanh cung xe/cung loai.
+  - Ngay het han khong duoc truoc ngay cap/ngay hieu luc.
+  - Phi khong duoc am.
+- Canh bao giay to:
+  - Hien qua han va sap het han.
+  - Loc `Tat ca`, `OVERDUE`, `COMING_DUE`.
+- Ke hoach bao duong:
+  - Tao/sua ke hoach theo ngay/km.
+  - Tu tinh ngay/ODO den han neu co moc nen.
+  - Khong cho trung ke hoach active cung xe/cung loai.
+- Canh bao bao duong va lich su bao duong.
+- Bao cao chi phi theo nam/xe.
+
+### Technician
+
+- Dashboard ky thuat.
+- Xe can bao duong.
+- Cap nhat phieu bao duong:
+  - Tao/sua phieu.
+  - Chon ke hoach lien quan neu co.
+  - Nhap hang muc cong viec/phu tung.
+  - Tong chi phi tu tinh theo hang muc.
+  - Khi phieu `COMPLETED`, he thong dong chu ky ke hoach lien quan va cap nhat ODO xe.
+- Lich su bao duong:
+  - Tra cuu theo xe.
+  - Xem chi tiet phieu va hang muc.
+
+Nghiep vu da chan:
+
+- Loai/trang thai phieu khong hop le.
+- ODO am.
+- Tong chi phi am.
+- So luong hang muc bang 0/am.
+- Don gia hang muc am.
+
+## Luong demo de xuat
+
+1. Chay seed reset.
+2. Dang nhap `admin`:
+   - Mo Dashboard.
+   - Mo Quan ly nguoi dung, tim kiem, sua user demo.
+   - Thu khoa chinh admin: he thong phai chan.
+   - Mo Cau hinh canh bao, nhap ngoai khoang: he thong phai chan.
+   - Mo Audit logs.
+3. Dang xuat, dang nhap `manager`:
+   - Mo Ho so phuong tien, Giay to xe.
+   - Mo Canh bao giay to, loc `Tat ca` phai hien day du canh bao.
+   - Mo Ke hoach/Canh bao/Lich su bao duong.
+   - Mo Bao cao chi phi nam hien tai.
+4. Dang xuat, dang nhap `tech`:
+   - Mo Xe can bao duong.
+   - Mo Cap nhat bao duong.
+   - Nhan dup vao phieu de mo cua so chi tiet.
+   - Them hang muc/phu tung de xem tong chi phi tu tinh.
+   - Mo Lich su bao duong.
+
+## Ket qua kiem thu ban cuoi
+
+Da kiem thu tren DB local sau khi merge vao `origin/dev`.
+
+Build:
+
+- `.\mvnw clean test`: PASS.
+
+FXML smoke:
+
+- Load thanh cong 16 man hinh FXML:
+  - Login.
+  - Main layout.
+  - Admin/Manager/Technician dashboard.
+  - Quan ly nguoi dung.
+  - Audit logs.
+  - Cau hinh canh bao.
+  - Ho so phuong tien.
+  - Giay to xe.
+  - Canh bao giay to.
+  - Ke hoach bao duong.
+  - Canh bao bao duong.
+  - Cap nhat bao duong.
+  - Lich su bao duong.
+  - Bao cao chi phi.
+
+Service smoke voi seed demo:
+
+| Hang muc | Ket qua |
+|---|---:|
+| Users | 3 |
+| Roles | 3 |
+| Vehicles | 6 |
+| Vehicle documents | 18 |
+| Document alerts | 9 |
+| Document alerts overdue | 5 |
+| Document alerts coming due | 4 |
+| Maintenance plans | 6 |
+| Maintenance due alerts | 4 |
+| Maintenance records | 5 |
+| Report rows nam hien tai | 10 |
+
+Case loi da test va duoc chan:
+
+- Admin tao user trung username.
+- Admin tao mat khau yeu.
+- Admin khoa chinh tai khoan dang dang nhap.
+- Manager/Technician goi chuc nang admin.
+- Xe thieu bien so, ODO am.
+- Giay to co ngay het han truoc ngay cap.
+- Ke hoach khong co chu ky, nguong canh bao am.
+- Phieu bao duong co tong tien am, trang thai sai.
+- Hang muc co so luong bang 0, don gia am.
+
+## Ghi chu phat trien
+
+- Khong commit `config/database.properties` neu chua chac chan da xoa thong tin rieng.
+- Khong commit mat khau MySQL ca nhan.
+- Truoc khi push:
 
 ```powershell
-.\mvnw clean package
-```
-
-Neu may moi chua co database, chay schema va seed:
-
-```powershell
-mysql --default-character-set=utf8mb4 -u root -p -e "source data/Dump20260524.sql"
-mysql --default-character-set=utf8mb4 -u root -p -e "source data/seed-team-demo-reset.sql"
-```
-
-Dong `audit-logs.sql` trong checklist la tuy chon de nap demo data; neu bo qua, app van tu tao bang khi mo/ghi Audit logs.
-
-Chay ung dung va test 3 role:
-
-```powershell
-.\mvnw javafx:run
-```
-
-- `admin/123456`: mo Quan ly nguoi dung, them/sua/khoa/mo khoa user mau neu can, doi role trong form user de test phan quyen co ban, mo Cau hinh canh bao de doi nguong ngay/km, mo Audit logs, loc theo hanh dong/ngay va thu tim kiem nhanh.
-- Admin lock/unlock smoke: tao user `qa_manager` voi password `QaManager123`, khoa user nay va xac nhan trang thai `Da khoa`, audit co `USER_LOCKED`, login bi chan; thu khoa chinh `admin` phai bi chan; mo khoa `qa_manager` va xac nhan trang thai `Hoat dong`, audit co `USER_UNLOCKED`, login lai thanh cong.
-- `manager/123456`: mo dashboard, ho so phuong tien, giay to xe, canh bao giay to, lich su bao duong va bao cao chi phi.
-- `tech/123456`: mo dashboard ky thuat, Xe can bao duong, Cap nhat bao duong (them phu tung/hang muc), Lich su bao duong (tra cuu ho so sua chua theo xe).
-- Moi role deu co nut Doi mat khau o sidebar. Mat khau moi phai co it nhat 8 ky tu, gom chu va so, va khong trung mat khau cu.
-- Admin co the reset mat khau cho tai khoan khac trong man hinh Quan ly nguoi dung. Tai khoan bi reset se buoc doi lai mat khau khi dang nhap.
-- Dang xuat sau moi role de xac nhan session duoc clear.
-- Neu thay loi ket noi DB, kiem tra lai `DB_MODE`, `DB_URL`, `DB_USER`, `DB_PASSWORD`.
-
-## Quy uoc phat trien
-
-- Entity dat trong `model/entity`.
-- DAO dat trong `model/dao`.
-- DTO dat trong `model/dto`.
-- Logic nghiep vu dat trong `service`.
-- Ket noi MySQL dat trong `database`.
-- FXML dat trong `src/main/resources/view`.
-- CSS dat trong `src/main/resources/css`.
-- Khong commit thong tin mat khau MySQL ca nhan.
-- Moi thanh vien cau hinh `DB_USER`, `DB_PASSWORD` rieng bang bien moi truong.
-
-Truoc khi push code, nen chay:
-
-```powershell
-.\mvnw clean package
+git status
+.\mvnw clean test
 ```
