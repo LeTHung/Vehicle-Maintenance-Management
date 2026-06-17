@@ -144,24 +144,24 @@ public class MainLayoutController {
         switch (role) {
             case ROLE_ADMIN -> {
                 lblUserRole.setText("Quản trị viên");
-                lblRoleBadge.setText("QUẢN TRỊ");
+                setRoleBadge("QUẢN TRỊ");
                 showGroup(groupAdmin);
             }
             case ROLE_TECH -> {
                 lblUserRole.setText("Nhân viên kỹ thuật");
-                lblRoleBadge.setText("KỸ THUẬT");
+                setRoleBadge("KỸ THUẬT");
                 showGroup(groupTechnician);
             }
             case ROLE_MANAGER -> {
                 lblUserRole.setText("Quản lý đội xe");
-                lblRoleBadge.setText("QUẢN LÝ");
+                setRoleBadge("QUẢN LÝ");
                 showGroup(groupManager);
                 showGroup(groupReport);
                 setNodeVisible(btnTopbarNotification, true);
             }
             default -> {
                 lblUserRole.setText("Chưa phân quyền");
-                lblRoleBadge.setText("CHƯA RÕ");
+                setRoleBadge("CHƯA RÕ");
             }
         }
     }
@@ -177,6 +177,18 @@ public class MainLayoutController {
         if (group != null) {
             group.setVisible(true);
             group.setManaged(true);
+        }
+    }
+
+    private void setRoleBadge(String text) {
+        if (lblRoleBadge != null) {
+            lblRoleBadge.setText(text);
+        }
+    }
+
+    private void setPageTitle(String title) {
+        if (lblPageTitle != null) {
+            lblPageTitle.setText(title);
         }
     }
 
@@ -405,7 +417,7 @@ public class MainLayoutController {
             contentArea.getChildren().setAll(page);
             SmoothScrollUtil.install(page);
             Platform.runLater(() -> SmoothScrollUtil.install(page));
-            lblPageTitle.setText(title);
+            setPageTitle(title);
             setActiveButton(activeButton);
             controllerCallback.accept(loader.getController());
         } catch (Exception e) {
@@ -492,7 +504,7 @@ public class MainLayoutController {
 
         box.getChildren().addAll(titleLabel, messageLabel);
         contentArea.getChildren().setAll(box);
-        lblPageTitle.setText(title);
+        setPageTitle(title);
         setActiveButton(activeButton);
     }
 
