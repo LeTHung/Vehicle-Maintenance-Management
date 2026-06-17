@@ -446,7 +446,9 @@ public class MainLayoutController {
                     this::openMaintenanceAlert,
                     this::openMaintenanceRecord);
         } else if (controller instanceof MaintenanceAlertController maintenanceAlertController) {
-            maintenanceAlertController.setOpenMaintenanceRecordHandler(this::openMaintenanceRecordForVehicle);
+            if (ROLE_TECH.equals(currentRole)) {
+                maintenanceAlertController.setOpenMaintenanceRecordHandler(this::openMaintenanceRecordForVehicle);
+            }
         }
     }
 
