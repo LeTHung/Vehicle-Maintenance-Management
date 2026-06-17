@@ -113,6 +113,28 @@ $env:DB_USER = "root"
 $env:DB_PASSWORD = "mat_khau_mysql"
 ```
 
+### Dùng MySQL từ xa (Railway)
+
+Khi kết nối tới MySQL host trên Railway, đặt `DB_MODE=railway` và khai báo thông số host (thay giá trị bằng thông tin thực tế của bạn):
+
+```properties
+DB_MODE=railway
+MYSQLHOST=<host>.proxy.rlwy.net
+MYSQLPORT=<port>
+MYSQLDATABASE=vehicle_maintenance_management
+MYSQLUSER=root
+MYSQLPASSWORD=<mat_khau>
+```
+
+Hoặc khai báo gọn bằng một biến URL:
+
+```properties
+DB_MODE=railway
+MYSQL_URL=mysql://root:<mat_khau>@<host>.proxy.rlwy.net:<port>/railway
+```
+
+Lưu ý: kết nối tới host từ xa có độ trễ mạng (lần đăng nhập đầu thường mất 1-2 giây để bắt tay với server) — đây là chờ mạng bình thường, không phải treo ứng dụng.
+
 ## Tạo database và seed demo
 
 Nếu PowerShell không nhận `mysql`, thêm MySQL client vào PATH:
@@ -177,6 +199,51 @@ Chạy ứng dụng:
 ```powershell
 .\mvnw javafx:run
 ```
+
+## Đóng gói ứng dụng (jpackage)
+
+Tạo bản chạy độc lập trên Windows (nhúng sẵn Java runtime, máy đích **không cần cài JDK**) bằng `jpackage` có sẵn trong JDK 25.
+
+Bước 1 — build và gom toàn bộ JAR (app + thư viện) vào một thư mục:
+
+```powershell
+.\mvnw clean package -DskipTests
+.\mvnw dependency:copy-dependencies "-DoutputDirectory=target/package-input"
+Copy-Item target/doan-javafx-mvc-1.0.0.jar target/package-input/
+```
+
+Bước 2 — tạo app-image (thư mục portable kèm file `.exe`, không cần WiX):
+
+```powershell
+jpackage `
+  --type app-image `
+  --name "QuanLyBaoDuongXe" `
+  --input target/package-input `
+  --main-jar doan-javafx-mvc-1.0.0.jar `
+  --main-class app.Launcher `
+  --dest dist `
+  --app-version 1.0.0 `
+  --java-options "-Dfile.encoding=UTF-8"
+```
+
+Kết quả: `dist/QuanLyBaoDuongXe/QuanLyBaoDuongXe.exe`. Chạy bằng cách double-click; giữ nguyên cấu trúc thư mục (`app/`, `runtime/`) khi sao chép/nén để bàn giao.
+
+**Quan trọng — cấu hình database cho bản đóng gói:** bản đóng gói chạy với thư mục làm việc khác nên **không đọc** file `config/database.properties` ở thư mục dự án. Phải cấp cấu hình DB qua một trong các cách sau, nếu không bấm đăng nhập sẽ không có phản hồi (do thiếu cấu hình kết nối):
+
+- Nhúng trực tiếp khi đóng gói bằng cách lặp lại `--java-options` cho từng tham số, ví dụ:
+
+  ```powershell
+  --java-options "-DDB_MODE=railway" `
+  --java-options "-DMYSQLHOST=<host>.proxy.rlwy.net" `
+  --java-options "-DMYSQLPORT=<port>" `
+  --java-options "-DMYSQLDATABASE=vehicle_maintenance_management" `
+  --java-options "-DMYSQLUSER=root" `
+  --java-options "-DMYSQLPASSWORD=<mat_khau>"
+  ```
+
+- Hoặc bổ sung các dòng `java-options=-D...` tương ứng vào file `dist/QuanLyBaoDuongXe/app/QuanLyBaoDuongXe.cfg` sau khi đóng gói (lưu ý: đóng gói lại sẽ ghi đè file này).
+
+DB không được nhúng trong bản đóng gói — máy chạy vẫn phải truy cập được MySQL (local hoặc Railway) đã cấu hình.
 
 ## Phạm vi chức năng theo role
 
