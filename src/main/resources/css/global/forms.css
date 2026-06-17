@@ -33,6 +33,13 @@
     -fx-text-fill: -app-text-normal;
 }
 
+.form-hint {
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -app-text-sub;
+    -fx-wrap-text: true;
+}
+
 .check-box {
     -fx-text-fill: -app-text-normal;
     -fx-font-size: 13px;

@@ -72,6 +72,38 @@ public class MaintenanceRecordDAO {
         return list;
     }
 
+    /** ODO lớn nhất trên các phiếu COMPLETED của xe (có thể loại trừ một phiếu). */
+    public Optional<Integer> findMaxCompletedOdometer(long vehicleId, Long excludeRecordId) {
+        String sql = """
+                SELECT MAX(odometer) AS max_odometer
+                FROM maintenance_records
+                WHERE vehicle_id = ?
+                  AND record_status = 'COMPLETED'
+                  AND odometer IS NOT NULL
+                """ + (excludeRecordId != null ? " AND record_id <> ?" : "");
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, vehicleId);
+            if (excludeRecordId != null) {
+                ps.setLong(2, excludeRecordId);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int max = rs.getInt("max_odometer");
+                    return rs.wasNull() ? Optional.empty() : Optional.of(max);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Optional.empty();
+    }
+
     public Optional<MaintenanceRecord> findById(long recordId) {
         String sql = """
                 SELECT record_id, vehicle_id, plan_id, record_type, title,

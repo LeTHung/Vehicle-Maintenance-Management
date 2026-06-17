@@ -249,5 +249,15 @@ public class MaintenancePlanService {
             throw new IllegalArgumentException(
                     "ODO bảo dưỡng không được nhỏ hơn ODO bảo dưỡng cuối của kế hoạch.");
         }
+
+        if (serviceOdometer != null) {
+            vehicleDAO.findById(vehicleId).ifPresent(vehicle -> {
+                if (serviceOdometer < vehicle.getCurrentOdometer()) {
+                    throw new IllegalArgumentException(
+                            "ODO bảo dưỡng (" + serviceOdometer + " km) không được nhỏ hơn "
+                                    + "ODO hiện tại của xe (" + vehicle.getCurrentOdometer() + " km).");
+                }
+            });
+        }
     }
 }
