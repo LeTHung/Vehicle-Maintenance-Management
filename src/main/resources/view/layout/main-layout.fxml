@@ -15,7 +15,7 @@
             <VBox styleClass="sidebar-brand">
                 <HBox spacing="12" styleClass="brand-row">
                     <StackPane styleClass="brand-logo-tile">
-                        <ImageView fitWidth="46" fitHeight="46" preserveRatio="true">
+                        <ImageView fitWidth="38" fitHeight="38" preserveRatio="true">
                             <image>
                                 <Image url="@../../images/fleetcare-icon.png"/>
                             </image>
@@ -84,23 +84,6 @@
             </VBox>
         </VBox>
     </left>
-
-    <top>
-        <HBox styleClass="topbar">
-            <VBox>
-                <HBox spacing="10">
-                    <Label fx:id="lblPageTitle" text="Tổng quan" styleClass="topbar-title"/>
-                    <Label fx:id="lblRoleBadge" text="VAI TRÒ" styleClass="role-badge"/>
-                </HBox>
-                <Label text="Hệ thống quản lý hồ sơ, giấy tờ và bảo dưỡng phương tiện." styleClass="topbar-subtitle"/>
-            </VBox>
-
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <TextField fx:id="txtQuickSearch" promptText="Tìm kiếm nhanh..." prefWidth="300" styleClass="search-field"/>
-            <Button fx:id="btnTopbarNotification" text="Thông báo" onAction="#openDocumentAlert" styleClass="btn-soft"/>
-        </HBox>
-    </top>
 
     <center>
         <StackPane fx:id="contentArea" styleClass="content-area"/>

@@ -13,19 +13,19 @@
 .primary-button {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, -app-primary, -app-primary-container);
     -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.30), 18, 0, 0, 6);
+    -fx-effect: dropshadow(gaussian, rgba(23,70,201,0.32), 18, 0, 0, 6);
 }
 
 .btn-primary:hover,
 .primary-button:hover {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #003ca3, -app-primary-hover);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, -app-primary-hover, -app-primary-container);
 }
 
 .btn-ghost,
 .secondary-button {
     -fx-background-color: transparent;
     -fx-text-fill: -app-primary;
-    -fx-border-color: rgba(0,74,198,0.18);
+    -fx-border-color: rgba(23,70,201,0.20);
     -fx-border-width: 1;
 }
 

@@ -25,11 +25,11 @@ public final class SmoothScrollUtil {
     private static final String ANIMATION_KEY = SmoothScrollUtil.class.getName() + ".animation";
     private static final String TARGET_VALUE_KEY = SmoothScrollUtil.class.getName() + ".targetValue";
 
-    private static final double SCROLL_PANE_MULTIPLIER = 1.22;
-    private static final double TABLE_PIXEL_MULTIPLIER = 1.10;
-    private static final double TABLE_ROW_MULTIPLIER = 2.70;
+    private static final double SCROLL_PANE_MULTIPLIER = 2.15;
+    private static final double TABLE_PIXEL_MULTIPLIER = 1.25;
+    private static final double TABLE_ROW_MULTIPLIER = 2.60;
     private static final double DEFAULT_ROW_HEIGHT = 44.0;
-    private static final double ANIMATION_MILLIS = 180.0;
+    private static final double ANIMATION_MILLIS = 160.0;
 
     private SmoothScrollUtil() {
     }

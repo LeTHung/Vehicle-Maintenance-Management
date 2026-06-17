@@ -7,15 +7,6 @@
             fitToWidth="true"
             styleClass="page-scroll">
     <VBox spacing="28" styleClass="page">
-        <VBox styleClass="hero-admin">
-            <Label text="Dashboard quản trị hệ thống" styleClass="display-title"/>
-            <Label text="Quản lý người dùng, nhật ký hoạt động và trạng thái vận hành FleetCare." styleClass="hero-subtitle"/>
-            <HBox spacing="12">
-                <Button text="+ Tạo người dùng" onAction="#handleCreateUser" styleClass="btn-primary"/>
-                <Button text="Cấu hình cảnh báo" onAction="#handleOpenAlertSettings" styleClass="btn-soft"/>
-                <Button text="Xem nhật ký hoạt động" onAction="#handleOpenAuditLog" styleClass="btn-ghost"/>
-            </HBox>
-        </VBox>
         <HBox spacing="18">
             <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
                 <Label text="Tổng tài khoản" styleClass="metric-label"/>

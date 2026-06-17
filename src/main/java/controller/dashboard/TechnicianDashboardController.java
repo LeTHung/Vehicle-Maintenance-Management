@@ -1,11 +1,13 @@
 package controller.dashboard;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import model.dao.MaintenancePlanDAO;
 import model.dao.MaintenanceRecordDAO;
-import model.dao.VehicleDAO;
 import model.dto.MaintenanceDueAlertDTO;
 import service.MaintenanceAlertService;
 
@@ -15,36 +17,32 @@ import java.util.List;
 
 public class TechnicianDashboardController {
 
-    private static final int MAX_ALERT_ROWS = 5;
+    private static final int MAX_ALERT_ROWS = 6;
 
-    private final MaintenancePlanDAO maintenancePlanDAO = new MaintenancePlanDAO();
     private final MaintenanceRecordDAO maintenanceRecordDAO = new MaintenanceRecordDAO();
-    private final VehicleDAO vehicleDAO = new VehicleDAO();
     private final MaintenanceAlertService maintenanceAlertService = new MaintenanceAlertService();
 
-    private Runnable openMaintenanceAlertHandler = () -> {
-    };
-    private Runnable openMaintenanceRecordHandler = () -> {
-    };
+    private Runnable openMaintenanceAlertHandler = () -> {};
+    private Runnable openMaintenanceRecordHandler = () -> {};
 
-    @FXML
-    private Label lblPendingWorkOrders;
-    @FXML
-    private Label lblPendingHint;
-    @FXML
-    private Label lblInProgressRecords;
-    @FXML
-    private Label lblInProgressHint;
-    @FXML
-    private Label lblCompletedToday;
-    @FXML
-    private Label lblCompletedHint;
-    @FXML
-    private VBox maintenanceAlertList;
+    // Quyết định hành động nút spotlight (handler được gán sau initialize).
+    private long maintenanceOverdue;
+
+    @FXML private VBox spotlight;
+    @FXML private Label lblSpotlightTitle;
+    @FXML private Label lblSpotlightText;
+    @FXML private Button btnSpotlight;
+
+    @FXML private Label lblPendingWorkOrders;
+    @FXML private Label lblInProgressRecords;
+    @FXML private Label lblCompletedToday;
+    @FXML private Label lblDueVehicles;
+
+    @FXML private VBox maintenanceAlertList;
 
     @FXML
     public void initialize() {
-        var dueAlerts = maintenancePlanDAO.findDueAlerts();
+        List<MaintenanceDueAlertDTO> dueAlerts = maintenanceAlertService.listDueAlerts();
         var records = maintenanceRecordDAO.findAll();
 
         long openRecords = records.stream()
@@ -57,19 +55,63 @@ public class TechnicianDashboardController {
                 .filter(record -> "COMPLETED".equalsIgnoreCase(nullToEmpty(record.getRecordStatus())))
                 .filter(record -> LocalDate.now().equals(record.getServiceDate()))
                 .count();
-        long underMaintenanceVehicles = vehicleDAO.findAll().stream()
-                .filter(vehicle -> "UNDER_MAINTENANCE".equalsIgnoreCase(nullToEmpty(vehicle.getVehicleStatus())))
+
+        maintenanceOverdue = dueAlerts.stream()
+                .filter(alert -> "OVERDUE".equalsIgnoreCase(nullToEmpty(alert.getDueStatus())))
                 .count();
+        long maintenanceComingDue = dueAlerts.size() - maintenanceOverdue;
 
         lblPendingWorkOrders.setText(String.valueOf(dueAlerts.size() + openRecords));
         lblInProgressRecords.setText(String.valueOf(inProgress));
         lblCompletedToday.setText(String.valueOf(completedToday));
-        lblPendingHint.setText(dueAlerts.size() + " kế hoạch đến hạn, " + openRecords + " phiếu chờ");
-        lblInProgressHint.setText(underMaintenanceVehicles + " xe đang ở trạng thái bảo dưỡng");
-        lblCompletedHint.setText("Lấy từ phiếu đã hoàn thành trong ngày");
+        lblDueVehicles.setText(String.valueOf(dueAlerts.size()));
 
-        renderMaintenanceAlertList(maintenanceAlertService.listDueAlerts());
+        renderSpotlight(maintenanceComingDue);
+        renderMaintenanceAlertList(dueAlerts);
     }
+
+    public void setNavigationHandlers(Runnable openMaintenanceAlertHandler,
+                                      Runnable openMaintenanceRecordHandler) {
+        this.openMaintenanceAlertHandler = safeHandler(openMaintenanceAlertHandler);
+        this.openMaintenanceRecordHandler = safeHandler(openMaintenanceRecordHandler);
+    }
+
+    @FXML private void handleOpenMaintenanceAlert() { openMaintenanceAlertHandler.run(); }
+    @FXML private void handleOpenMaintenanceRecord() { openMaintenanceRecordHandler.run(); }
+
+    @FXML
+    private void handleSpotlightAction() {
+        if (maintenanceOverdue > 0) {
+            openMaintenanceRecordHandler.run();
+        } else {
+            openMaintenanceAlertHandler.run();
+        }
+    }
+
+    // ── Spotlight ───────────────────────────────────────────────────────────
+
+    private void renderSpotlight(long maintenanceComingDue) {
+        spotlight.getStyleClass().removeAll("spotlight-success", "spotlight-warning", "spotlight-danger");
+
+        if (maintenanceOverdue > 0) {
+            spotlight.getStyleClass().add("spotlight-danger");
+            lblSpotlightTitle.setText(maintenanceOverdue + " xe quá hạn bảo dưỡng — cần lên phiếu ngay");
+            lblSpotlightText.setText("Tạo phiếu bảo dưỡng/sửa chữa cho các xe đã quá hạn để xử lý kịp thời.");
+            btnSpotlight.setText("Tạo phiếu ngay");
+        } else if (maintenanceComingDue > 0) {
+            spotlight.getStyleClass().add("spotlight-warning");
+            lblSpotlightTitle.setText(maintenanceComingDue + " xe sắp đến hạn bảo dưỡng");
+            lblSpotlightText.setText("Chủ động sắp xếp công việc cho các xe sắp đến hạn theo ngày/ODO.");
+            btnSpotlight.setText("Xem danh sách");
+        } else {
+            spotlight.getStyleClass().add("spotlight-success");
+            lblSpotlightTitle.setText("Chưa có xe nào quá hạn bảo dưỡng");
+            lblSpotlightText.setText("Theo dõi danh sách xe đến hạn để chủ động xử lý.");
+            btnSpotlight.setText("Xem lịch hôm nay");
+        }
+    }
+
+    // ── Danh sách xe đến hạn ──────────────────────────────────────────────────
 
     private void renderMaintenanceAlertList(List<MaintenanceDueAlertDTO> alerts) {
         maintenanceAlertList.getChildren().clear();
@@ -87,19 +129,24 @@ public class TechnicianDashboardController {
                 .forEach(maintenanceAlertList.getChildren()::add);
     }
 
-    private VBox createMaintenanceAlertRow(MaintenanceDueAlertDTO alert) {
-        VBox row = new VBox(4);
-        row.getStyleClass().add("OVERDUE".equalsIgnoreCase(alert.getDueStatus())
-                ? "priority-card-warning" : "priority-card-primary");
+    private Node createMaintenanceAlertRow(MaintenanceDueAlertDTO alert) {
+        boolean overdue = "OVERDUE".equalsIgnoreCase(nullToEmpty(alert.getDueStatus()));
 
-        Label title = new Label(alert.getLicensePlate() + " - " + alert.getMaintenanceName());
-        title.getStyleClass().add("priority-title");
+        Label dot = new Label("●");
+        dot.getStyleClass().addAll("alert-dot", overdue ? "alert-dot-overdue" : "alert-dot-coming");
 
-        Label text = new Label(formatMaintenanceAlertText(alert));
-        text.getStyleClass().add("priority-text");
-        text.setWrapText(true);
+        Label title = new Label(nullToEmpty(alert.getLicensePlate()) + " · " + nullToEmpty(alert.getMaintenanceName()));
+        title.getStyleClass().add("item-title");
 
-        row.getChildren().addAll(title, text);
+        Label subtitle = new Label(formatMaintenanceAlertText(alert));
+        subtitle.getStyleClass().add("item-subtitle");
+        subtitle.setWrapText(true);
+
+        VBox texts = new VBox(2, title, subtitle);
+        HBox.setHgrow(texts, Priority.ALWAYS);
+
+        HBox row = new HBox(dot, texts);
+        row.getStyleClass().add("alert-row");
         return row;
     }
 
@@ -137,25 +184,8 @@ public class TechnicianDashboardController {
         return builder.toString();
     }
 
-    public void setNavigationHandlers(Runnable openMaintenanceAlertHandler,
-            Runnable openMaintenanceRecordHandler) {
-        this.openMaintenanceAlertHandler = safeHandler(openMaintenanceAlertHandler);
-        this.openMaintenanceRecordHandler = safeHandler(openMaintenanceRecordHandler);
-    }
-
-    @FXML
-    private void handleOpenMaintenanceAlert() {
-        openMaintenanceAlertHandler.run();
-    }
-
-    @FXML
-    private void handleOpenMaintenanceRecord() {
-        openMaintenanceRecordHandler.run();
-    }
-
     private Runnable safeHandler(Runnable handler) {
-        return handler == null ? () -> {
-        } : handler;
+        return handler == null ? () -> {} : handler;
     }
 
     private String nullToEmpty(String value) {
