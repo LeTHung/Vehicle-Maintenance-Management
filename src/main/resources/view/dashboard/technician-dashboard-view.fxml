@@ -6,41 +6,69 @@
             fx:controller="controller.dashboard.TechnicianDashboardController"
             fitToWidth="true"
             styleClass="page-scroll">
-    <VBox spacing="16" styleClass="page">
-        <VBox styleClass="hero-tech">
-            <Label text="Bảng công việc kỹ thuật bảo dưỡng" styleClass="display-title"/>
-            <Label text="Theo dõi lịch bảo dưỡng, phiếu sửa chữa, vật tư và lịch sử kỹ thuật của từng phương tiện." styleClass="hero-subtitle"/>
-            <HBox spacing="12">
-                <Button text="+ Tạo phiếu bảo dưỡng" onAction="#handleOpenMaintenanceRecord" styleClass="btn-primary"/>
-                <Button text="Xem lịch hôm nay" onAction="#handleOpenMaintenanceAlert" styleClass="btn-ghost"/>
+    <VBox spacing="22" styleClass="page">
+        <VBox fx:id="spotlight" styleClass="spotlight">
+            <Label text="ƯU TIÊN HÔM NAY" styleClass="spotlight-eyebrow"/>
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label fx:id="lblSpotlightTitle" text="Chưa có xe nào quá hạn bảo dưỡng"
+                           styleClass="spotlight-title" wrapText="true"/>
+                    <Label fx:id="lblSpotlightText"
+                           text="Theo dõi danh sách xe đến hạn để chủ động xử lý."
+                           styleClass="spotlight-text" wrapText="true"/>
+                </VBox>
+                <Button fx:id="btnSpotlight" text="Xem lịch hôm nay" onAction="#handleSpotlightAction"
+                        styleClass="btn-primary"/>
             </HBox>
         </VBox>
-        <HBox spacing="12">
-            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
-                <Label text="Lệnh chờ xử lý" styleClass="metric-label"/>
-                <Label fx:id="lblPendingWorkOrders" text="0" styleClass="metric-value"/>
-                <Label fx:id="lblPendingHint" text="Kế hoạch đến hạn + phiếu chờ xử lý" styleClass="metric-trend-warning"/>
-            </VBox>
 
-            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
-                <Label text="Đang sửa chữa" styleClass="metric-label"/>
-                <Label fx:id="lblInProgressRecords" text="0" styleClass="metric-value-warning"/>
-                <Label fx:id="lblInProgressHint" text="Theo dõi trong xưởng" styleClass="metric-trend-primary"/>
+        <HBox spacing="14">
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="Lệnh chờ xử lý" styleClass="kpi-label"/>
+                <Label fx:id="lblPendingWorkOrders" text="0" styleClass="kpi-value-warning"/>
             </VBox>
-
-            <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
-                <Label text="Hoàn tất hôm nay" styleClass="metric-label"/>
-                <Label fx:id="lblCompletedToday" text="0" styleClass="metric-value"/>
-                <Label fx:id="lblCompletedHint" text="Lấy từ phiếu bảo dưỡng" styleClass="metric-trend-success"/>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="Đang sửa chữa" styleClass="kpi-label"/>
+                <Label fx:id="lblInProgressRecords" text="0" styleClass="kpi-value"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="Hoàn tất hôm nay" styleClass="kpi-label"/>
+                <Label fx:id="lblCompletedToday" text="0" styleClass="kpi-value"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="Xe đến hạn" styleClass="kpi-label"/>
+                <Label fx:id="lblDueVehicles" text="0" styleClass="kpi-value-warning"/>
             </VBox>
         </HBox>
-        <VBox spacing="10" styleClass="panel">
-            <HBox spacing="12" styleClass="table-title-row">
-                <Label text="Xe đến hạn bảo dưỡng" styleClass="section-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Xem tất cả" onAction="#handleOpenMaintenanceAlert" styleClass="btn-soft"/>
-            </HBox>
-            <VBox fx:id="maintenanceAlertList" spacing="12"/>
-        </VBox>
+
+        <HBox spacing="22">
+            <VBox spacing="16" styleClass="panel" HBox.hgrow="ALWAYS">
+                <HBox spacing="12" styleClass="table-title-row">
+                    <Label text="Xe đến hạn bảo dưỡng" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Xem tất cả" onAction="#handleOpenMaintenanceAlert" styleClass="btn-soft"/>
+                </HBox>
+                <VBox fx:id="maintenanceAlertList" spacing="10"/>
+            </VBox>
+
+            <VBox spacing="16" styleClass="panel" prefWidth="340">
+                <Label text="Hướng dẫn nhanh" styleClass="section-title"/>
+                <VBox styleClass="priority-card-primary">
+                    <Label text="1. Chọn xe đến hạn" styleClass="priority-title"/>
+                    <Label text="Xem danh sách bên trái để biết xe nào cần ưu tiên xử lý trước."
+                           wrapText="true" styleClass="priority-text"/>
+                </VBox>
+                <VBox styleClass="priority-card-primary">
+                    <Label text="2. Tạo phiếu bảo dưỡng" styleClass="priority-title"/>
+                    <Label text="Nhập nội dung sửa chữa, ODO, chi phí và người thực hiện."
+                           wrapText="true" styleClass="priority-text"/>
+                </VBox>
+                <VBox styleClass="priority-card-warning">
+                    <Label text="3. Ghi nhận vật tư" styleClass="priority-title"/>
+                    <Label text="Thêm hạng mục/phụ tùng kèm số lượng và đơn giá để tính thành tiền."
+                           wrapText="true" styleClass="priority-text"/>
+                </VBox>
+            </VBox>
+        </HBox>
     </VBox>
 </ScrollPane>

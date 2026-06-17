@@ -4,26 +4,26 @@
 .app-shell,
 .root-layout {
     -fx-font-family: "Inter", "Segoe UI", Arial, sans-serif;
-    -fx-background-color: #f7f9fd;
-    -fx-text-fill: #181c1f;
+    -fx-background-color: #f4f7fc;
+    -fx-text-fill: #151922;
 
-    -app-primary: #004ac6;
-    -app-primary-hover: #1d4ed8;
-    -app-primary-container: #2563eb;
-    -app-primary-soft: #eff6ff;
+    -app-primary: #1746c9;
+    -app-primary-hover: #1037a8;
+    -app-primary-container: #3b82f6;
+    -app-primary-soft: #eaf1ff;
 
-    -app-surface: #f7f9fd;
-    -app-surface-low: #f2f4f8;
+    -app-surface: #f4f7fc;
+    -app-surface-low: #ebeff7;
     -app-surface-card: #ffffff;
-    -app-surface-high: #e6e8ec;
-    -app-border: rgba(115,118,134,0.22);
+    -app-surface-high: #dde4f0;
+    -app-border: rgba(90,102,140,0.20);
 
-    -app-text-main: #181c1f;
-    -app-text-normal: #434655;
-    -app-text-sub: #737686;
+    -app-text-main: #151922;
+    -app-text-normal: #3d4456;
+    -app-text-sub: #6b7286;
 
-    -app-success: #10b981;
-    -app-warning: #f59e0b;
+    -app-success: #0ea371;
+    -app-warning: #f08c00;
     -app-danger: #ef4444;
     -app-danger-dark: #b91c1c;
 }

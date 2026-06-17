@@ -29,3 +29,90 @@
     -fx-font-weight: 800;
     -fx-text-fill: -app-primary;
 }
+
+/* ── Spotlight banner: gom việc khẩn cấp nhất lên đầu ───────────────────── */
+.spotlight {
+    -fx-padding: 22 26;
+    -fx-spacing: 6;
+    -fx-background-radius: 20;
+    -fx-border-width: 1;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.10), 24, 0, 0, 10);
+}
+
+.spotlight-danger {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #fff5f5, #fee2e2);
+    -fx-border-color: rgba(220,38,38,0.30);
+}
+
+.spotlight-warning {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #fffbeb, #fef3c7);
+    -fx-border-color: rgba(180,83,9,0.28);
+}
+
+.spotlight-success {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f0fdf4, #d1fae5);
+    -fx-border-color: rgba(4,120,87,0.25);
+}
+
+.spotlight-eyebrow {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -app-text-sub;
+}
+
+.spotlight-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+    -fx-text-fill: -app-text-main;
+}
+
+.spotlight-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: -app-text-sub;
+}
+
+/* ── Thẻ KPI gọn: một hàng số liệu nhanh ────────────────────────────────── */
+.kpi-card {
+    -fx-background-color: rgba(255,255,255,0.86);
+    -fx-background-radius: 16;
+    -fx-padding: 14 16;
+    -fx-spacing: 3;
+    -fx-min-height: 90;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.06), 16, 0, 0, 6);
+}
+
+.kpi-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -app-text-sub;
+    -fx-wrap-text: true;
+}
+
+.kpi-value,
+.kpi-value-warning,
+.kpi-value-danger {
+    -fx-font-size: 26px;
+    -fx-font-weight: 900;
+}
+
+.kpi-value { -fx-text-fill: -app-text-main; }
+.kpi-value-warning { -fx-text-fill: #b45309; }
+.kpi-value-danger { -fx-text-fill: #dc2626; }
+
+/* ── Hàng cảnh báo gộp: chấm màu + tiêu đề + mô tả ──────────────────────── */
+.alert-row {
+    -fx-padding: 12 14;
+    -fx-spacing: 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-color: -app-surface;
+    -fx-background-radius: 14;
+}
+
+.alert-dot {
+    -fx-font-size: 16px;
+}
+
+.alert-dot-danger { -fx-text-fill: #dc2626; }
+.alert-dot-overdue { -fx-text-fill: #ea580c; }
+.alert-dot-coming { -fx-text-fill: #d97706; }
