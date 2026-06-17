@@ -2,11 +2,15 @@ package controller.common;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.DialogPane;
 import javafx.scene.layout.GridPane;
+import util.AlertUtil;
+import util.StylesheetLoader;
 
 import java.util.Optional;
 
@@ -27,6 +31,8 @@ public final class PasswordDialogHelper {
         Dialog<PasswordChangeData> dialog = new Dialog<>();
         dialog.setTitle(title);
         dialog.setHeaderText(header);
+        AlertUtil.applyFleetCareIcon(dialog);
+        styleDialogPane(dialog.getDialogPane());
 
         ButtonType saveButtonType = new ButtonType("Cập nhật", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -39,20 +45,24 @@ public final class PasswordDialogHelper {
         currentPasswordField.setPromptText("Mật khẩu hiện tại");
         newPasswordField.setPromptText("Tối thiểu 8 ký tự, có chữ và số");
         confirmPasswordField.setPromptText("Nhập lại mật khẩu mới");
+        currentPasswordField.getStyleClass().add("password-dialog-field");
+        newPasswordField.getStyleClass().add("password-dialog-field");
+        confirmPasswordField.getStyleClass().add("password-dialog-field");
 
         GridPane form = new GridPane();
+        form.getStyleClass().add("password-dialog-form");
         form.setHgap(12);
         form.setVgap(12);
         form.setPadding(new Insets(12));
 
         int row = 0;
         if (requireCurrentPassword) {
-            form.add(new Label("Mật khẩu hiện tại"), 0, row);
+            form.add(formLabel("Mật khẩu hiện tại"), 0, row);
             form.add(currentPasswordField, 1, row++);
         }
-        form.add(new Label("Mật khẩu mới"), 0, row);
+        form.add(formLabel("Mật khẩu mới"), 0, row);
         form.add(newPasswordField, 1, row++);
-        form.add(new Label("Xác nhận mật khẩu mới"), 0, row);
+        form.add(formLabel("Xác nhận mật khẩu mới"), 0, row);
         form.add(confirmPasswordField, 1, row);
 
         currentPasswordField.setPrefWidth(320);
@@ -60,6 +70,7 @@ public final class PasswordDialogHelper {
         confirmPasswordField.setPrefWidth(320);
 
         dialog.getDialogPane().setContent(form);
+        styleDialogButtons(dialog.getDialogPane(), saveButtonType, cancelButtonType);
 
         dialog.setResultConverter(buttonType -> {
             if (buttonType != saveButtonType) {
@@ -72,6 +83,28 @@ public final class PasswordDialogHelper {
         });
 
         return dialog.showAndWait();
+    }
+
+    private static Label formLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("form-label");
+        return label;
+    }
+
+    public static void styleDialogPane(DialogPane pane) {
+        StylesheetLoader.addBaseStyles(pane);
+        pane.getStyleClass().add("password-dialog-pane");
+    }
+
+    public static void styleDialogButtons(DialogPane pane, ButtonType saveButtonType, ButtonType cancelButtonType) {
+        Button saveButton = (Button) pane.lookupButton(saveButtonType);
+        if (saveButton != null) {
+            saveButton.getStyleClass().add("btn-primary");
+        }
+        Button cancelButton = (Button) pane.lookupButton(cancelButtonType);
+        if (cancelButton != null) {
+            cancelButton.getStyleClass().add("btn-soft");
+        }
     }
 
     public record PasswordChangeData(String currentPassword,

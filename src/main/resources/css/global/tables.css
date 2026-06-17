@@ -15,7 +15,7 @@
 .table-view .column-header,
 .table-view .filler {
     -fx-background-color: transparent;
-    -fx-size: 42;
+    -fx-size: 52;
 }
 
 .table-view .column-header .label {
@@ -23,6 +23,8 @@
     -fx-font-size: 12px;
     -fx-font-weight: 800;
     -fx-alignment: CENTER_LEFT;
+    -fx-wrap-text: true;
+    -fx-text-overrun: clip;
 }
 
 .table-row-cell {
@@ -36,14 +38,19 @@
 }
 
 .table-row-cell:selected,
-.table-row-cell:selected:hover {
+.table-row-cell:selected:hover,
+.table-row-cell:selected:focused,
+.table-row-cell:selected:filled {
     -fx-background-color: #dbeafe;
     -fx-background-insets: 0 0 8 0;
+    -fx-border-color: rgba(37,99,235,0.35);
+    -fx-border-width: 1 0 1 3;
     -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.18), 16, 0, 0, 4);
 }
 
-.table-row-cell:selected .table-cell {
-    -fx-text-fill: -app-text-main;
+.table-row-cell:selected .table-cell,
+.table-row-cell:selected:focused .table-cell {
+    -fx-text-fill: #12305f;
     -fx-font-weight: 800;
 }
 
@@ -56,6 +63,10 @@
 
 .data-table {
     -fx-table-cell-border-color: transparent;
+}
+
+.embedded-table {
+    -fx-padding: 0;
 }
 
 .table-view .scroll-bar:vertical {

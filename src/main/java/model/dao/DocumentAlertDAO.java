@@ -119,7 +119,11 @@ public class DocumentAlertDAO {
             return null;
         }
 
-        return dueStatus.trim().toUpperCase();
+        String normalizedStatus = dueStatus.trim().toUpperCase();
+        return switch (normalizedStatus) {
+            case "OVERDUE", "COMING_DUE", "NORMAL" -> normalizedStatus;
+            default -> null;
+        };
     }
 
     private DocumentAlertDTO mapToAlert(ResultSet resultSet) throws SQLException {

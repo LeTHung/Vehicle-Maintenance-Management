@@ -2,6 +2,7 @@ package controller.user;
 
 import controller.common.PasswordDialogHelper;
 import controller.common.PasswordDialogHelper.PasswordChangeData;
+import controller.layout.QuickSearchAware;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -26,6 +27,7 @@ import model.entity.Role;
 import model.entity.User;
 import service.UserService;
 import session.UserSession;
+import util.AlertUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,15 +41,17 @@ import java.util.Optional;
  *
  * <p>Day 5: thêm / sửa / khóa - mở khóa tài khoản qua UserService.</p>
  */
-public class UserController {
+public class UserController implements QuickSearchAware {
 
     private static final String STATUS_ACTIVE = "ACTIVE";
     private static final String STATUS_LOCKED = "LOCKED";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final UserService userService = new UserService();
+    private final ObservableList<User> allUsers = FXCollections.observableArrayList();
     private final ObservableList<User> users = FXCollections.observableArrayList();
     private final Map<Long, Role> roleById = new HashMap<>();
+    private String currentKeyword = "";
 
     @FXML
     private TableView<User> userTable;
@@ -237,7 +241,7 @@ public class UserController {
 
         userTable.setItems(users);
         userTable.setPlaceholder(new Label("Không có tài khoản người dùng"));
-        userTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        userTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
         userTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && getSelectedUser() != null) {
                 onEditClick();
@@ -260,12 +264,43 @@ public class UserController {
     private void reloadData() {
         try {
             loadRoles();
-            users.setAll(userService.listUsers());
+            allUsers.setAll(userService.listUsers());
+            applyFilter();
             updateLockButton(getSelectedUser());
             renderSelectedUserSummary(getSelectedUser());
         } catch (RuntimeException e) {
             showError("Không thể tải danh sách tài khoản. " + nullToEmpty(e.getMessage()));
         }
+    }
+
+    @Override
+    public void applyQuickSearch(String keyword) {
+        currentKeyword = keyword == null ? "" : keyword.trim().toLowerCase();
+        applyFilter();
+    }
+
+    private void applyFilter() {
+        if (currentKeyword.isBlank()) {
+            users.setAll(allUsers);
+            return;
+        }
+
+        users.setAll(allUsers.stream()
+                .filter(this::matchesKeyword)
+                .toList());
+    }
+
+    private boolean matchesKeyword(User user) {
+        return contains(user.getUsername())
+                || contains(user.getFullName())
+                || contains(user.getEmail())
+                || contains(user.getPhone())
+                || contains(resolveRoleName(user.getRoleId()))
+                || contains(resolveStatusLabel(user.getAccountStatus()));
+    }
+
+    private boolean contains(String value) {
+        return nullToEmpty(value).toLowerCase().contains(currentKeyword);
     }
 
     private void loadRoles() {
@@ -282,6 +317,8 @@ public class UserController {
         Dialog<UserFormData> dialog = new Dialog<>();
         dialog.setTitle(editMode ? "Sửa tài khoản" : "Thêm tài khoản");
         dialog.setHeaderText(editMode ? "Cập nhật thông tin tài khoản" : "Tạo tài khoản đăng nhập mới");
+        AlertUtil.applyFleetCareIcon(dialog);
+        PasswordDialogHelper.styleDialogPane(dialog.getDialogPane());
 
         ButtonType saveButtonType = new ButtonType(editMode ? "Cập nhật" : "Tạo mới", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -300,6 +337,12 @@ public class UserController {
         emailField.setPromptText("email@fleetcare.local");
         phoneField.setPromptText("Số điện thoại");
         roleComboBox.setPromptText("Chọn vai trò");
+        usernameField.getStyleClass().add("password-dialog-field");
+        passwordField.getStyleClass().add("password-dialog-field");
+        fullNameField.getStyleClass().add("password-dialog-field");
+        emailField.getStyleClass().add("password-dialog-field");
+        phoneField.getStyleClass().add("password-dialog-field");
+        roleComboBox.getStyleClass().add("password-dialog-field");
 
         roleComboBox.getItems().setAll(roleById.values());
         roleComboBox.setCellFactory(comboBox -> new RoleListCell());
@@ -309,26 +352,27 @@ public class UserController {
         }
 
         GridPane form = new GridPane();
+        form.getStyleClass().add("password-dialog-form");
         form.setHgap(12);
         form.setVgap(12);
         form.setPadding(new Insets(12));
-        form.add(new Label("Tên đăng nhập"), 0, 0);
+        form.add(formLabel("Tên đăng nhập"), 0, 0);
         form.add(usernameField, 1, 0);
 
         int row = 1;
         if (!editMode) {
-            form.add(new Label("Mật khẩu"), 0, row);
+            form.add(formLabel("Mật khẩu"), 0, row);
             form.add(passwordField, 1, row);
             row++;
         }
 
-        form.add(new Label("Họ tên"), 0, row);
+        form.add(formLabel("Họ tên"), 0, row);
         form.add(fullNameField, 1, row++);
-        form.add(new Label("Email"), 0, row);
+        form.add(formLabel("Email"), 0, row);
         form.add(emailField, 1, row++);
-        form.add(new Label("Điện thoại"), 0, row);
+        form.add(formLabel("Điện thoại"), 0, row);
         form.add(phoneField, 1, row++);
-        form.add(new Label("Vai trò"), 0, row);
+        form.add(formLabel("Vai trò"), 0, row);
         form.add(roleComboBox, 1, row);
 
         usernameField.setPrefWidth(280);
@@ -341,6 +385,7 @@ public class UserController {
         dialog.getDialogPane().setContent(form);
 
         Button saveButton = (Button) dialog.getDialogPane().lookupButton(saveButtonType);
+        PasswordDialogHelper.styleDialogButtons(dialog.getDialogPane(), saveButtonType, cancelButtonType);
         saveButton.addEventFilter(ActionEvent.ACTION, event -> {
             String message = validateForm(editMode, usernameField, passwordField, fullNameField, roleComboBox);
             if (!message.isEmpty()) {
@@ -365,6 +410,12 @@ public class UserController {
         });
 
         return dialog.showAndWait();
+    }
+
+    private Label formLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("form-label");
+        return label;
     }
 
     private String validateForm(boolean editMode,
@@ -491,11 +542,7 @@ public class UserController {
         if (name.isEmpty()) {
             return code;
         }
-        if (code.isEmpty()) {
-            return name;
-        }
-
-        return name + " (" + code + ")";
+        return name;
     }
 
     private String resolveStatusLabel(String status) {
@@ -515,6 +562,7 @@ public class UserController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        AlertUtil.applyFleetCareIcon(alert);
 
         return alert.showAndWait().filter(ButtonType.OK::equals).isPresent();
     }
@@ -536,6 +584,7 @@ public class UserController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        AlertUtil.applyFleetCareIcon(alert);
         alert.showAndWait();
     }
 

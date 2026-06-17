@@ -9,14 +9,19 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import model.entity.MaintenancePlan;
 import model.entity.MaintenanceType;
 import model.entity.Vehicle;
 import service.MaintenancePlanService;
+import util.DetailWindow;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -26,6 +31,9 @@ import java.util.Map;
 public class MaintenancePlanController {
 
     private final MaintenancePlanService service = new MaintenancePlanService();
+
+    @FXML private VBox planDetailPanel;
+    @FXML private Label lblPlanDetailTitle;
 
     @FXML private ComboBox<Vehicle> cbFilterVehicle;
     @FXML private ComboBox<Vehicle> cbVehicle;
@@ -52,6 +60,7 @@ public class MaintenancePlanController {
 
     private Long selectedPlanId;
     private boolean selectedPlanActive = true;
+    private Stage planDetailStage;
     private final Map<Long, String> vehicleNameMap = new HashMap<>();
     private final Map<Integer, String> typeNameMap = new HashMap<>();
 
@@ -125,8 +134,16 @@ public class MaintenancePlanController {
     }
 
     private void setupRowSelectionListener() {
-        tblPlan.getSelectionModel().selectedItemProperty()
-            .addListener((obs, oldVal, newVal) -> populateForm(newVal));
+        tblPlan.setRowFactory(table -> {
+            TableRow<MaintenancePlan> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    populateForm(row.getItem());
+                    showPlanDetailWindow();
+                }
+            });
+            return row;
+        });
     }
 
     private void loadTable(List<MaintenancePlan> plans) {
@@ -137,6 +154,7 @@ public class MaintenancePlanController {
         if (plan == null) return;
         selectedPlanId = plan.getPlanId();
         selectedPlanActive = plan.isActive();
+        lblPlanDetailTitle.setText("Chi tiết kế hoạch: " + vehicleNameMap.getOrDefault(plan.getVehicleId(), ""));
 
         cbVehicle.getItems().stream()
             .filter(v -> v.getVehicleId() == plan.getVehicleId())
@@ -158,6 +176,13 @@ public class MaintenancePlanController {
     }
 
     @FXML
+    private void handleNewPlan() {
+        handleClear();
+        lblPlanDetailTitle.setText("Thêm kế hoạch bảo dưỡng mới");
+        showPlanDetailWindow();
+    }
+
+    @FXML
     private void handleSave() {
         try {
             MaintenancePlan plan = readFromForm();
@@ -165,6 +190,7 @@ public class MaintenancePlanController {
             cbFilterVehicle.setValue(null);
             loadTable(service.listPlans());
             handleClear();
+            DetailWindow.hide(planDetailStage);
             showInfo("Đã lưu kế hoạch bảo dưỡng.");
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
@@ -186,6 +212,7 @@ public class MaintenancePlanController {
             cbFilterVehicle.setValue(null);
             loadTable(service.listPlans());
             handleClear();
+            DetailWindow.hide(planDetailStage);
             showInfo("Đã cập nhật kế hoạch bảo dưỡng.");
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
@@ -207,6 +234,7 @@ public class MaintenancePlanController {
         cbFilterVehicle.setValue(null);
         loadTable(service.listPlans());
         handleClear();
+        DetailWindow.hide(planDetailStage);
         showInfo("Đã hủy kích hoạt kế hoạch.");
     }
 
@@ -231,7 +259,19 @@ public class MaintenancePlanController {
     @FXML
     private void handleRefresh() {
         cbFilterVehicle.setValue(null);
+        handleClear();
+        DetailWindow.hide(planDetailStage);
         loadTable(service.listPlans());
+    }
+
+    private void showPlanDetailWindow() {
+        planDetailStage = DetailWindow.show(
+                planDetailStage,
+                planDetailPanel,
+                tblPlan,
+                "Thông tin kế hoạch bảo dưỡng",
+                900,
+                520);
     }
 
     private MaintenancePlan readFromForm() {

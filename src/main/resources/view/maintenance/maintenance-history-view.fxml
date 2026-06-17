@@ -9,7 +9,7 @@
     <VBox spacing="24" styleClass="page">
         <VBox styleClass="page-header">
             <Label text="Lịch sử bảo dưỡng" styleClass="page-title"/>
-            <Label text="Tra cứu các lần bảo dưỡng theo xe, trạng thái và kỹ thuật viên phụ trách." styleClass="page-subtitle"/>
+            <Label text="Tra cứu các lần bảo dưỡng theo xe, trạng thái; nhấn đúp vào một dòng để xem hạng mục chi tiết." styleClass="page-subtitle"/>
         </VBox>
 
         <HBox spacing="12" styleClass="toolbar-panel">
@@ -40,7 +40,7 @@
             </TableView>
         </VBox>
 
-        <VBox styleClass="table-panel">
+        <VBox fx:id="historyDetailPanel" styleClass="table-panel, detail-panel" visible="false" managed="false">
             <HBox styleClass="table-title-row">
                 <Label text="Chi tiết hạng mục / phụ tùng của phiếu đã chọn" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>

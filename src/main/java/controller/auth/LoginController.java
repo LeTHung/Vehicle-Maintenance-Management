@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import service.AuthService;
 import service.AuthenticationException;
 import service.UserService;
+import util.AlertUtil;
 import util.StylesheetLoader;
 
 import java.io.IOException;
@@ -133,6 +134,7 @@ public class LoginController {
         alert.setTitle("Lỗi");
         alert.setHeaderText(null);
         alert.setContentText(message == null || message.isBlank() ? "Đã có lỗi xảy ra." : message);
+        AlertUtil.applyFleetCareIcon(alert);
         alert.showAndWait();
     }
 }

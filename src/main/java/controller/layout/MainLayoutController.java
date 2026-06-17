@@ -28,6 +28,7 @@ import model.entity.User;
 import service.AuthService;
 import service.UserService;
 import session.UserSession;
+import util.AlertUtil;
 import util.SmoothScrollUtil;
 import util.StylesheetLoader;
 
@@ -536,6 +537,7 @@ public class MainLayoutController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        AlertUtil.applyFleetCareIcon(alert);
         alert.showAndWait();
     }
 }

@@ -10,14 +10,19 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import model.dto.VehicleDocumentViewDTO;
 import model.entity.DocumentType;
 import model.entity.Vehicle;
 import model.entity.VehicleDocument;
 import service.VehicleDocumentService;
+import util.DetailWindow;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -32,6 +37,12 @@ public class VehicleDocumentController {
     private final Map<String, Vehicle> vehicleByLabel = new HashMap<>();
     private final Map<String, DocumentType> documentTypeByLabel = new HashMap<>();
     private Long selectedDocumentId;
+    private Stage documentDetailStage;
+
+    @FXML
+    private VBox documentDetailPanel;
+    @FXML
+    private Label lblDocumentDetailTitle;
 
     @FXML
     private ComboBox<String> cbVehicleFilter;
@@ -158,8 +169,23 @@ public class VehicleDocumentController {
                 cell -> new SimpleStringProperty(documentStatusLabel(cell.getValue().getDocumentStatus())));
         colIsCurrent.setCellValueFactory(cell -> new SimpleBooleanProperty(cell.getValue().isCurrent()));
 
-        tblDocument.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> populateForm(newValue));
+        tblDocument.setRowFactory(table -> {
+            TableRow<VehicleDocumentViewDTO> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    populateForm(row.getItem());
+                    showDocumentDetailWindow();
+                }
+            });
+            return row;
+        });
+    }
+
+    @FXML
+    private void handleNewDocument() {
+        handleClearDocumentForm();
+        lblDocumentDetailTitle.setText("Thêm giấy tờ mới");
+        showDocumentDetailWindow();
     }
 
     @FXML
@@ -193,6 +219,7 @@ public class VehicleDocumentController {
             cbStatusFilter.setValue(ALL_OPTION);
         }
         handleClearDocumentForm();
+        DetailWindow.hide(documentDetailStage);
         loadDocumentData();
     }
 
@@ -202,6 +229,7 @@ public class VehicleDocumentController {
             VehicleDocument created = vehicleDocumentService.createDocument(readDocumentFromForm());
             loadDocumentData();
             selectDocument(created.getDocumentId());
+            DetailWindow.hide(documentDetailStage);
             showInfo("Đã lưu giấy tờ xe.");
         } catch (RuntimeException e) {
             showError(e.getMessage());
@@ -221,6 +249,7 @@ public class VehicleDocumentController {
             VehicleDocument updated = vehicleDocumentService.updateDocument(document);
             loadDocumentData();
             selectDocument(updated.getDocumentId());
+            DetailWindow.hide(documentDetailStage);
             showInfo("Đã cập nhật giấy tờ xe.");
         } catch (RuntimeException e) {
             showError(e.getMessage());
@@ -275,6 +304,7 @@ public class VehicleDocumentController {
         }
 
         selectedDocumentId = document.getDocumentId();
+        lblDocumentDetailTitle.setText("Chi tiết giấy tờ: " + nullToEmpty(document.getDocumentNumber()));
         cbVehicle.setValue(findVehicleLabel(document.getVehicleId()));
         cbDocumentType.setValue(findTypeLabel(document.getDocumentTypeId()));
         txtDocumentNumber.setText(nullToEmpty(document.getDocumentNumber()));
@@ -287,6 +317,16 @@ public class VehicleDocumentController {
         cbDocumentStatus.setValue(documentStatusLabel(document.getDocumentStatus()));
         chkIsCurrent.setSelected(document.isCurrent());
         txtNote.setText(nullToEmpty(document.getNote()));
+    }
+
+    private void showDocumentDetailWindow() {
+        documentDetailStage = DetailWindow.show(
+                documentDetailStage,
+                documentDetailPanel,
+                tblDocument,
+                "Thông tin giấy tờ xe",
+                980,
+                500);
     }
 
     private void selectDocument(long documentId) {

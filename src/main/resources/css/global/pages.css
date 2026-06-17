@@ -127,3 +127,8 @@
     -fx-font-size: 12px;
     -fx-font-weight: 700;
 }
+
+.table-note {
+    -fx-font-size: 12px;
+    -fx-text-fill: -app-text-sub;
+}

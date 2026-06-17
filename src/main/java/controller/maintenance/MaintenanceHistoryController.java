@@ -7,7 +7,10 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import model.dao.UserDAO;
 import model.entity.MaintenanceItemDetail;
@@ -15,6 +18,7 @@ import model.entity.MaintenanceRecord;
 import model.entity.User;
 import model.entity.Vehicle;
 import service.MaintenanceRecordService;
+import util.DetailWindow;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -32,9 +36,11 @@ public class MaintenanceHistoryController {
     private final UserDAO userDAO = new UserDAO();
     private final Map<Long, String> vehicleNameMap = new HashMap<>();
     private final Map<Long, String> technicianNameMap = new HashMap<>();
+    private Stage historyDetailStage;
 
     @FXML private ComboBox<Vehicle> cbFilterVehicle;
     @FXML private ComboBox<String> cbFilterStatus;
+    @FXML private VBox historyDetailPanel;
 
     @FXML private TableView<MaintenanceRecord> tblHistory;
     @FXML private TableColumn<MaintenanceRecord, Long> colHistoryId;
@@ -65,8 +71,16 @@ public class MaintenanceHistoryController {
         configureTable();
         configureItemTable();
         setupFilterListeners();
-        tblHistory.getSelectionModel().selectedItemProperty()
-            .addListener((obs, oldVal, newVal) -> loadItems(newVal));
+        tblHistory.setRowFactory(table -> {
+            TableRow<MaintenanceRecord> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    loadItems(row.getItem());
+                    showHistoryDetailWindow();
+                }
+            });
+            return row;
+        });
         applyFilters();
     }
 
@@ -76,6 +90,7 @@ public class MaintenanceHistoryController {
         cbFilterStatus.setValue(ALL_STATUSES);
         loadLookupData();
         setupVehicleFilter();
+        DetailWindow.hide(historyDetailStage);
         applyFilters();
     }
 
@@ -166,6 +181,16 @@ public class MaintenanceHistoryController {
         }
         List<MaintenanceItemDetail> items = service.listItems(record.getRecordId());
         tblItems.setItems(FXCollections.observableArrayList(items));
+    }
+
+    private void showHistoryDetailWindow() {
+        historyDetailStage = DetailWindow.show(
+                historyDetailStage,
+                historyDetailPanel,
+                tblHistory,
+                "Chi tiết hạng mục bảo dưỡng",
+                760,
+                360);
     }
 
     private String formatMoney(BigDecimal value) {

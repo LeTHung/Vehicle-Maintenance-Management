@@ -26,6 +26,26 @@
     -fx-alignment: CENTER;
 }
 
+.brand-logo-tile {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-min-width: 52;
+    -fx-min-height: 52;
+    -fx-max-width: 52;
+    -fx-max-height: 52;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.08), 12, 0, 0, 4);
+}
+
+.avatar-logo-tile {
+    -fx-background-color: white;
+    -fx-background-radius: 999;
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-max-width: 42;
+    -fx-max-height: 42;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.07), 10, 0, 0, 3);
+}
+
 .brand-title,
 .logo-text {
     -fx-font-size: 22px;
@@ -35,6 +55,10 @@
 
 .login-page .brand-title {
     -fx-font-size: 28px;
+}
+
+.login-logo {
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.06), 18, 0, 0, 6);
 }
 
 .brand-subtitle,
@@ -201,4 +225,13 @@
     -fx-font-size: 10px;
     -fx-font-weight: 800;
     -fx-padding: 4 10;
+}
+
+/* Mục menu đang mở có độ tương phản mạnh hơn các mục còn lại. */
+.nav-button-active,
+.nav-button.active {
+    -fx-border-color: -app-primary;
+    -fx-border-width: 0 0 0 4;
+    -fx-border-radius: 12 0 0 12;
+    -fx-padding: 12 14 12 10;
 }

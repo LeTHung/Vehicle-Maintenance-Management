@@ -15,6 +15,7 @@ import model.entity.Vehicle;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,8 +41,7 @@ public class ReportController {
 
     @FXML
     public void initialize() {
-        cbYear.getItems().addAll("2024", "2025", "2026");
-        cbYear.setValue("2026");
+        configureYearFilter();
         configureVehicleFilter();
         configureTable();
         loadReportData();
@@ -55,8 +55,18 @@ public class ReportController {
     @FXML
     private void handleRefresh() {
         cbVehicle.setValue(null);
-        cbYear.setValue("2026");
+        cbYear.setValue(defaultYear());
         loadReportData();
+    }
+
+    private void configureYearFilter() {
+        int year = LocalDate.now().getYear();
+        cbYear.getItems().setAll(
+                String.valueOf(year - 2),
+                String.valueOf(year - 1),
+                String.valueOf(year),
+                String.valueOf(year + 1));
+        cbYear.setValue(defaultYear());
     }
 
     private void configureVehicleFilter() {
@@ -89,7 +99,7 @@ public class ReportController {
 
     private void loadReportData() {
         String year = cbYear.getValue() == null || cbYear.getValue().isBlank()
-                ? "2026"
+                ? defaultYear()
                 : cbYear.getValue();
         Vehicle vehicle = cbVehicle.getValue();
         List<MonthlyCostReportDTO> rows = vehicle == null
@@ -126,5 +136,9 @@ public class ReportController {
 
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
+    }
+
+    private String defaultYear() {
+        return String.valueOf(LocalDate.now().getYear());
     }
 }

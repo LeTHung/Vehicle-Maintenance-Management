@@ -14,8 +14,11 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import model.dao.UserDAO;
 import model.entity.MaintenanceItemDetail;
@@ -26,6 +29,7 @@ import model.entity.Vehicle;
 import session.UserSession;
 import service.MaintenancePlanService;
 import service.MaintenanceRecordService;
+import util.DetailWindow;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -40,6 +44,9 @@ public class MaintenanceRecordController {
     private final MaintenanceRecordService service = new MaintenanceRecordService();
     private final MaintenancePlanService planService = new MaintenancePlanService();
     private final UserDAO userDAO = new UserDAO();
+
+    @FXML private VBox recordDetailPanel;
+    @FXML private Label lblRecordDetailTitle;
 
     @FXML private ComboBox<Vehicle> cbFilterVehicle;
     @FXML private ComboBox<Vehicle> cbVehicle;
@@ -86,6 +93,7 @@ public class MaintenanceRecordController {
     private Long selectedRecordId;
     private Long selectedTechnicianId;
     private Long selectedCreatedBy;
+    private Stage recordDetailStage;
     private final Map<Long, String> vehicleNameMap = new HashMap<>();
     private final Map<Long, String> technicianNameMap = new HashMap<>();
     private final Map<Integer, String> typeNameMap = new HashMap<>();
@@ -276,8 +284,16 @@ public class MaintenanceRecordController {
     }
 
     private void setupRowSelectionListener() {
-        tblRecord.getSelectionModel().selectedItemProperty()
-            .addListener((obs, oldVal, newVal) -> populateForm(newVal));
+        tblRecord.setRowFactory(table -> {
+            TableRow<MaintenanceRecord> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    populateForm(row.getItem());
+                    showRecordDetailWindow();
+                }
+            });
+            return row;
+        });
     }
 
     private void loadTable(List<MaintenanceRecord> records) {
@@ -289,6 +305,10 @@ public class MaintenanceRecordController {
         selectedRecordId = record.getRecordId();
         selectedTechnicianId = record.getTechnicianId();
         selectedCreatedBy = record.getCreatedBy();
+        lblRecordDetailTitle.setText("Chi tiáº¿t phiáº¿u: "
+                + (record.getTitle() == null || record.getTitle().isBlank()
+                ? "#" + record.getRecordId()
+                : record.getTitle()));
 
         // setValue kích hoạt listener nạp lại danh sách kế hoạch active của xe
         cbVehicle.getItems().stream()
@@ -317,6 +337,8 @@ public class MaintenanceRecordController {
     @FXML
     private void handleNewRecord() {
         handleClear();
+        lblRecordDetailTitle.setText("Táº¡o phiáº¿u báº£o dÆ°á»¡ng má»›i");
+        showRecordDetailWindow();
     }
 
     @FXML
@@ -337,6 +359,7 @@ public class MaintenanceRecordController {
             String extra = applyCompletionEffects(record, currentUserId);
             loadTable(service.listAll());
             handleClear();
+            DetailWindow.hide(recordDetailStage);
             showInfo("Đã lưu phiếu bảo dưỡng (" + itemCount + " hạng mục)." + extra);
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
@@ -368,6 +391,7 @@ public class MaintenanceRecordController {
             String extra = applyCompletionEffects(record, currentUserId);
             loadTable(service.listAll());
             handleClear();
+            DetailWindow.hide(recordDetailStage);
             showInfo("Đã cập nhật phiếu bảo dưỡng." + extra);
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
@@ -400,7 +424,19 @@ public class MaintenanceRecordController {
     @FXML
     private void handleRefresh() {
         cbFilterVehicle.setValue(null);
+        handleClear();
+        DetailWindow.hide(recordDetailStage);
         loadTable(service.listAll());
+    }
+
+    private void showRecordDetailWindow() {
+        recordDetailStage = DetailWindow.show(
+                recordDetailStage,
+                recordDetailPanel,
+                tblRecord,
+                "ThÃ´ng tin phiáº¿u báº£o dÆ°á»¡ng",
+                1080,
+                760);
     }
 
     @FXML

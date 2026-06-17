@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
@@ -13,7 +14,13 @@
         <VBox styleClass="sidebar">
             <VBox styleClass="sidebar-brand">
                 <HBox spacing="12" styleClass="brand-row">
-                    <Label text="FC" styleClass="brand-mark"/>
+                    <StackPane styleClass="brand-logo-tile">
+                        <ImageView fitWidth="46" fitHeight="46" preserveRatio="true">
+                            <image>
+                                <Image url="@../../images/fleetcare-icon.png"/>
+                            </image>
+                        </ImageView>
+                    </StackPane>
                     <VBox>
                         <Label text="FleetCare" styleClass="brand-title"/>
                         <Label text="Quản lý hồ sơ &amp; bảo dưỡng" styleClass="brand-subtitle"/>
@@ -60,7 +67,13 @@
 
             <VBox styleClass="sidebar-footer">
                 <HBox spacing="10">
-                    <Label text="FC" styleClass="avatar-mini"/>
+                    <StackPane styleClass="avatar-logo-tile">
+                        <ImageView fitWidth="36" fitHeight="36" preserveRatio="true">
+                            <image>
+                                <Image url="@../../images/fleetcare-icon.png"/>
+                            </image>
+                        </ImageView>
+                    </StackPane>
                     <VBox>
                         <Label fx:id="lblUserName" text="Người dùng" styleClass="user-name"/>
                         <Label fx:id="lblUserRole" text="Vai trò" styleClass="user-role"/>

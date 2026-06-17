@@ -159,6 +159,18 @@ public class MaintenancePlanService {
             throw new IllegalArgumentException("Chu kỳ km phải lớn hơn 0.");
         }
         // Bắt buộc nhập mốc nền để tự tính được ngày/ODO đến hạn
+        if (plan.getLastServiceOdometer() != null && plan.getLastServiceOdometer() < 0) {
+            throw new IllegalArgumentException("ODO bảo dưỡng gần nhất không được âm.");
+        }
+        if (plan.getNextDueOdometer() != null && plan.getNextDueOdometer() < 0) {
+            throw new IllegalArgumentException("ODO đến hạn kế tiếp không được âm.");
+        }
+        if (plan.getAlertBeforeDays() != null && plan.getAlertBeforeDays() < 0) {
+            throw new IllegalArgumentException("Số ngày cảnh báo trước không được âm.");
+        }
+        if (plan.getAlertBeforeKm() != null && plan.getAlertBeforeKm() < 0) {
+            throw new IllegalArgumentException("Số km cảnh báo trước không được âm.");
+        }
         if (plan.getIntervalDays() != null
                 && plan.getLastServiceDate() == null
                 && plan.getNextDueDate() == null) {

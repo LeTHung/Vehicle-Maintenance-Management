@@ -1,6 +1,7 @@
 package util;
 
 import javafx.scene.Scene;
+import javafx.scene.Parent;
 
 import java.net.URL;
 
@@ -25,10 +26,19 @@ public final class StylesheetLoader {
 
     public static void addBaseStyles(Scene scene) {
         scene.getStylesheets().clear();
+        addStylesheets(scene.getStylesheets());
+    }
+
+    public static void addBaseStyles(Parent parent) {
+        parent.getStylesheets().clear();
+        addStylesheets(parent.getStylesheets());
+    }
+
+    private static void addStylesheets(java.util.List<String> stylesheets) {
         for (String stylesheet : BASE_STYLES) {
             URL url = StylesheetLoader.class.getResource(stylesheet);
             if (url != null) {
-                scene.getStylesheets().add(url.toExternalForm());
+                stylesheets.add(url.toExternalForm());
             } else {
                 System.out.println("Không tìm thấy stylesheet: " + stylesheet);
             }
