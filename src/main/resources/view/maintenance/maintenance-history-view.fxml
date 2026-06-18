@@ -4,55 +4,57 @@
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.maintenance.MaintenanceHistoryController"
-            fitToWidth="true" styleClass="page-scroll">
+            fitToWidth="true"
+            styleClass="page-scroll">
     <VBox spacing="24" styleClass="page">
-
         <VBox styleClass="page-header">
             <Label text="Lịch sử bảo dưỡng" styleClass="page-title"/>
-            <Label text="Tra cứu toàn bộ lịch sử bảo dưỡng và sửa chữa theo từng phương tiện." styleClass="page-subtitle"/>
+            <Label text="Tra cứu các lần bảo dưỡng theo xe, trạng thái; nhấn đúp vào một dòng để xem hạng mục chi tiết." styleClass="page-subtitle"/>
         </VBox>
 
         <HBox spacing="12" styleClass="toolbar-panel">
-            <ComboBox fx:id="cbVehicle" promptText="Chọn xe để xem lịch sử..." prefWidth="260"/>
-            <Label fx:id="lblRecordCount" text="Chưa chọn xe" styleClass="metric-label"/>
-            <Region HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="cbFilterVehicle" promptText="Lọc theo xe..." prefWidth="220"/>
+            <ComboBox fx:id="cbFilterStatus" promptText="Lọc trạng thái..." prefWidth="180"/>
             <Button text="Làm mới" onAction="#handleRefresh" styleClass="btn-soft"/>
         </HBox>
 
         <VBox styleClass="table-panel">
             <HBox styleClass="table-title-row">
-                <Label text="Danh sách phiếu bảo dưỡng" styleClass="section-title"/>
+                <Label text="Danh sách lịch sử bảo dưỡng" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblHistory" prefHeight="280" styleClass="data-table">
+            <TableView fx:id="tblHistory" prefHeight="520" minHeight="420" fixedCellSize="44" styleClass="data-table">
                 <columns>
-                    <TableColumn fx:id="colHistoryId"     text="ID"             prefWidth="60"/>
-                    <TableColumn fx:id="colHistoryType"   text="Loại phiếu"     prefWidth="110"/>
-                    <TableColumn fx:id="colHistoryTitle"  text="Tiêu đề"        prefWidth="220"/>
-                    <TableColumn fx:id="colHistoryDate"   text="Ngày thực hiện" prefWidth="140"/>
-                    <TableColumn fx:id="colHistoryOdo"    text="ODO"            prefWidth="110"/>
-                    <TableColumn fx:id="colHistoryCost"   text="Chi phí"        prefWidth="150"/>
-                    <TableColumn fx:id="colHistoryStatus" text="Trạng thái"     prefWidth="120"/>
+                    <TableColumn fx:id="colHistoryId" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="colHistoryLicensePlate" text="Biển số" prefWidth="120"/>
+                    <TableColumn fx:id="colHistoryType" text="Loại" prefWidth="120"/>
+                    <TableColumn fx:id="colHistoryTitle" text="Tiêu đề" prefWidth="190"/>
+                    <TableColumn fx:id="colHistoryServiceDate" text="Ngày thực hiện" prefWidth="130"/>
+                    <TableColumn fx:id="colHistoryOdometer" text="ODO (km)" prefWidth="100"/>
+                    <TableColumn fx:id="colHistoryTechnician" text="Kỹ thuật viên" prefWidth="160"/>
+                    <TableColumn fx:id="colHistoryProvider" text="Nhà cung cấp" prefWidth="150"/>
+                    <TableColumn fx:id="colHistoryTotalCost" text="Chi phí (VNĐ)" prefWidth="130"/>
+                    <TableColumn fx:id="colHistoryStatus" text="Trạng thái" prefWidth="120"/>
+                    <TableColumn fx:id="colHistoryWorkSummary" text="Nội dung công việc" prefWidth="240"/>
                 </columns>
             </TableView>
         </VBox>
 
-        <VBox styleClass="table-panel">
+        <VBox fx:id="historyDetailPanel" prefWidth="1080" styleClass="table-panel, detail-panel" visible="false" managed="false">
             <HBox styleClass="table-title-row">
-                <Label text="Hạng mục / Phụ tùng (chọn phiếu bên trên để xem)" styleClass="section-title"/>
+                <Label text="Chi tiết hạng mục / phụ tùng của phiếu đã chọn" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
-            <TableView fx:id="tblItems" prefHeight="200" styleClass="data-table">
+            <TableView fx:id="tblItems" prefHeight="420" minHeight="340" fixedCellSize="44" styleClass="data-table">
                 <columns>
-                    <TableColumn fx:id="colItemType"      text="Loại"       prefWidth="80"/>
-                    <TableColumn fx:id="colItemDesc"      text="Mô tả"      prefWidth="280"/>
-                    <TableColumn fx:id="colItemQty"       text="SL"         prefWidth="70"/>
-                    <TableColumn fx:id="colItemUnit"      text="Đơn vị"     prefWidth="80"/>
-                    <TableColumn fx:id="colItemUnitCost"  text="Đơn giá"    prefWidth="140"/>
-                    <TableColumn fx:id="colItemLineTotal" text="Thành tiền" prefWidth="140"/>
+                    <TableColumn fx:id="colItemType"      text="Loại"       prefWidth="125"/>
+                    <TableColumn fx:id="colItemDesc"      text="Mô tả"      prefWidth="390"/>
+                    <TableColumn fx:id="colItemQty"       text="SL"         prefWidth="80"/>
+                    <TableColumn fx:id="colItemUnit"      text="Đơn vị"     prefWidth="90"/>
+                    <TableColumn fx:id="colItemUnitCost"  text="Đơn giá"    prefWidth="145"/>
+                    <TableColumn fx:id="colItemLineTotal" text="Thành tiền" prefWidth="165"/>
                 </columns>
             </TableView>
         </VBox>
-
     </VBox>
 </ScrollPane>

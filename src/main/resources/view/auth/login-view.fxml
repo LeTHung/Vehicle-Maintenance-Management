@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx"
@@ -17,8 +18,12 @@
         <Insets top="28" right="32" bottom="28" left="32"/>
     </padding>
 
-    <VBox alignment="CENTER" spacing="4">
-        <Label text="FleetCare" styleClass="brand-title"/>
+    <VBox alignment="CENTER" spacing="8">
+        <ImageView fitWidth="310" preserveRatio="true" styleClass="login-logo">
+            <image>
+                <Image url="@../../images/fleetcare-logo.png"/>
+            </image>
+        </ImageView>
         <Label text="Đăng nhập hệ thống" styleClass="page-subtitle"/>
     </VBox>
 

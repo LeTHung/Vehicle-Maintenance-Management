@@ -2,13 +2,13 @@
 
 .sidebar {
     -fx-background-color: -app-surface-low;
-    -fx-pref-width: 276;
-    -fx-min-width: 276;
-    -fx-max-width: 276;
+    -fx-pref-width: 236;
+    -fx-min-width: 236;
+    -fx-max-width: 236;
 }
 
 .sidebar-brand {
-    -fx-padding: 26 22 18 22;
+    -fx-padding: 18 16 12 16;
 }
 
 .brand-row {
@@ -26,7 +26,32 @@
     -fx-alignment: CENTER;
 }
 
-.brand-title,
+.brand-logo-tile {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-max-width: 42;
+    -fx-max-height: 42;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.08), 12, 0, 0, 4);
+}
+
+.avatar-logo-tile {
+    -fx-background-color: white;
+    -fx-background-radius: 999;
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-max-width: 42;
+    -fx-max-height: 42;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.07), 10, 0, 0, 3);
+}
+
+.brand-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -app-text-main;
+}
+
 .logo-text {
     -fx-font-size: 22px;
     -fx-font-weight: 800;
@@ -35,6 +60,10 @@
 
 .login-page .brand-title {
     -fx-font-size: 28px;
+}
+
+.login-logo {
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.06), 18, 0, 0, 6);
 }
 
 .brand-subtitle,
@@ -46,15 +75,15 @@
 
 .nav-wrap,
 .sidebar-menu {
-    -fx-padding: 2 14 14 14;
-    -fx-spacing: 4;
+    -fx-padding: 2 12 12 12;
+    -fx-spacing: 3;
 }
 
 .nav-title {
     -fx-font-size: 10px;
     -fx-font-weight: 800;
     -fx-text-fill: -app-text-sub;
-    -fx-padding: 18 12 7 12;
+    -fx-padding: 14 12 6 12;
 }
 
 .nav-button {
@@ -62,8 +91,8 @@
     -fx-text-fill: #555b68;
     -fx-font-size: 13px;
     -fx-font-weight: 600;
-    -fx-padding: 12 14;
-    -fx-background-radius: 12;
+    -fx-padding: 10 13;
+    -fx-background-radius: 11;
     -fx-alignment: CENTER_LEFT;
     -fx-cursor: hand;
 }
@@ -82,8 +111,8 @@
 }
 
 .sidebar-footer {
-    -fx-padding: 16;
-    -fx-spacing: 12;
+    -fx-padding: 14;
+    -fx-spacing: 10;
 }
 
 .avatar-mini {
@@ -111,8 +140,8 @@
     -fx-background-color: rgba(239,68,68,0.10);
     -fx-text-fill: -app-danger-dark;
     -fx-font-weight: 700;
-    -fx-background-radius: 12;
-    -fx-padding: 10 14;
+    -fx-background-radius: 11;
+    -fx-padding: 9 13;
     -fx-cursor: hand;
 }
 
@@ -133,18 +162,22 @@
 }
 
 .sidebar-scroll > .scroll-bar:vertical {
-    -fx-pref-width: 4;
+    -fx-pref-width: 6;
     -fx-background-color: transparent;
 }
 
 .sidebar-scroll > .scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(0, 74, 198, 0.22);
-    -fx-background-radius: 3;
+    -fx-background-color: rgba(0, 74, 198, 0.20);
+    -fx-background-radius: 999;
     -fx-background-insets: 1;
 }
 
 .sidebar-scroll > .scroll-bar:vertical .thumb:hover {
     -fx-background-color: rgba(0, 74, 198, 0.50);
+}
+
+.sidebar-scroll > .scroll-bar:vertical .thumb:pressed {
+    -fx-background-color: rgba(0, 74, 198, 0.70);
 }
 
 .sidebar-scroll > .scroll-bar:vertical .track,
@@ -197,4 +230,13 @@
     -fx-font-size: 10px;
     -fx-font-weight: 800;
     -fx-padding: 4 10;
+}
+
+/* Mục menu đang mở có độ tương phản mạnh hơn các mục còn lại. */
+.nav-button-active,
+.nav-button.active {
+    -fx-border-color: -app-primary;
+    -fx-border-width: 0 0 0 4;
+    -fx-border-radius: 12 0 0 12;
+    -fx-padding: 12 14 12 10;
 }

@@ -183,6 +183,34 @@ public class VehicleDAO {
         return false;
     }
 
+    /**
+     * Cập nhật ODO hiện tại của xe sau khi bảo dưỡng.
+     * Chỉ tăng (không cho lùi ODO) để tránh ghi đè bằng số nhỏ hơn.
+     */
+    public boolean updateOdometer(long vehicleId, int odometer) {
+        String sql = """
+                UPDATE vehicles
+                SET current_odometer = ?
+                WHERE vehicle_id = ?
+                  AND (current_odometer IS NULL OR current_odometer < ?)
+                """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, odometer);
+            ps.setLong(2, vehicleId);
+            ps.setInt(3, odometer);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public boolean existsByVehicleCode(String vehicleCode, Long excludedVehicleId) {
         return existsByUniqueColumn("vehicle_code", vehicleCode, excludedVehicleId);
     }

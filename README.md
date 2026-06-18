@@ -1,207 +1,339 @@
-# Vehicle Maintenance Management
+# FleetCare - Quản lý hồ sơ và bảo dưỡng phương tiện
 
-Ung dung desktop JavaFX cho do an **Quan ly ho so va bao duong phuong tien**.
-Du an duoc to chuc theo huong MVC, dung FXML/CSS cho giao dien va MySQL lam co so du lieu.
+FleetCare là ứng dụng desktop JavaFX phục vụ dự án **Quản lý hồ sơ và bảo dưỡng phương tiện**. Ứng dụng hỗ trợ quản lý đội xe, giấy tờ pháp lý, kế hoạch bảo dưỡng, phiếu bảo dưỡng, cảnh báo đến hạn, báo cáo chi phí và quản trị người dùng theo vai trò.
 
-## Trang thai hien tai
+## Tổng quan
 
-- Da co man hinh dang nhap, dang xuat, session va phan quyen menu theo role.
-- Da co quan ly tai khoan co ban: xem danh sach, them, sua, khoa/mo khoa user.
-- Da co seed du lieu role/user demo trong `data/seed-auth.sql`.
-- Cac man hinh vehicle/document/maintenance/report van do cac thanh vien/pham vi khac tiep tuc hoan thien.
+Dự án được tổ chức theo mô hình MVC:
 
-## Muc tieu
+- **View**: FXML và CSS trong `src/main/resources`.
+- **Controller**: xử lý tương tác giao diện trong `src/main/java/controller`.
+- **Service**: nghiệp vụ, validate và điều phối thao tác.
+- **DAO**: truy cập dữ liệu MySQL bằng JDBC.
+- **Entity/DTO**: mô hình dữ liệu và dữ liệu hiển thị.
 
-- Quan ly ho so phuong tien.
-- Quan ly tai khoan va vai tro nguoi dung.
-- Theo doi canh bao lien quan den giay to, bao duong va trang thai phuong tien.
-- Ket noi MySQL qua JDBC.
+Luồng nghiệp vụ chính:
 
-## Cong nghe su dung
+1. Admin quản lý tài khoản, cấu hình ngưỡng cảnh báo và xem audit log.
+2. Fleet Manager quản lý hồ sơ xe, giấy tờ, kế hoạch bảo dưỡng, cảnh báo và báo cáo chi phí.
+3. Technician xem xe cần bảo dưỡng, tạo/cập nhật phiếu bảo dưỡng và lịch sử bảo dưỡng.
+
+## Công nghệ sử dụng
 
 - Java JDK 25
 - JavaFX 25.0.3
-- FXML + CSS
-- MySQL
-- MySQL Connector/J
 - Maven Wrapper
+- MySQL 8.x
+- JDBC / MySQL Connector/J 9.7.0
 - jBCrypt 0.4
-- VS Code
+- FXML + CSS
 
-## Cau truc thu muc
+## Cấu trúc thư mục
 
 ```text
-src/main/java
-|-- app          # Diem khoi chay ung dung
-|-- controller   # Controller cua cac man hinh FXML
-|-- database     # Ket noi MySQL
-|-- model
-|   |-- dao      # Lop truy cap du lieu
-|   |-- dto      # Lop truyen du lieu giua cac tang
-|   `-- entity   # Lop anh xa du lieu nghiep vu
-|-- service      # Xu ly nghiep vu
-|-- session      # Luu thong tin phien dang nhap
-`-- util         # Tien ich dung chung
-
-src/main/resources
-|-- css          # File giao dien CSS
-|-- images       # Hinh anh, icon
-`-- view         # File FXML
-
-data
-|-- Dump20260524.sql
-`-- seed-auth.sql
+.
+|-- config
+|   `-- database.example.properties   # File cấu hình mẫu, copy thành database.properties
+|-- data
+|   |-- schema.sql                    # Tạo database, bảng, ràng buộc và view
+|   `-- data.sql                      # Dữ liệu tham chiếu và dữ liệu demo
+|-- dist
+|   `-- QuanLyBaoDuongXe.zip          # Bản đóng gói
+|-- lib
+|   `-- mysql-connector-j-9.7.0.jar
+|-- src/main/java
+|   |-- app                           # MainApp và Launcher
+|   |-- controller                    # Controller cho từng màn hình
+|   |-- database                      # DatabaseConnection và TestConnection
+|   |-- model
+|   |   |-- dao                       # Lớp truy cập MySQL
+|   |   |-- dto                       # DTO cho bảng/cảnh báo/báo cáo
+|   |   `-- entity                    # Entity nghiệp vụ
+|   |-- service                       # Xử lý nghiệp vụ và validate
+|   |-- session                       # UserSession
+|   `-- util                          # Alert, icon, password, stylesheet, scroll
+`-- src/main/resources
+    |-- css                           # Theme, layout, form, table, page CSS
+    |-- images                        # Logo/icon FleetCare
+    `-- view                          # FXML giao diện
 ```
 
-## Yeu cau moi truong
+## Chức năng chính
 
-- Cai Java JDK 25.
-- Cai MySQL Server.
-- Cai VS Code.
-- Cai extension **Extension Pack for Java** trong VS Code.
+### Admin
 
-Neu may co nhieu JDK, dat `JAVA_HOME` ve JDK 25 truoc khi build:
+- Dashboard quản trị tổng hợp người dùng, tài khoản bị khóa, cảnh báo hệ thống và audit log gần đây.
+- Quản lý người dùng: thêm, sửa, khóa/mở khóa, reset mật khẩu.
+- Đổi mật khẩu cá nhân.
+- Cấu hình cảnh báo:
+  - Số ngày cảnh báo giấy tờ.
+  - Số ngày cảnh báo bảo dưỡng.
+  - Số km cảnh báo bảo dưỡng.
+  - Đồng bộ ngưỡng giấy tờ sang danh mục loại giấy tờ.
+- Xem audit log đăng nhập, đăng xuất và thao tác quản trị.
+
+### Fleet Manager
+
+- Dashboard đội xe và danh sách cảnh báo tổng hợp.
+- Quản lý hồ sơ phương tiện.
+- Quản lý giấy tờ xe: đăng kiểm, bảo hiểm, phí đường bộ.
+- Theo dõi cảnh báo giấy tờ quá hạn và sắp hết hạn.
+- Lập, cập nhật, hủy kích hoạt kế hoạch bảo dưỡng.
+- Xem cảnh báo bảo dưỡng theo ngày hoặc ODO.
+- Xem lịch sử bảo dưỡng.
+- Xem báo cáo chi phí bảo dưỡng và giấy tờ theo tháng, năm, xe.
+
+### Technician
+
+- Dashboard kỹ thuật.
+- Xem danh sách xe cần bảo dưỡng.
+- Tạo và cập nhật phiếu bảo dưỡng.
+- Nhập hạng mục công việc/phụ tùng, số lượng, đơn giá và tổng chi phí.
+- Khi phiếu chuyển sang `COMPLETED`, hệ thống cập nhật ODO xe và đóng chu kỳ kế hoạch liên quan.
+- Xem lịch sử bảo dưỡng và chi tiết hạng mục.
+
+## Nghiệp vụ và kiểm soát dữ liệu
+
+Ứng dụng có các lớp validate ở tầng service và ràng buộc ở database, gồm:
+
+- Không cho trùng mã xe, biển số, số khung, số máy.
+- ODO không được âm và không được giảm so với dữ liệu bảo dưỡng đã hoàn thành.
+- Không cho trùng giấy tờ hiện hành cùng xe/cùng loại.
+- Ngày hết hạn giấy tờ không được trước ngày cấp hoặc ngày hiệu lực.
+- Chi phí giấy tờ, chi phí bảo dưỡng và đơn giá hạng mục không được âm.
+- Kế hoạch bảo dưỡng phải có chu kỳ theo ngày hoặc theo km.
+- Không cho trùng kế hoạch active cùng xe/cùng loại bảo dưỡng.
+- Phiếu đã `COMPLETED` không được chuyển ngược sang trạng thái khác.
+- Mật khẩu tối thiểu 8 ký tự, có chữ và số, lưu bằng BCrypt.
+- Admin không được khóa chính tài khoản đang đăng nhập và không reset mật khẩu của chính mình ở màn quản lý user.
+
+## Yêu cầu môi trường
+
+- JDK 25.
+- MySQL Server 8.x.
+- MySQL client CLI nếu muốn chạy script bằng terminal.
+- Maven không cần cài riêng vì dự án có Maven Wrapper (`mvnw`, `mvnw.cmd`).
+
+Kiểm tra môi trường:
+
+```powershell
+java -version
+.\mvnw.cmd -v
+mysql --version
+```
+
+Nếu máy có nhiều JDK, đặt `JAVA_HOME` về JDK 25 trước khi chạy:
 
 ```powershell
 $env:JAVA_HOME = "D:\Java\jdk-25.0.3"
 $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 ```
 
-Kiem tra:
+## Cấu hình database
+
+Ứng dụng đọc cấu hình database theo thứ tự ưu tiên:
+
+1. System properties khi chạy Java.
+2. Biến môi trường.
+3. File local `config/database.properties`.
+
+Tạo file cấu hình local:
 
 ```powershell
-java -version
-.\mvnw -v
+Copy-Item config\database.example.properties config\database.properties
 ```
 
-Ket qua Maven nen hien thi Java `25.x`.
-
-## Cau hinh MySQL
-
-Mac dinh project ket noi toi database:
-
-```text
-jdbc:mysql://localhost:3306/vehicle_maintenance_management
-user: root
-password: 123456
-```
-
-Thong tin ket noi nam trong file local:
-
-```text
-config/database.properties
-```
-
-File nay khong commit len git. Co the copy tu:
-
-```text
-config/database.example.properties
-```
-
-### Chay local
-
-Dat `DB_MODE=local`, sau do cau hinh trong `config/database.properties`:
+Ví dụ cấu hình MySQL local:
 
 ```properties
-DB_URL=jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh
+DB_MODE=local
+DB_URL=jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true
 DB_USER=root
-DB_PASSWORD=mat_khau_mysql
+DB_PASSWORD=your_mysql_password
 ```
 
-Neu muon cau hinh bang bien moi truong trong terminal:
+`DB_MODE` có thể là:
 
-```powershell
-$env:DB_URL = "jdbc:mysql://localhost:3306/vehicle_maintenance_management?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh"
-$env:DB_USER = "root"
-$env:DB_PASSWORD = "mat_khau_mysql"
-```
+- `local`: dùng `DB_URL`, `DB_USER`, `DB_PASSWORD`.
+- `railway`: dùng `MYSQL_PUBLIC_URL` / `MYSQL_URL`, hoặc bộ `MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD`.
+- `auto`: tự chọn Railway nếu có biến Railway, ngược lại dùng local.
 
-### Chay Railway
-
-Dat `DB_MODE=railway`. App se doc thong tin Railway theo 1 trong 2 cach:
+Ví dụ cấu hình Railway:
 
 ```properties
+DB_MODE=railway
 MYSQL_PUBLIC_URL=mysql://user:password@host:port/database
 ```
 
-Co the dung `MYSQL_URL` thay cho `MYSQL_PUBLIC_URL`, nhung khi chay app tu may ca nhan thi public URL thuong de ket noi hon.
-
-Hoac:
+Hoặc:
 
 ```properties
+DB_MODE=railway
 MYSQLHOST=host
-MYSQLPORT=port
+MYSQLPORT=3306
 MYSQLDATABASE=database
 MYSQLUSER=user
 MYSQLPASSWORD=password
 ```
 
-## Tao database va seed tai khoan demo
+## Tạo database và nạp dữ liệu demo
 
-Chay schema goc neu database chua co bang:
+File SQL có tiếng Việt, nên trên Windows nên chạy bằng redirection. Không dùng dạng `Get-Content data\schema.sql | mysql` vì PowerShell có thể làm hỏng dấu tiếng Việt.
 
-```powershell
-Get-Content data\Dump20260524.sql | mysql -u root -p
-```
-
-Chay seed auth/user/role:
+Chạy bằng PowerShell qua `cmd /c`:
 
 ```powershell
-Get-Content data\seed-auth.sql | mysql -u root -p
+cmd /c "mysql -u root -p --default-character-set=utf8mb4 < data\schema.sql"
+cmd /c "mysql -u root -p --default-character-set=utf8mb4 < data\data.sql"
 ```
 
-Tai khoan demo:
+Nếu tài khoản MySQL root không có mật khẩu, bỏ `-p`:
 
-| Username | Password | Role |
-|---|---|---|
-| `admin` | `123456` | `ADMIN` |
-| `manager` | `123456` | `FLEET_MANAGER` |
-| `tech` | `123456` | `TECHNICIAN` |
+```powershell
+cmd /c "mysql -u root --default-character-set=utf8mb4 < data\schema.sql"
+cmd /c "mysql -u root --default-character-set=utf8mb4 < data\data.sql"
+```
 
-Kiem tra nhanh sau khi seed:
+Nếu MySQL client chưa có trong `PATH`, thêm tạm trong PowerShell:
+
+```powershell
+$env:Path = "C:\Program Files\MySQL\MySQL Server 8.0\bin;$env:Path"
+mysql --version
+```
+
+Database mặc định được tạo là:
+
+```text
+vehicle_maintenance_management
+```
+
+## Dữ liệu demo
+
+`data/data.sql` nạp dữ liệu tham chiếu và dữ liệu demo gồm:
+
+- 3 vai trò: `ADMIN`, `FLEET_MANAGER`, `TECHNICIAN`.
+- 16 quyền nghiệp vụ.
+- 3 loại giấy tờ: đăng kiểm, bảo hiểm, phí đường bộ.
+- 5 loại bảo dưỡng.
+- 20 hạng mục công việc/phụ tùng.
+- 10 phương tiện.
+- 30 giấy tờ pháp lý.
+- Nhiều kế hoạch và phiếu bảo dưỡng, bao gồm dữ liệu lịch sử để xem báo cáo.
+- Cảnh báo giấy tờ và bảo dưỡng theo dữ liệu tương đối với `CURDATE()`, giúp luôn có trạng thái `OVERDUE` và `COMING_DUE`.
+
+Tài khoản demo:
+
+| Username  | Password      | Vai trò         | Ghi chú           |
+| --------- | ------------- | --------------- | ----------------- |
+| `admin`   | `admin1234`   | `ADMIN`         | Quản trị hệ thống |
+| `manager` | `manager1234` | `FLEET_MANAGER` | Quản lý đội xe    |
+| `tech`    | `tech1234`    | `TECHNICIAN`    | Nguyễn Văn An     |
+| `tech2`   | `tech21234`   | `TECHNICIAN`    | Nguyễn Văn Minh   |
+| `tech3`   | `tech31234`   | `TECHNICIAN`    | Trần Quốc Hùng    |
+| `tech4`   | `tech41234`   | `TECHNICIAN`    | Lê Hoàng Phúc     |
+
+Kiểm tra nhanh sau khi seed:
 
 ```sql
+USE vehicle_maintenance_management;
+
 SELECT role_id, role_code, role_name, is_active FROM roles;
 SELECT user_id, username, full_name, role_id, account_status FROM users;
+SELECT vehicle_id, license_plate, vehicle_status FROM vehicles;
+SELECT due_status, COUNT(*) FROM vw_due_vehicle_documents GROUP BY due_status;
+SELECT due_status, COUNT(*) FROM vw_due_maintenance_plans GROUP BY due_status;
+SELECT period_ym, SUM(total_cost) FROM vw_vehicle_cost_monthly GROUP BY period_ym;
 ```
 
-## Build project
+## Chạy ứng dụng
 
-Chay trong thu muc goc project:
+Chạy app bằng Maven Wrapper:
 
 ```powershell
-.\mvnw clean package
+.\mvnw.cmd javafx:run
 ```
 
-Neu build loi do Java version, kiem tra lai `JAVA_HOME` dang tro dung JDK 25.
+Main class được cấu hình trong `pom.xml`:
 
-## Chay ung dung
+```text
+app.Launcher
+```
+
+Màn hình đầu tiên là đăng nhập. Sau khi đăng nhập, menu và dashboard thay đổi theo vai trò của tài khoản.
+
+## Kiểm tra kết nối database
+
+Dự án có class kiểm tra kết nối:
 
 ```powershell
-.\mvnw javafx:run
+.\mvnw.cmd exec:java -Dexec.mainClass="database.TestConnection"
 ```
 
-Luong dang nhap hien tai:
+Nếu plugin `exec` chưa được tải/cấu hình, có thể kiểm tra bằng cách chạy ứng dụng trực tiếp với `javafx:run`; lỗi thiếu cấu hình database sẽ được in ra console khi app khởi động hoặc khi đăng nhập.
 
-- Dang nhap bang tai khoan demo.
-- Admin co menu Quan ly nguoi dung.
-- Manager co menu phuong tien/giay to/canh bao/bao cao.
-- Technician co menu bao duong.
+## Build
 
-## Quy uoc phat trien
-
-- Entity dat trong `model/entity`.
-- DAO dat trong `model/dao`.
-- DTO dat trong `model/dto`.
-- Logic nghiep vu dat trong `service`.
-- Ket noi MySQL dat trong `database`.
-- FXML dat trong `src/main/resources/view`.
-- CSS dat trong `src/main/resources/css`.
-- Khong commit thong tin mat khau MySQL ca nhan.
-- Moi thanh vien cau hinh `DB_USER`, `DB_PASSWORD` rieng bang bien moi truong.
-
-Truoc khi push code, nen chay:
+Biên dịch dự án:
 
 ```powershell
-.\mvnw clean package
+.\mvnw.cmd clean compile
 ```
+
+Đóng gói jar:
+
+```powershell
+.\mvnw.cmd clean package
+```
+
+Kết quả build nằm trong thư mục `target/`.
+
+## Cài đặt bản EXE trên Windows
+
+Nếu dùng bản đóng gói sẵn, file nén nằm trong:
+
+```text
+dist/QuanLyBaoDuongXe.zip
+```
+
+Cách cài/chạy:
+
+1. Giải nén `QuanLyBaoDuongXe.zip` ra một thư mục bất kỳ trên máy Windows.
+2. Mở thư mục vừa giải nén và chạy file `QuanLyBaoDuongXe.exe`.
+3. Đảm bảo MySQL đã được tạo database và nạp dữ liệu theo phần **Tạo database và nạp dữ liệu demo**.
+4. Cấu hình kết nối database bằng biến môi trường hoặc file `config/database.properties` nếu bản đóng gói được chạy cùng thư mục cấu hình.
+
+Lưu ý khi chia sẻ bản `.exe`:
+
+- Không xóa các thư mục đi kèm trong bản giải nén, vì file `.exe` cần runtime và thư viện đi cùng.
+- Không đưa mật khẩu database thật vào file cấu hình nếu nộp/chia sẻ công khai.
+- Nếu Windows SmartScreen cảnh báo ứng dụng không rõ nhà phát hành, chọn **More info** rồi **Run anyway** nếu chắc chắn file được build từ dự án này.
+
+## Các bảng và view chính
+
+Các bảng chính:
+
+- `roles`, `permissions`, `role_permissions`
+- `users`
+- `vehicles`
+- `document_types`, `vehicle_documents`
+- `maintenance_types`, `maintenance_items`
+- `maintenance_plans`
+- `maintenance_records`, `maintenance_record_items`
+- `alert_settings`, `alerts`
+- `audit_logs` được tạo tự động bởi `AuditLogDAO` khi ghi/xem log nếu bảng chưa tồn tại.
+
+Các view nghiệp vụ:
+
+- `vw_due_maintenance_plans`: xác định kế hoạch bảo dưỡng `OVERDUE`, `COMING_DUE`, `NORMAL`.
+- `vw_due_vehicle_documents`: xác định giấy tờ xe quá hạn hoặc sắp hết hạn.
+- `vw_vehicle_cost_monthly`: tổng hợp chi phí bảo dưỡng và giấy tờ theo tháng/xe.
+
+## Mục đích
+
+Dự án được xây dựng cho học phần thực tập cơ sở / đồ án JavaFX MVC, tập trung vào bài toán quản lý hồ sơ và bảo dưỡng phương tiện trong đội xe.
+
+## Kết luận
+
+FleetCare đã hoàn thiện các nghiệp vụ cốt lõi của một hệ thống quản lý đội xe ở mức ứng dụng desktop: quản lý người dùng theo vai trò, lưu trữ hồ sơ phương tiện, theo dõi giấy tờ pháp lý, lập kế hoạch bảo dưỡng, cập nhật phiếu bảo dưỡng, cảnh báo đến hạn và tổng hợp chi phí. Dự án cũng thể hiện được cách tổ chức mã nguồn theo mô hình MVC, tách rõ controller, service, DAO và model để dễ bảo trì.
+
+Với dữ liệu demo, cấu hình database linh hoạt và hướng dẫn chạy chi tiết, ứng dụng có thể dùng để trình bày luồng nghiệp vụ thực tế từ quản trị hệ thống đến vận hành đội xe. Trong tương lai, dự án có thể mở rộng thêm upload file giấy tờ, phân quyền động chi tiết hơn, xuất báo cáo PDF/Excel và bổ sung test tự động cho các luồng quan trọng.

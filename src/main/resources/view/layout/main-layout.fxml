@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
@@ -13,7 +14,13 @@
         <VBox styleClass="sidebar">
             <VBox styleClass="sidebar-brand">
                 <HBox spacing="12" styleClass="brand-row">
-                    <Label text="FC" styleClass="brand-mark"/>
+                    <StackPane styleClass="brand-logo-tile">
+                        <ImageView fitWidth="38" fitHeight="38" preserveRatio="true">
+                            <image>
+                                <Image url="@../../images/fleetcare-icon.png"/>
+                            </image>
+                        </ImageView>
+                    </StackPane>
                     <VBox>
                         <Label text="FleetCare" styleClass="brand-title"/>
                         <Label text="Quản lý hồ sơ &amp; bảo dưỡng" styleClass="brand-subtitle"/>
@@ -24,12 +31,12 @@
             <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="sidebar-scroll">
                 <VBox styleClass="nav-wrap">
                     <Label text="TỔNG QUAN" styleClass="nav-title"/>
-                    <Button fx:id="btnDashboard" text="Dashboard" onAction="#openDashboard" maxWidth="Infinity" styleClass="nav-button"/>
+                    <Button fx:id="btnDashboard" text="Tổng quan" onAction="#openDashboard" maxWidth="Infinity" styleClass="nav-button"/>
 
                     <VBox fx:id="groupAdmin">
                         <Label text="QUẢN TRỊ HỆ THỐNG" styleClass="nav-title"/>
                         <Button fx:id="btnAdminUsers" text="Quản lý người dùng" onAction="#openAdminUsers" maxWidth="Infinity" styleClass="nav-button"/>
-                        <Button fx:id="btnAdminRoles" text="Vai trò &amp; phân quyền" onAction="#openAdminRoles" maxWidth="Infinity" styleClass="nav-button"/>
+                        <Button fx:id="btnAlertSettings" text="Cấu hình cảnh báo" onAction="#openAlertSettings" maxWidth="Infinity" styleClass="nav-button"/>
                         <Button fx:id="btnAuditLog" text="Audit logs" onAction="#openAuditLog" maxWidth="Infinity" styleClass="nav-button"/>
                     </VBox>
 
@@ -46,7 +53,9 @@
 
                     <VBox fx:id="groupTechnician">
                         <Label text="KỸ THUẬT BẢO DƯỠNG" styleClass="nav-title"/>
+                        <Button fx:id="btnTechMaintenanceAlert" text="Xe cần bảo dưỡng" onAction="#openMaintenanceAlert" maxWidth="Infinity" styleClass="nav-button"/>
                         <Button fx:id="btnMaintenanceRecord" text="Cập nhật bảo dưỡng" onAction="#openMaintenanceRecord" maxWidth="Infinity" styleClass="nav-button"/>
+                        <Button fx:id="btnTechMaintenanceHistory" text="Lịch sử bảo dưỡng" onAction="#openMaintenanceHistory" maxWidth="Infinity" styleClass="nav-button"/>
                     </VBox>
 
                     <VBox fx:id="groupReport">
@@ -58,33 +67,23 @@
 
             <VBox styleClass="sidebar-footer">
                 <HBox spacing="10">
-                    <Label text="FC" styleClass="avatar-mini"/>
+                    <StackPane styleClass="avatar-logo-tile">
+                        <ImageView fitWidth="36" fitHeight="36" preserveRatio="true">
+                            <image>
+                                <Image url="@../../images/fleetcare-icon.png"/>
+                            </image>
+                        </ImageView>
+                    </StackPane>
                     <VBox>
                         <Label fx:id="lblUserName" text="Người dùng" styleClass="user-name"/>
                         <Label fx:id="lblUserRole" text="Vai trò" styleClass="user-role"/>
                     </VBox>
                 </HBox>
+                <Button text="Đổi mật khẩu" onAction="#handleChangeOwnPassword" maxWidth="Infinity" styleClass="btn-soft"/>
                 <Button text="Đăng xuất" onAction="#handleLogout" maxWidth="Infinity" styleClass="logout-button"/>
             </VBox>
         </VBox>
     </left>
-
-    <top>
-        <HBox styleClass="topbar">
-            <VBox>
-                <HBox spacing="10">
-                    <Label fx:id="lblPageTitle" text="Dashboard" styleClass="topbar-title"/>
-                    <Label fx:id="lblRoleBadge" text="ROLE" styleClass="role-badge"/>
-                </HBox>
-                <Label text="Hệ thống quản lý hồ sơ, giấy tờ và bảo dưỡng phương tiện." styleClass="topbar-subtitle"/>
-            </VBox>
-
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <TextField fx:id="txtQuickSearch" promptText="Tìm kiếm nhanh..." prefWidth="300" styleClass="search-field"/>
-            <Button text="Thông báo" onAction="#openDocumentAlert" styleClass="btn-soft"/>
-        </HBox>
-    </top>
 
     <center>
         <StackPane fx:id="contentArea" styleClass="content-area"/>

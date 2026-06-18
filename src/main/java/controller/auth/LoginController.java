@@ -1,5 +1,7 @@
 package controller.auth;
 
+import controller.common.PasswordDialogHelper;
+import controller.common.PasswordDialogHelper.PasswordChangeData;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,16 +13,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Screen;
+import model.entity.User;
 import javafx.stage.Stage;
 import service.AuthService;
 import service.AuthenticationException;
+import service.UserService;
 import util.StylesheetLoader;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class LoginController {
 
     private final AuthService authService = new AuthService();
+    private final UserService userService = new UserService();
 
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
@@ -42,7 +48,13 @@ public class LoginController {
         hideError();
 
         try {
-            authService.login(usernameField.getText(), passwordField.getText());
+            User user = authService.login(usernameField.getText(), passwordField.getText());
+            if (user.isMustChangePassword() && !forcePasswordChange()) {
+                authService.logout();
+                passwordField.clear();
+                showError("Bạn cần đổi mật khẩu trước khi vào hệ thống.");
+                return;
+            }
             loadMainLayout();
         } catch (AuthenticationException e) {
             showError(e.getMessage());
@@ -52,6 +64,14 @@ public class LoginController {
             showError("Không thể mở màn hình chính. Vui lòng thử lại.");
             e.printStackTrace();
         }
+    }
+
+    private boolean forcePasswordChange() {
+        Optional<PasswordChangeData> formData = PasswordDialogHelper.showOwnPasswordDialog(
+                "Đổi mật khẩu bắt buộc",
+                "Tài khoản của bạn đang dùng mật khẩu tạm. Vui lòng đổi mật khẩu mới.",
+                data -> userService.changeOwnPassword(data.currentPassword(), data.newPassword(), data.confirmPassword()));
+        return formData.isPresent();
     }
 
     private void loadMainLayout() throws IOException {
@@ -95,4 +115,5 @@ public class LoginController {
         errorLabel.setManaged(false);
         errorLabel.setText("");
     }
+
 }

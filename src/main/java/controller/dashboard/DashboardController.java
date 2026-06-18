@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import model.dao.DocumentAlertDAO;
+import model.dao.MaintenancePlanDAO;
+import model.dao.MaintenanceRecordDAO;
 import model.dao.RoleDAO;
 import model.dao.UserDAO;
 import model.dao.VehicleDAO;
@@ -58,6 +60,8 @@ public class DashboardController {
     private final DocumentAlertDAO documentAlertDAO = new DocumentAlertDAO();
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
+    private final MaintenancePlanDAO maintenancePlanDAO = new MaintenancePlanDAO();
+    private final MaintenanceRecordDAO maintenanceRecordDAO = new MaintenanceRecordDAO();
 
     @FXML
     public void initialize() {
@@ -82,15 +86,15 @@ public class DashboardController {
 
         setHeader("Xin chào, " + displayName,
                 "Quản trị tài khoản, vai trò và trạng thái vận hành hệ thống.",
-                "ADMIN");
+                "QUẢN TRỊ");
         setKpis("Tài khoản", users.size(), "Người dùng đã tạo",
                 "Vai trò", roleDAO.findAllActive().size(), "Nhóm quyền đang kích hoạt",
                 "Bị khóa", lockedUsers, "Tài khoản cần xem lại",
                 "Phương tiện", vehicleDAO.findAll().size(), "Dữ liệu nghiệp vụ hiện có");
-        setModules("Quản lý người dùng", "Tạo tài khoản, sửa thông tin, khóa và mở khóa.", "ADMIN",
-                "Vai trò & phân quyền", "Kiểm tra nhóm quyền cho Admin, Manager và Tech.", "RBAC",
-                "Tổng quan hệ thống", "Theo dõi số liệu tổng hợp khi demo và nghiệm thu.", "OVERVIEW",
-                "Báo cáo", "Truy cập dữ liệu tổng hợp để đối chiếu nhanh.", "READ ONLY");
+        setModules("Quản lý người dùng", "Tạo tài khoản, sửa thông tin, khóa và mở khóa.", "QUẢN TRỊ",
+                "Audit logs", "Theo dõi đăng nhập, đăng xuất và thao tác quản trị user.", "AUDIT",
+                "Tổng quan hệ thống", "Theo dõi số liệu tổng hợp khi demo và nghiệm thu.", "TỔNG QUAN",
+                "Báo cáo", "Truy cập dữ liệu tổng hợp để đối chiếu nhanh.", "CHỈ XEM");
         setFocus("Cần kiểm tra trước khi bàn giao",
                 "Đảm bảo mỗi thành viên có tài khoản đúng vai trò và tài khoản demo đang hoạt động.",
                 "1. Tạo đủ tài khoản admin, manager, tech.",
@@ -106,15 +110,15 @@ public class DashboardController {
 
         setHeader("Xin chào, " + displayName,
                 "Theo dõi phương tiện, giấy tờ pháp lý, cảnh báo và báo cáo đội xe.",
-                "MANAGER");
+                "QUẢN LÝ");
         setKpis("Tổng xe", vehicles.size(), "Hồ sơ phương tiện đang quản lý",
                 "Bảo dưỡng", underMaintenance, "Xe đang ở trạng thái bảo dưỡng",
                 "Sắp hết hạn", documentAlertDAO.countByStatus("COMING_DUE"), "Giấy tờ cần theo dõi",
                 "Đã hết hạn", documentAlertDAO.countByStatus("OVERDUE"), "Cần xử lý ưu tiên");
-        setModules("Hồ sơ phương tiện", "Quản lý biển số, loại xe, ODO, số khung và số máy.", "CORE",
-                "Giấy tờ xe", "Cập nhật đăng kiểm, bảo hiểm và phí đường bộ.", "DOCUMENT",
-                "Cảnh báo giấy tờ", "Lọc giấy tờ sắp hết hạn hoặc đã quá hạn.", "ALERT",
-                "Báo cáo chi phí", "Theo dõi chi phí khi module báo cáo được kết nối.", "REPORT");
+        setModules("Hồ sơ phương tiện", "Quản lý biển số, loại xe, ODO, số khung và số máy.", "CỐT LÕI",
+                "Giấy tờ xe", "Cập nhật đăng kiểm, bảo hiểm và phí đường bộ.", "GIẤY TỜ",
+                "Cảnh báo giấy tờ", "Lọc giấy tờ sắp hết hạn hoặc đã quá hạn.", "CẢNH BÁO",
+                "Báo cáo chi phí", "Theo dõi chi phí khi phân hệ báo cáo được kết nối.", "BÁO CÁO");
         setFocus("Ưu tiên vận hành đội xe",
                 "Xử lý giấy tờ đã hết hạn trước, sau đó bổ sung hồ sơ xe và cập nhật cảnh báo còn lại.",
                 "1. Mở Cảnh báo giấy tờ để xem xe quá hạn.",
@@ -129,14 +133,22 @@ public class DashboardController {
 
         setHeader("Xin chào, " + displayName,
                 "Theo dõi kế hoạch bảo dưỡng, phiếu sửa chữa và lịch sử xử lý xe.",
-                "TECH");
+                "KỸ THUẬT");
+        long duePlans = maintenancePlanDAO.findDueAlerts().size();
+        long inProgressRecords = maintenanceRecordDAO.findAll().stream()
+                .filter(record -> "IN_PROGRESS".equalsIgnoreCase(nullToEmpty(record.getRecordStatus())))
+                .count();
+        long completedRecords = maintenanceRecordDAO.findAll().stream()
+                .filter(record -> "COMPLETED".equalsIgnoreCase(nullToEmpty(record.getRecordStatus())))
+                .count();
+
         setKpis("Đang bảo dưỡng", underMaintenance, "Lấy từ trạng thái phương tiện",
-                "Kế hoạch", "-", "Chờ module bảo dưỡng kết nối",
-                "Phiếu xử lý", "-", "Chờ module sửa chữa kết nối",
-                "Hoàn thành", "-", "Chờ thống kê công việc kết nối");
-        setModules("Kế hoạch bảo dưỡng", "Lập lịch theo ngày hoặc số km cho từng phương tiện.", "PLANNING",
-                "Cập nhật bảo dưỡng", "Ghi nhận nội dung sửa chữa, ODO và chi phí.", "WORK ORDER",
-                "Lịch sử bảo dưỡng", "Tra cứu các lần bảo dưỡng theo từng xe.", "HISTORY",
+                "Kế hoạch đến hạn", duePlans, "Lấy từ danh sách bảo dưỡng đến hạn",
+                "Phiếu đang xử lý", inProgressRecords, "Trạng thái đang xử lý",
+                "Phiếu hoàn thành", completedRecords, "Trạng thái hoàn thành");
+        setModules("Kế hoạch bảo dưỡng", "Lập lịch theo ngày hoặc số km cho từng phương tiện.", "KẾ HOẠCH",
+                "Cập nhật bảo dưỡng", "Ghi nhận nội dung sửa chữa, ODO và chi phí.", "PHIẾU VIỆC",
+                "Lịch sử bảo dưỡng", "Tra cứu các lần bảo dưỡng theo từng xe.", "LỊCH SỬ",
                 null, null, null);
         setFocus("Ưu tiên kỹ thuật",
                 "Kiểm tra xe đang bảo dưỡng và chuẩn bị nối dữ liệu cho kế hoạch, phiếu sửa chữa, lịch sử.",
@@ -150,8 +162,8 @@ public class DashboardController {
         setKpis("Phương tiện", vehicleDAO.findAll().size(), "Dữ liệu tổng quan",
                 "Sắp hết hạn", documentAlertDAO.countByStatus("COMING_DUE"), "Cảnh báo giấy tờ",
                 "Đã hết hạn", documentAlertDAO.countByStatus("OVERDUE"), "Cảnh báo giấy tờ",
-                "Vai trò", roleDAO.findAllActive().size(), "Role đang hoạt động");
-        setModules("Dashboard", "Liên hệ quản trị để kiểm tra vai trò tài khoản.", "ACCOUNT",
+                "Vai trò", roleDAO.findAllActive().size(), "Vai trò đang hoạt động");
+        setModules("Tổng quan", "Liên hệ quản trị để kiểm tra vai trò tài khoản.", "TÀI KHOẢN",
                 null, null, null,
                 null, null, null,
                 null, null, null);

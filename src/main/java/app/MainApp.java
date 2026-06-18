@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import util.StylesheetLoader;
 
@@ -27,6 +28,7 @@ public class MainApp extends Application {
             StylesheetLoader.addBaseStyles(scene);
 
             stage.setTitle("FleetCare - Đăng nhập");
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/fleetcare-app-icon.png")));
             stage.setResizable(false);
             stage.setMinWidth(LOGIN_WIDTH);
             stage.setMinHeight(LOGIN_HEIGHT);

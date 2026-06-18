@@ -4,6 +4,7 @@ import model.dao.RoleDAO;
 import model.dao.UserDAO;
 import model.entity.Role;
 import model.entity.User;
+import session.UserSession;
 import util.PasswordUtil;
 
 import java.util.List;
@@ -11,20 +12,23 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
- * Service quan ly tai khoan nguoi dung.
+ * Service quản lý tài khoản người dùng.
  *
- * <p>Day 5: implement CRUD co ban cho man hinh quan tri user.</p>
+ * <p>Day 5: implement CRUD cơ bản cho màn hình quản trị user.</p>
  */
 public class UserService {
 
     private static final String STATUS_ACTIVE = "ACTIVE";
     private static final String STATUS_LOCKED = "LOCKED";
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final int MIN_PASSWORD_LENGTH = 8;
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
+    private final AuditLogService auditLogService = new AuditLogService();
 
     /**
-     * Tao moi mot tai khoan nguoi dung.
+     * Tạo mới một tài khoản người dùng.
      */
     public User createUser(String username,
                            String rawPassword,
@@ -32,12 +36,14 @@ public class UserService {
                            String email,
                            String phone,
                            Long roleId) {
-        String normalizedUsername = requireText(username, "Ten dang nhap khong duoc de trong.");
-        String normalizedPassword = requireText(rawPassword, "Mat khau khong duoc de trong.");
-        String normalizedFullName = requireText(fullName, "Ho ten khong duoc de trong.");
+        requireCurrentAdmin("Chỉ quản trị viên mới được tạo tài khoản.");
+        String normalizedUsername = requireText(username, "Tên đăng nhập không được để trống.");
+        String normalizedPassword = requireText(rawPassword, "Mật khẩu không được để trống.");
+        String normalizedFullName = requireText(fullName, "Họ tên không được để trống.");
 
         validateUsernameAvailable(normalizedUsername, null);
         validateRole(roleId);
+        validateNewPassword(normalizedPassword, normalizedPassword, null);
 
         User user = new User();
         user.setUsername(normalizedUsername);
@@ -51,22 +57,25 @@ public class UserService {
 
         Long generatedId = userDAO.insert(user);
         if (generatedId == null) {
-            throw new IllegalStateException("Khong the tao tai khoan. Vui long kiem tra du lieu va thu lai.");
+            throw new IllegalStateException("Không thể tạo tài khoản. Vui lòng kiểm tra dữ liệu và thử lại.");
         }
 
-        return userDAO.findById(generatedId).orElse(user);
+        User createdUser = userDAO.findById(generatedId).orElse(user);
+        auditLogService.recordUserCreated(createdUser);
+        return createdUser;
     }
 
     /**
-     * Cap nhat thong tin tai khoan, khong doi mat khau o method nay.
+     * Cập nhật thông tin tài khoản, không đổi mật khẩu ở method này.
      */
     public User updateUser(User user) {
+        requireCurrentAdmin("Chỉ quản trị viên mới được cập nhật tài khoản.");
         if (user == null || user.getUserId() == null) {
-            throw new IllegalArgumentException("Vui long chon tai khoan can cap nhat.");
+            throw new IllegalArgumentException("Vui lòng chọn tài khoản cần cập nhật.");
         }
 
-        String normalizedUsername = requireText(user.getUsername(), "Ten dang nhap khong duoc de trong.");
-        String normalizedFullName = requireText(user.getFullName(), "Ho ten khong duoc de trong.");
+        String normalizedUsername = requireText(user.getUsername(), "Tên đăng nhập không được để trống.");
+        String normalizedFullName = requireText(user.getFullName(), "Họ tên không được để trống.");
         String normalizedStatus = normalizeStatus(user.getAccountStatus());
 
         validateUsernameAvailable(normalizedUsername, user.getUserId());
@@ -79,48 +88,186 @@ public class UserService {
         user.setAccountStatus(normalizedStatus);
 
         if (!userDAO.update(user)) {
-            throw new IllegalStateException("Khong the cap nhat tai khoan. Vui long thu lai.");
+            throw new IllegalStateException("Không thể cập nhật tài khoản. Vui lòng thử lại.");
         }
 
-        return userDAO.findById(user.getUserId()).orElse(user);
+        User updatedUser = userDAO.findById(user.getUserId()).orElse(user);
+        auditLogService.recordUserUpdated(updatedUser);
+        return updatedUser;
     }
 
     /**
-     * Khoa tai khoan: chuyen account_status sang LOCKED.
+     * Khóa tài khoản: chuyển account_status sang LOCKED.
      */
     public void lockUser(Long userId) {
-        updateAccountStatus(userId, STATUS_LOCKED);
+        requireCurrentAdmin("Chỉ quản trị viên mới được khóa/mở khóa tài khoản.");
+        requireNotCurrentUser(userId, "Không thể khóa chính tài khoản đang đăng nhập.");
+
+        User updatedUser = updateAccountStatus(userId, STATUS_LOCKED);
+        auditLogService.recordUserLocked(updatedUser);
     }
 
     /**
-     * Mo khoa tai khoan: chuyen account_status sang ACTIVE.
+     * Mở khóa tài khoản: chuyển account_status sang ACTIVE.
      */
     public void unlockUser(Long userId) {
-        updateAccountStatus(userId, STATUS_ACTIVE);
+        requireCurrentAdmin("Chỉ quản trị viên mới được khóa/mở khóa tài khoản.");
+
+        User updatedUser = updateAccountStatus(userId, STATUS_ACTIVE);
+        auditLogService.recordUserUnlocked(updatedUser);
     }
 
     /**
-     * Liet ke toan bo user phuc vu trang quan tri.
+     * Liệt kê toàn bộ user phục vụ trang quản trị.
      */
     public List<User> listUsers() {
+        requireCurrentAdmin("Chỉ quản trị viên mới được xem danh sách tài khoản.");
         return userDAO.findAll();
     }
 
     /**
-     * Liet ke role dang active de hien thi trong form them/sua user.
+     * Liệt kê role đang active để hiển thị trong form thêm/sửa user.
      */
     public List<Role> listActiveRoles() {
+        requireCurrentAdmin("Chỉ quản trị viên mới được xem danh sách vai trò.");
         return roleDAO.findAllActive();
     }
 
-    private void updateAccountStatus(Long userId, String status) {
+    public User changeOwnPassword(String currentPassword,
+                                  String newPassword,
+                                  String confirmPassword) {
+        User sessionUser = UserSession.getInstance().getCurrentUser();
+        if (sessionUser == null || sessionUser.getUserId() == null) {
+            throw new IllegalStateException("Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.");
+        }
+
+        User currentUser = userDAO.findById(sessionUser.getUserId())
+                .orElseThrow(() -> new IllegalStateException("Không tìm thấy tài khoản hiện tại."));
+
+        if (!PasswordUtil.verify(currentPassword, currentUser.getPasswordHash())) {
+            throw new IllegalArgumentException("Mật khẩu hiện tại không đúng.");
+        }
+
+        validateNewPassword(newPassword, confirmPassword, currentUser.getPasswordHash());
+        String passwordHash = PasswordUtil.hash(newPassword);
+
+        if (!userDAO.updatePassword(currentUser.getUserId(), passwordHash, false)) {
+            throw new IllegalStateException("Không thể cập nhật mật khẩu. Vui lòng thử lại.");
+        }
+
+        User updatedUser = userDAO.findById(currentUser.getUserId()).orElse(currentUser);
+        sessionUser.setPasswordHash(updatedUser.getPasswordHash());
+        sessionUser.setMustChangePassword(false);
+        auditLogService.recordPasswordChanged(updatedUser);
+        return updatedUser;
+    }
+
+    public User adminResetPassword(Long targetUserId,
+                                   String newPassword,
+                                   String confirmPassword) {
+        requireCurrentAdmin();
+        if (targetUserId == null) {
+            throw new IllegalArgumentException("Vui lòng chọn tài khoản cần reset mật khẩu.");
+        }
+
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser != null && targetUserId.equals(currentUser.getUserId())) {
+            throw new IllegalArgumentException("Không reset mật khẩu của chính mình tại đây. Vui lòng dùng chức năng Đổi mật khẩu của tôi.");
+        }
+
+        User targetUser = userDAO.findById(targetUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Tài khoản cần reset mật khẩu không tồn tại."));
+
+        validateNewPassword(newPassword, confirmPassword, targetUser.getPasswordHash());
+        String passwordHash = PasswordUtil.hash(newPassword);
+
+        if (!userDAO.updatePassword(targetUserId, passwordHash, true)) {
+            throw new IllegalStateException("Không thể reset mật khẩu. Vui lòng thử lại.");
+        }
+
+        User updatedUser = userDAO.findById(targetUserId).orElse(targetUser);
+        auditLogService.recordPasswordResetByAdmin(updatedUser);
+        return updatedUser;
+    }
+
+    private User updateAccountStatus(Long userId, String status) {
         if (userId == null) {
-            throw new IllegalArgumentException("Vui long chon tai khoan.");
+            throw new IllegalArgumentException("Vui lòng chọn tài khoản.");
         }
 
         if (!userDAO.updateAccountStatus(userId, status)) {
-            throw new IllegalStateException("Khong the cap nhat trang thai tai khoan. Vui long thu lai.");
+            throw new IllegalStateException("Không thể cập nhật trạng thái tài khoản. Vui lòng thử lại.");
         }
+
+        return userDAO.findById(userId).orElseGet(() -> {
+            User user = new User();
+            user.setUserId(userId);
+            user.setAccountStatus(status);
+            return user;
+        });
+    }
+
+    private void requireCurrentAdmin() {
+        Role currentRole = UserSession.getInstance().getCurrentRole();
+        String roleCode = currentRole == null ? null : currentRole.getRoleCode();
+        if (!ROLE_ADMIN.equalsIgnoreCase(roleCode == null ? "" : roleCode.trim())) {
+            throw new IllegalStateException("Chỉ quản trị viên mới được reset mật khẩu tài khoản khác.");
+        }
+    }
+
+    private void requireCurrentAdmin(String message) {
+        Role currentRole = UserSession.getInstance().getCurrentRole();
+        String roleCode = currentRole == null ? null : currentRole.getRoleCode();
+        if (!ROLE_ADMIN.equalsIgnoreCase(roleCode == null ? "" : roleCode.trim())) {
+            throw new IllegalStateException(message);
+        }
+    }
+
+    private void requireNotCurrentUser(Long targetUserId, String message) {
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser != null
+                && targetUserId != null
+                && targetUserId.equals(currentUser.getUserId())) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    private void validateNewPassword(String newPassword,
+                                     String confirmPassword,
+                                     String currentPasswordHash) {
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new IllegalArgumentException("Mật khẩu mới không được để trống.");
+        }
+        if (confirmPassword == null || !newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Xác nhận mật khẩu mới không khớp.");
+        }
+        if (newPassword.length() < MIN_PASSWORD_LENGTH) {
+            throw new IllegalArgumentException("Mật khẩu mới phải có ít nhất " + MIN_PASSWORD_LENGTH + " ký tự.");
+        }
+        if (!containsLetter(newPassword) || !containsDigit(newPassword)) {
+            throw new IllegalArgumentException("Mật khẩu mới phải có ít nhất một chữ cái và một chữ số.");
+        }
+        if (PasswordUtil.verify(newPassword, currentPasswordHash)) {
+            throw new IllegalArgumentException("Mật khẩu mới không được trùng mật khẩu hiện tại.");
+        }
+    }
+
+    private boolean containsLetter(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            if (Character.isLetter(value.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsDigit(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            if (Character.isDigit(value.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void validateUsernameAvailable(String username, Long currentUserId) {
@@ -131,27 +278,27 @@ public class UserService {
 
         Long existingId = existing.get().getUserId();
         if (currentUserId == null || !currentUserId.equals(existingId)) {
-            throw new IllegalArgumentException("Ten dang nhap da ton tai.");
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại.");
         }
     }
 
     private void validateRole(Long roleId) {
         if (roleId == null) {
-            throw new IllegalArgumentException("Vui long chon vai tro.");
+            throw new IllegalArgumentException("Vui lòng chọn vai trò.");
         }
 
         Role role = roleDAO.findById(roleId)
-                .orElseThrow(() -> new IllegalArgumentException("Vai tro khong ton tai."));
+                .orElseThrow(() -> new IllegalArgumentException("Vai trò không tồn tại."));
 
         if (!role.isActive()) {
-            throw new IllegalArgumentException("Vai tro da bi vo hieu hoa.");
+            throw new IllegalArgumentException("Vai trò đã bị vô hiệu hóa.");
         }
     }
 
     private String normalizeStatus(String status) {
         String normalizedStatus = status == null ? STATUS_ACTIVE : status.trim().toUpperCase(Locale.ROOT);
         if (!STATUS_ACTIVE.equals(normalizedStatus) && !STATUS_LOCKED.equals(normalizedStatus)) {
-            throw new IllegalArgumentException("Trang thai tai khoan khong hop le.");
+            throw new IllegalArgumentException("Trạng thái tài khoản không hợp lệ.");
         }
 
         return normalizedStatus;

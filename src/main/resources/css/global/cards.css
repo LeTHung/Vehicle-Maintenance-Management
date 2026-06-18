@@ -3,6 +3,7 @@
 .metric-card,
 .panel,
 .toolbar-panel,
+.selection-strip,
 .form-panel,
 .table-panel,
 .module-card,
@@ -10,18 +11,18 @@
 .summary-warning,
 .summary-primary {
     -fx-background-color: rgba(255,255,255,0.86);
-    -fx-background-radius: 20;
-    -fx-padding: 20;
-    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.07), 22, 0, 0, 8);
+    -fx-background-radius: 14;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.06), 16, 0, 0, 5);
 }
 
 .metric-card {
-    -fx-spacing: 8;
-    -fx-min-height: 130;
+    -fx-spacing: 5;
+    -fx-min-height: 92;
 }
 
 .panel {
-    -fx-padding: 22;
+    -fx-padding: 16;
 }
 
 .module-card {
@@ -29,9 +30,24 @@
     -fx-min-height: 110;
 }
 
+.clickable-card {
+    -fx-cursor: hand;
+}
+
+.clickable-card:hover {
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(24,28,31,0.10), 24, 0, 0, 10);
+}
+
 .toolbar-panel {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 16;
+}
+
+.selection-strip {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 14 18;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ffffff, #eef6ff);
 }
 
 .form-panel {
@@ -44,7 +60,7 @@
 }
 
 .table-title-row {
-    -fx-padding: 18 20 10 20;
+    -fx-padding: 14 16 8 16;
     -fx-alignment: CENTER_LEFT;
 }
 
@@ -57,7 +73,7 @@
 .metric-value,
 .metric-value-warning,
 .metric-value-danger {
-    -fx-font-size: 34px;
+    -fx-font-size: 28px;
     -fx-font-weight: 900;
 }
 
@@ -77,9 +93,9 @@
 .metric-trend-primary,
 .metric-trend-warning,
 .metric-trend-danger {
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
     -fx-font-weight: 700;
-    -fx-padding: 4 10;
+    -fx-padding: 3 8;
     -fx-background-radius: 999;
 }
 
@@ -117,9 +133,9 @@
 
 .priority-card-warning,
 .priority-card-primary {
-    -fx-padding: 16;
-    -fx-spacing: 6;
-    -fx-background-radius: 16;
+    -fx-padding: 12;
+    -fx-spacing: 5;
+    -fx-background-radius: 12;
 }
 
 .priority-card-warning {
@@ -146,4 +162,40 @@
 
 .dot-primary {
     -fx-text-fill: -app-primary-container;
+}
+
+/* Khối chi tiết chỉ xuất hiện sau khi người dùng chọn một dòng. */
+.detail-panel {
+    -fx-border-color: rgba(37,99,235,0.18);
+    -fx-border-width: 1;
+    -fx-border-radius: 20;
+    -fx-background-color: rgba(255,255,255,0.97);
+}
+
+.compact-title-row {
+    -fx-padding: 0 0 8 0;
+}
+
+.record-summary-panel {
+    -fx-padding: 14 18 16 18;
+}
+
+.record-summary-panel .text-field,
+.record-summary-panel .combo-box-base,
+.record-summary-panel .date-picker {
+    -fx-padding: 6 10;
+}
+
+.detail-field {
+    -fx-min-height: 40;
+}
+
+.detail-field-label {
+    -fx-pref-width: 108;
+    -fx-min-width: 108;
+    -fx-max-width: 108;
+}
+
+.record-items-panel {
+    -fx-padding: 18;
 }

@@ -22,7 +22,7 @@ public class DocumentAlertDAO {
                        expiry_date, days_to_expiry, due_status
                 FROM vw_due_vehicle_documents
                 WHERE due_status IN ('OVERDUE', 'COMING_DUE')
-                ORDER BY days_to_expiry ASC
+                ORDER BY days_to_expiry DESC
                 """;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -58,7 +58,7 @@ public class DocumentAlertDAO {
                     OR document_number LIKE ?
                     OR issuer_name LIKE ?
                   )
-                ORDER BY days_to_expiry ASC
+                ORDER BY days_to_expiry DESC
                 """;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -119,7 +119,11 @@ public class DocumentAlertDAO {
             return null;
         }
 
-        return dueStatus.trim().toUpperCase();
+        String normalizedStatus = dueStatus.trim().toUpperCase();
+        return switch (normalizedStatus) {
+            case "OVERDUE", "COMING_DUE", "NORMAL" -> normalizedStatus;
+            default -> null;
+        };
     }
 
     private DocumentAlertDTO mapToAlert(ResultSet resultSet) throws SQLException {
