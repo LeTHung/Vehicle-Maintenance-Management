@@ -178,20 +178,20 @@ MYSQLPASSWORD=password
 
 ## Tạo database và nạp dữ liệu demo
 
-File SQL có tiếng Việt, nên trên Windows nên chạy bằng redirection. Không dùng dạng `Get-Content data\schema.sql | mysql` vì PowerShell có thể làm hỏng dấu tiếng Việt.
+File SQL có tiếng Việt, nên trên Windows nên chạy bằng redirection. Không dùng dạng `Get-Content database\schema.sql | mysql` vì PowerShell có thể làm hỏng dấu tiếng Việt.
 
 Chạy bằng PowerShell qua `cmd /c`:
 
 ```powershell
-cmd /c "mysql -u root -p --default-character-set=utf8mb4 < data\schema.sql"
-cmd /c "mysql -u root -p --default-character-set=utf8mb4 < data\data.sql"
+cmd /c "mysql -u root -p --default-character-set=utf8mb4 < database\schema.sql"
+cmd /c "mysql -u root -p --default-character-set=utf8mb4 < database\data.sql"
 ```
 
 Nếu tài khoản MySQL root không có mật khẩu, bỏ `-p`:
 
 ```powershell
-cmd /c "mysql -u root --default-character-set=utf8mb4 < data\schema.sql"
-cmd /c "mysql -u root --default-character-set=utf8mb4 < data\data.sql"
+cmd /c "mysql -u root --default-character-set=utf8mb4 < database\schema.sql"
+cmd /c "mysql -u root --default-character-set=utf8mb4 < database\data.sql"
 ```
 
 Nếu MySQL client chưa có trong `PATH`, thêm tạm trong PowerShell:
@@ -209,7 +209,7 @@ vehicle_maintenance_management
 
 ## Dữ liệu demo
 
-`data/data.sql` nạp dữ liệu tham chiếu và dữ liệu demo gồm:
+`database/data.sql` nạp dữ liệu tham chiếu và dữ liệu demo gồm:
 
 - 3 vai trò: `ADMIN`, `FLEET_MANAGER`, `TECHNICIAN`.
 - 16 quyền nghiệp vụ.
@@ -266,7 +266,7 @@ Màn hình đầu tiên là đăng nhập. Sau khi đăng nhập, menu và dashb
 Dự án có class kiểm tra kết nối:
 
 ```powershell
-.\mvnw.cmd exec:java -Dexec.mainClass="database.TestConnection"
+.\mvnw.cmd --% exec:java -Dexec.mainClass=database.TestConnection
 ```
 
 Nếu plugin `exec` chưa được tải/cấu hình, có thể kiểm tra bằng cách chạy ứng dụng trực tiếp với `javafx:run`; lỗi thiếu cấu hình database sẽ được in ra console khi app khởi động hoặc khi đăng nhập.
